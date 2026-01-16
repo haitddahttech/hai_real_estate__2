@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Parent Menu for Site Plans in Website Header -->
+    <record id="menu_site_plans_parent" model="website.menu">
+        <field name="name">Dự Án</field>
+        <field name="url">/real-estate</field>
+        <field name="sequence">50</field>
+        <field name="is_visible" eval="True"/>
+    </record>
+</odoo>

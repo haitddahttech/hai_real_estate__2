@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_house_manager"
+              name="House Manager"
+              sequence="99"
+              web_icon="customer_manager,static/description/icon.jpg"
+              action="stock.product_template_action_product"/>
+
+    <record id="product_category_search_view_inherit" model="ir.ui.view">
+            <field name="name">product.category.search.inherit</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_search_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                    <filter string="Parent Category"
+                            name="groupby_parent_id"
+                            domain="[]"
+                            context="{'group_by': 'parent_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+<!--    <record id="product.product_category_action_form" model="ir.actions.act_window">-->
+<!--        <field name="context">{'search_default_groupby_parent_id': 1}</field>-->
+<!--    </record>-->
+
+    <menuitem id="menu_categ_manager"
+              name="House Categ Manager"
+              sequence="99"
+              web_icon="customer_manager,static/description/logo_danh_muc.jpg"
+              action="product.product_category_action_form"/>
+
+    <menuitem id="menu_user_account_manager"
+              name="User Manager"
+              sequence="99"
+              web_icon="customer_manager,static/description/icon_user.png"
+              groups="base.group_system"
+              action="base.action_res_users"/>
+
+    <record id="stock.product_template_action_product" model="ir.actions.act_window">
+        <field name="context">{}</field>
+    </record>
+
+    <record id="view_product_form_view_procurement_button_customer_manager_inherit_" model="ir.ui.view">
+        <field name="name">product.template.form.view.procurement.button.customer.manager.form.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="stock.product_template_form_view_procurement_button"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_product_tmpl_forecast_report']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_view_stock_move_lines']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_view_orderpoints'][1]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_view_orderpoints'][2]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="product_template_kanban_customer_manager_view">
+            <field name="name">Product Template Kanban customer manager</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_kanban_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban" position="replace">
+                    <kanban sample="1">
+                        <field name="currency_id"/>
+                        <field name="activity_state"/>
+                        <field name="categ_id"/>
+                        <field name="is_sold"/>  <!-- Rất quan trọng: phải load field này -->
+
+                        <progressbar field="activity_state"
+                                     colors='{"planned": "success", "today": "warning", "overdue": "danger"}'/>
+
+                        <templates>
+                            <t t-name="card" class="flex-row">
+                                <main class="pe-2">
+                                    <div class="mb-1">
+                                        <div class="d-flex mb-0 h5 align-items-center">
+                                            <field class="me-1" name="is_favorite" widget="boolean_favorite" nolabel="1"/>
+                                            <field name="name"/>
+
+                                            <!-- Badge trạng thái Đã bán / Chưa bán -->
+                                            <span class="ms-2 badge rounded-pill"
+                                                  t-att-class="record.is_sold.raw_value ? 'bg-danger' : 'bg-success'">
+                                                <t t-if="record.is_sold.raw_value">
+                                                    Đã bán
+                                                </t>
+                                                <t t-else="">
+                                                    Chưa bán
+                                                </t>
+                                            </span>
+                                        </div>
+
+                                        <span t-if="record.default_code.value">
+                                            [<field name="default_code"/>]
+                                        </span>
+                                        <strong t-if="record.product_variant_count.value &gt; 1">
+                                            <field name="product_variant_count"/> Variants
+                                        </strong>
+                                    </div>
+
+                                    <span>
+                                        Giá bán: <field name="list_price" widget="monetary"
+                                                      options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                                    </span>
+
+                                    <field name="product_properties" widget="properties"/>
+                                </main>
+
+                                <aside>
+                                    <field name="image_128" widget="image" alt="Product"
+                                           options="{'img_class': 'w-100 object-fit-contain'}"
+                                           invisible="not image_128"/>
+                                </aside>
+                            </t>
+                        </templates>
+                    </kanban>
+                </xpath>
+            </field>
+        </record>
+
+    <record id="view_product_customer_manager_inherit" model="ir.ui.view">
+        <field name="name">product.template.import.customer.manager.form.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="stock.view_template_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+               <button type="object"
+                    name="action_view_customer_followers"
+                    invisible="count_customer_followers == 0"
+                    class="oe_stat_button"
+                    icon="fa-users">
+                    <field name="count_customer_followers" string="Following customers" widget="statinfo"/>
+                </button>
+            </xpath>
+            <xpath expr="//page[@name='sales_price']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='type']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//div[@name='options']" position="inside">
+                <span class="d-inline-block">
+                    <label for="is_sold">Status</label>
+                    <field name="is_sold" readonly="0" widget="boolean_toggle"/>
+                </span>
+            </xpath>
+            <xpath expr="//group[@name='group_general']" position="inside">
+                <field name="buyer_id"/>
+                <field name="customer_follower_ids" readonly="1" force_save="1" options="{'no_open': True, 'no_create': True}" on_change="1" can_create="True" can_write="True">
+                    <list string="Followers">
+                        <control>
+                            <create name="add_new" invisible="1"/>
+                        </control>
+                        <field name="name"/>
+                        <field name="email"/>
+                        <field name="phone"/>
+                        <field name="customer_sale_state" widget="badge"/>
+                    </list>
+                </field>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_product_template_tree_view_a1_inherit" model="ir.ui.view">
+        <field name="name">product.template.list.view.a1.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list/field[@name='list_price']" position="after">
+                <field name="is_sold" widget="boolean_toggle" string="Đã bán"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Product Template Search View - Add Sale Status Filters -->
+    <record id="view_product_template_search_inherit" model="ir.ui.view">
+        <field name="name">product.template.search.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search/filter[@name='inactive']" position="after">
+                <separator/>
+                <filter string="Đã bán" name="filter_sold" domain="[('is_sold', '=', True)]"/>
+                <filter string="Chưa bán" name="filter_not_sold" domain="[('is_sold', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

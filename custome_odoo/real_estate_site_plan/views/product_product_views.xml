@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Product Form View - Add Site Plan Info -->
+    <record id="view_product_template_form_inherit" model="ir.ui.view">
+        <field name="name">product.template.form.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form//sheet//notebook" position="inside">
+                <page string="Thông tin Bất động sản" name="real_estate_info">
+                    <group>
+                        <group string="Thông tin chung">
+                            <field name="site_plan_polygon_id" readonly="1" string="Lô đất"/>
+                            <field name="is_real_estate" invisible="1"/>
+                            <field name="property_type" string="Loại hình"/>
+                            <field name="direction" string="Hướng"/>
+                            <field name="is_sold" readonly="0" widget="boolean_toggle" string="Đã bán"/>
+                            <field name="color" widget="color" string="Màu sắc"/>
+                        </group>
+                        <group string="Diện tích và Giá">
+                            <field name="area" force_save="1" on_change="1"/>
+                            <field name="construction_area" force_save="1" on_change="1"/>
+                            <field name="list_price" force_save="1" on_change="1"/>
+                            <field name="deposit" force_save="1" on_change="1"/>
+                            <field name="price_per_m2" readonly="1" force_save="1"/>
+                        </group>
+                    </group>
+                    <group string="Chi tiết Thuế và Phí">
+                        <group>
+                            <field name="price_exclude_land_tax" force_save="1" on_change="1"/>
+                            <field name="land_tax" force_save="1" on_change="1"/>
+                            <field name="price_include_land_tax" readonly="1" force_save="1" on_change="1"/>
+                        </group>
+                        <group>
+                            <field name="vat_tax" readonly="0" force_save="1" on_change="1"/>
+                            <field name="maintenance_fee" force_save="1" on_change="1"/>
+                        </group>
+                    </group>
+                    <group string="Lịch trình thanh toán">
+                        <group>
+                            <group>
+                                <field name="deposit_date" placeholder="Chọn ngày đặt cọc tại đây"/>
+                            </group>
+                            <group></group>
+                        </group>
+                        <field name="payment_timeline_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="type"/>
+                                <field name="date"/>
+                                <field name="name"/>
+                                <field name="amount"/>
+                                <field name="vat_amount"/>
+                                <field name="total_amount"/>
+                                <field name="currency_id" optional="hide"/>
+                            </list>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

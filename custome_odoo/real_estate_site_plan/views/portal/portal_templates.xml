@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Create Website Menu Items for Site Plans -->
+    <!-- This will be populated dynamically via Python code -->
+    <template id="create_site_plan_menus" name="Create Site Plan Menus">
+        <!-- Menus will be created programmatically in the controller -->
+    </template>
+
+
+
+    <!-- Site Plans List Page -->
+    <template id="portal_my_site_plans" name="My Site Plans">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Bản Đồ Dự Án</t>
+            </t>
+
+            <t t-if="not site_plans">
+                <div class="alert alert-info" role="alert">
+                    <p class="mb-0">Hiện tại chưa có bản đồ dự án nào.</p>
+                </div>
+            </t>
+
+            <t t-if="site_plans" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>Tên Dự Án</th>
+                        <th>Số Lô Đất</th>
+                        <th class="text-end">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="site_plans" t-as="site_plan">
+                        <tr>
+                            <td>
+                                <a t-attf-href="/my/site-plan/#{site_plan.id}">
+                                    <t t-esc="site_plan.name"/>
+                                </a>
+                            </td>
+                            <td>
+                                <span t-esc="site_plan.polygon_count"/> lô đất
+                            </td>
+                            <td class="text-end">
+                                <a t-attf-href="/my/site-plan/#{site_plan.id}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-map"/> Xem Bản Đồ
+                                </a>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </t>
+        </t>
+    </template>
+
+
+</odoo>

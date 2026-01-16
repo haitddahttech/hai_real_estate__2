@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_site_plan_user,access.site.plan.user,model_site_plan,base.group_user,1,1,1,1
+access_site_plan_polygon_user,access.site.plan.polygon.user,model_site_plan_polygon,base.group_user,1,1,1,1
+access_payment_timeline,access.payment.timeline,model_payment_timeline,,1,1,1,1
+access_product_discount_config,access.product.discount.config,model_product_discount_config,base.group_user,1,1,1,1

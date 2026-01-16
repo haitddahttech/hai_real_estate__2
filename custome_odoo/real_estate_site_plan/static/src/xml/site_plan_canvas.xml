@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="real_estate_site_plan.SitePlanCanvasWidget">
+        <div class="o_site_plan_canvas_widget" style="max-width: 1400px; margin: 0 auto; padding: 20px;">
+            <!-- 2-Column Layout -->
+            <div style="display: flex; gap: 20px;">
+                <!-- Left: Canvas (70%) -->
+                <div style="flex: 0 0 70%; min-width: 0;">
+                    <!-- Canvas -->
+                    <div class="o_canvas_container" style="border: 2px solid #dee2e6; border-radius: 5px; overflow: hidden; background: #fff;">
+                        <canvas t-ref="canvas" 
+                                style="display: block; cursor: crosshair; width: 100%;"/>
+                    </div>
+                    
+                    <!-- Instructions -->
+                    <div class="o_canvas_instructions" style="margin-top: 15px; padding: 12px 15px; background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); border-left: 4px solid #2196F3; border-radius: 6px; font-size: 0.8rem;">
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <i class="fa fa-lightbulb-o" style="font-size: 1.2rem; color: #2196F3; margin-right: 8px;"/>
+                            <strong style="font-size: 0.9rem;">Mẹo nhanh</strong>
+                        </div>
+                        <ul style="margin: 0; padding-left: 20px; line-height: 1.6;">
+                            <li><strong>Đa giác:</strong> Click để thêm điểm, click đúp chuột để vẽ xong</li>
+                            <li><strong>Hình chữ nhật:</strong> Click chuột trái và kéo</li>
+                            <li><strong>Chỉnh sửa:</strong> Kéo các điểm để điều chỉnh hình dạng</li>
+                            <li><strong>Zoom:</strong> Lăn chuột | <strong>Pan:</strong> Giữ chuột phải và kéo</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Right: Compact Toolbar (220px) -->
+                <div style="flex: 0 0 220px; min-width: 220px;">
+                    <div class="o_canvas_toolbar" style="padding: 12px; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; position: sticky; top: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.08);">
+                        <!-- Header -->
+                        <div style="margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #f5f5f5; display: flex; align-items: center;">
+                            <i class="fa fa-cog" style="font-size: 1rem; color: #666; margin-right: 6px;"/>
+                            <h6 style="margin: 0; font-weight: 600; color: #333; font-size: 0.9rem;">Công cụ</h6>
+                        </div>
+                        
+                        <!-- Drawing Mode -->
+                        <div style="margin-bottom: 10px;">
+                            <label style="font-weight: 600; font-size: 0.7rem; color: #666; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">Chế độ</label>
+                            <div class="btn-group-vertical" role="group" style="width: 100%; gap: 3px; display: flex; flex-direction: column;">
+                                <button type="button" 
+                                        class="btn btn-sm"
+                                        t-att-class="state.mode === 'select' ? 'btn-primary' : 'btn-outline-secondary'"
+                                        t-on-click="() => this.setMode('select')"
+                                        style="text-align: left; padding: 6px 10px; border-radius: 5px; transition: all 0.2s; font-size: 0.8rem;">
+                                    <i class="fa fa-mouse-pointer" style="width: 16px;"/> Chọn
+                                </button>
+                                <button type="button" 
+                                        class="btn btn-sm"
+                                        t-att-class="state.mode === 'polygon' ? 'btn-primary' : 'btn-outline-secondary'"
+                                        t-on-click="() => this.setMode('polygon')"
+                                        style="text-align: left; padding: 6px 10px; border-radius: 5px; transition: all 0.2s; font-size: 0.8rem;">
+                                    <i class="fa fa-pencil" style="width: 16px;"/> Đa giác
+                                </button>
+                                <button type="button" 
+                                        class="btn btn-sm"
+                                        t-att-class="state.mode === 'rectangle' ? 'btn-primary' : 'btn-outline-secondary'"
+                                        t-on-click="() => this.setMode('rectangle')"
+                                        style="text-align: left; padding: 6px 10px; border-radius: 5px; transition: all 0.2s; font-size: 0.8rem;">
+                                    <i class="fa fa-square-o" style="width: 16px;"/> Hình chữ nhật
+                                </button>
+                                <button type="button" 
+                                        class="btn btn-sm"
+                                        t-att-class="state.mode === 'edit' ? 'btn-primary' : 'btn-outline-secondary'"
+                                        t-on-click="() => this.setMode('edit')"
+                                        style="text-align: left; padding: 6px 10px; border-radius: 5px; transition: all 0.2s; font-size: 0.8rem;">
+                                    <i class="fa fa-edit" style="width: 16px;"/> Chỉnh sửa
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Color -->
+                        <div style="margin-bottom: 10px;">
+                            <label style="font-weight: 600; font-size: 0.7rem; color: #666; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <i class="fa fa-paint-brush"/> Màu sắc
+                            </label>
+                            <input type="color" 
+                                   t-model="state.color"
+                                   t-on-change="setColor"
+                                   style="width: 100%; height: 32px; border: 2px solid #e0e0e0; border-radius: 5px; cursor: pointer;"/>
+                            
+                            <!-- Quick Colors -->
+                            <div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px;" t-if="getUsedColors().length > 0">
+                                <t t-foreach="getUsedColors()" t-as="usedColor" t-key="usedColor">
+                                    <button type="button"
+                                            t-on-click="() => this.selectColor(usedColor)"
+                                            t-att-title="`Dùng màu ${usedColor}`"
+                                            t-att-style="`background: ${usedColor}; border: 2px solid ${state.color === usedColor ? '#333' : '#e0e0e0'}; width: 28px; height: 28px; border-radius: 5px; cursor: pointer; transition: all 0.2s;`">
+                                    </button>
+                                </t>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div style="margin-bottom: 10px;">
+                            <label style="font-weight: 600; font-size: 0.7rem; color: #666; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">Thao tác</label>
+                            <div style="display: flex; flex-direction: column; gap: 3px;">
+                                <button type="button" 
+                                        class="btn btn-sm btn-success"
+                                        t-on-click="() => this.saveCurrentPolygon()"
+                                        t-att-disabled="state.currentPolygon.length lt 3"
+                                        style="text-align: left; padding: 6px 10px; border-radius: 5px; font-size: 0.8rem;">
+                                    <i class="fa fa-save" style="width: 16px;"/> Lưu
+                                </button>
+                                <button type="button" 
+                                        class="btn btn-sm btn-info"
+                                        t-on-click="updatePolygonColor"
+                                        t-att-disabled="state.selectedPolygon === null"
+                                        style="text-align: left; padding: 6px 10px; border-radius: 5px; font-size: 0.8rem;">
+                                    <i class="fa fa-paint-brush" style="width: 16px;"/> Cập nhật màu
+                                </button>
+                                <button type="button" 
+                                        class="btn btn-sm btn-danger"
+                                        t-on-click="deleteSelectedPolygon"
+                                        style="text-align: left; padding: 6px 10px; border-radius: 5px; font-size: 0.8rem;">
+                                    <i class="fa fa-trash" style="width: 16px;"/> Xóa
+                                </button>
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-secondary"
+                                        t-on-click="clearCanvas"
+                                        style="text-align: left; padding: 6px 10px; border-radius: 5px; font-size: 0.8rem;">
+                                    <i class="fa fa-eraser" style="width: 16px;"/> Xóa trắng
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Zoom -->
+                        <div style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <label style="font-weight: 600; font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Thu phóng</label>
+                                <span style="font-size: 0.7rem; color: #2196F3; font-weight: 600;" t-esc="`${Math.round(state.scale * 100)}%`"/>
+                            </div>
+                            
+                            <!-- Zoom Slider -->
+                            <input type="range" 
+                                   min="0.5" 
+                                   max="10" 
+                                   step="0.1"
+                                   t-att-value="state.scale"
+                                   t-on-input="onZoomSliderChange"
+                                   style="width: 100%; height: 6px; border-radius: 3px; background: linear-gradient(to right, #e0e0e0 0%, #2196F3 50%, #e0e0e0 100%); outline: none; cursor: pointer; margin-bottom: 6px;"/>
+                            
+                            <!-- Reset Button -->
+                            <button type="button" 
+                                    class="btn btn-sm btn-outline-secondary"
+                                    t-on-click="() => this.resetZoom()"
+                                    style="width: 100%; padding: 6px; border-radius: 5px; font-size: 0.75rem;">
+                                <i class="fa fa-expand"/> Mặc định
+                            </button>
+                        </div>
+                        
+                        <!-- Info -->
+                        <div style="padding: 8px; background: #f8f9fa; border-radius: 5px; border: 1px solid #e9ecef;">
+                            <div style="font-size: 0.7rem; color: #666; margin-bottom: 3px;">
+                                <i class="fa fa-info-circle" style="color: #2196F3;"/> <strong>Chế độ:</strong> <span t-esc="state.mode" style="color: #333;"/>
+                            </div>
+                            <div style="font-size: 0.7rem; color: #666;" t-if="state.selectedPolygon !== null">
+                                <i class="fa fa-check-circle" style="color: #4caf50;"/> <strong>Đã chọn:</strong> <span t-esc="state.polygons[state.selectedPolygon].name" style="color: #333;"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+    
+</templates>

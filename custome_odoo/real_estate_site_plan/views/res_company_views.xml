@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Inherit res.company form view to add bank account fields -->
+    <record id="view_company_form_bank_info" model="ir.ui.view">
+        <field name="name">res.company.form.bank.info</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <!-- Add bank info after the email field -->
+            <xpath expr="//field[@name='email']" position="after">
+                <separator string="Thông tin ngân hàng" colspan="2"/>
+                <field name="bank_account_holder_name" placeholder="Công ty TNHH ABC"/>
+                <field name="bank_name" placeholder="Vietcombank, Techcombank, BIDV, ..."/>
+                <field name="bank_account_number" placeholder="1234567890"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,261 @@
+# Translation for Real Estate Site Plan Module
+# Vietnamese (vi_VN)
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_site_plan
+msgid "Site Plan / Master Plan"
+msgstr "Mặt Bằng / Sơ Đồ Tổng Thể"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_site_plan_polygon
+msgid "Site Plan Polygon"
+msgstr "Đa Giác Mặt Bằng"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_product_product
+msgid "Product"
+msgstr "Sản Phẩm"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_product_category
+msgid "Product Category"
+msgstr "Danh Mục Sản Phẩm"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__name
+msgid "Site Plan Name"
+msgstr "Tên Mặt Bằng"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__image
+msgid "Site Plan Image"
+msgstr "Hình Ảnh Mặt Bằng"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__description
+msgid "Description"
+msgstr "Mô Tả"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__polygon_ids
+msgid "Polygons"
+msgstr "Các Đa Giác"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__polygon_count
+msgid "Polygon Count"
+msgstr "Số Lượng Đa Giác"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__active
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__active
+msgid "Active"
+msgstr "Kích Hoạt"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__name
+msgid "Polygon Name"
+msgstr "Tên Đa Giác"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__site_plan_id
+msgid "Site Plan"
+msgstr "Mặt Bằng"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__product_id
+msgid "Product"
+msgstr "Sản Phẩm"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__polygon_type
+msgid "Polygon Type"
+msgstr "Loại Đa Giác"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__coordinates
+msgid "Coordinates"
+msgstr "Tọa Độ"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__color
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_category__color
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__color
+msgid "Color"
+msgstr "Màu Sắc"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__is_sold
+msgid "Is Sold"
+msgstr "Đã Bán"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__area
+msgid "Area (m²)"
+msgstr "Diện Tích (m²)"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__list_price
+msgid "Price"
+msgstr "Giá"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__deposit
+msgid "Deposit"
+msgstr "Đặt Cọc"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__price_per_m2
+msgid "Price per m²"
+msgstr "Giá/m²"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__is_real_estate
+msgid "Is Real Estate"
+msgstr "Là Bất Động Sản"
+
+#. module: real_estate_site_plan
+#: model:ir.ui.menu,name:real_estate_site_plan.menu_real_estate_root
+msgid "Real Estate"
+msgstr "Bất Động Sản"
+
+#. module: real_estate_site_plan
+#: model:ir.ui.menu,name:real_estate_site_plan.menu_site_plans
+msgid "Site Plans"
+msgstr "Mặt Bằng"
+
+#. module: real_estate_site_plan
+#: model:ir.ui.menu,name:real_estate_site_plan.menu_portal_maps
+#: model:ir.ui.menu,name:real_estate_site_plan.menu_portal_maps_root
+msgid "Portal Maps"
+msgstr "Bản Đồ Portal"
+
+#. module: real_estate_site_plan
+#: model:ir.actions.act_window,name:real_estate_site_plan.action_site_plan
+msgid "Site Plans"
+msgstr "Mặt Bằng"
+
+#. module: real_estate_site_plan
+#: model:ir.actions.act_url,name:real_estate_site_plan.action_portal_maps
+msgid "Portal Maps"
+msgstr "Bản Đồ Portal"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "View Portal Map"
+msgstr "Xem Bản Đồ Portal"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "Real Estate Information"
+msgstr "Thông Tin Bất Động Sản"
+
+#. module: real_estate_site_plan
+#: selection:site.plan.polygon,polygon_type:0
+msgid "Free Form"
+msgstr "Tự Do"
+
+#. module: real_estate_site_plan
+#: selection:site.plan.polygon,polygon_type:0
+msgid "Rectangle"
+msgstr "Hình Chữ Nhật"
+
+#. module: real_estate_site_plan
+msgid "Available"
+msgstr "Còn Trống"
+
+#. module: real_estate_site_plan
+msgid "Sold"
+msgstr "Đã Bán"
+
+#. module: real_estate_site_plan
+msgid "Selected"
+msgstr "Đã Chọn"
+
+#. module: real_estate_site_plan
+msgid "Category"
+msgstr "Danh Mục"
+
+#. module: real_estate_site_plan
+msgid "All Projects"
+msgstr "Tất Cả Dự Án"
+
+#. module: real_estate_site_plan
+msgid "Back to Projects"
+msgstr "Quay Lại Dự Án"
+
+#. module: real_estate_site_plan
+msgid "Zoom In"
+msgstr "Phóng To"
+
+#. module: real_estate_site_plan
+msgid "Zoom Out"
+msgstr "Thu Nhỏ"
+
+#. module: real_estate_site_plan
+msgid "Reset View"
+msgstr "Đặt Lại"
+
+#. module: real_estate_site_plan
+msgid "Click on properties to view details"
+msgstr "Nhấp vào bất động sản để xem chi tiết"
+
+#. module: real_estate_site_plan
+msgid "Property Status Legend"
+msgstr "Chú Thích Trạng Thái"
+
+#. module: real_estate_site_plan
+msgid "Ready for sale"
+msgstr "Sẵn sàng bán"
+
+#. module: real_estate_site_plan
+msgid "Already purchased"
+msgstr "Đã mua"
+
+#. module: real_estate_site_plan
+msgid "Currently viewing"
+msgstr "Đang xem"
+
+#. module: real_estate_site_plan
+msgid "View Full Details"
+msgstr "Xem Chi Tiết Đầy Đủ"
+
+#. module: real_estate_site_plan
+msgid "SOLD"
+msgstr "ĐÃ BÁN"
+
+#. module: real_estate_site_plan
+msgid "AVAILABLE"
+msgstr "CÒN TRỐNG"
+
+#. module: real_estate_site_plan
+msgid "Land area in square meters"
+msgstr "Diện tích đất tính bằng mét vuông"
+
+#. module: real_estate_site_plan
+msgid "Total price of the property"
+msgstr "Tổng giá của bất động sản"
+
+#. module: real_estate_site_plan
+msgid "Deposit or down payment amount"
+msgstr "Số tiền đặt cọc hoặc trả trước"
+
+#. module: real_estate_site_plan
+msgid "Price per square meter (auto-calculated)"
+msgstr "Giá mỗi mét vuông (tự động tính)"
+
+#. module: real_estate_site_plan
+msgid "Indicates if this product/property has been sold"
+msgstr "Cho biết sản phẩm/bất động sản này đã được bán chưa"
+
+#. module: real_estate_site_plan
+msgid "Hex color code for polygon display (inherited from category by default)"
+msgstr "Mã màu hex để hiển thị đa giác (mặc định kế thừa từ danh mục)"
+
+#. module: real_estate_site_plan
+msgid "Create your first Site Plan"
+msgstr "Tạo Mặt Bằng Đầu Tiên"
+
+#. module: real_estate_site_plan
+msgid "Upload a master plan image and draw polygons to represent properties."
+msgstr "Tải lên hình ảnh mặt bằng tổng thể và vẽ các đa giác để đại diện cho bất động sản."

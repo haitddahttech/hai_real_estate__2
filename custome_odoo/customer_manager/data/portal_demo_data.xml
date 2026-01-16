@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Demo Portal User -->
+        <record id="portal_user_demo" model="res.users">
+            <field name="name">Portal User Demo</field>
+            <field name="login">portal.demo@example.com</field>
+            <field name="password">portal</field>
+            <field name="groups_id" eval="[(6, 0, [ref('base.group_portal')])]"/>
+        </record>
+
+        <!-- Demo Customers -->
+        <record id="demo_customer_1" model="res.partner">
+            <field name="name">Nguyễn Văn A</field>
+            <field name="ref">CUST001</field>
+            <field name="phone">0901234567</field>
+            <field name="email">nguyenvana@example.com</field>
+            <field name="street">123 Đường Lê Lợi</field>
+            <field name="city">Hồ Chí Minh</field>
+            <field name="is_company" eval="False"/>
+            <field name="type">contact</field>
+        </record>
+
+        <record id="demo_customer_2" model="res.partner">
+            <field name="name">Trần Thị B</field>
+            <field name="ref">CUST002</field>
+            <field name="phone">0912345678</field>
+            <field name="email">tranthib@example.com</field>
+            <field name="street">456 Đường Nguyễn Huệ</field>
+            <field name="city">Hà Nội</field>
+            <field name="is_company" eval="False"/>
+            <field name="type">contact</field>
+        </record>
+
+        <record id="demo_customer_3" model="res.partner">
+            <field name="name">Lê Văn C</field>
+            <field name="ref">CUST003</field>
+            <field name="phone">0923456789</field>
+            <field name="email">levanc@example.com</field>
+            <field name="street">789 Đường Trần Hưng Đạo</field>
+            <field name="city">Đà Nẵng</field>
+            <field name="is_company" eval="False"/>
+            <field name="type">contact</field>
+        </record>
+    </data>
+</odoo>

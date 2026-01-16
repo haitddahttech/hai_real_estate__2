@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Optional: For login page specifically -->
+<!--        <template id="custom_login_layout" inherit_id="web.login_layout">-->
+<!--            <xpath expr="//title" position="replace">-->
+<!--                <title>My Company - Sign In</title>-->
+<!--            </xpath>-->
+<!--        </template>-->
+
+        <record id="res_config_settings_view_form" model="ir.ui.view">
+            <field name="name">res.config.settings.view.analytic.account.inherit</field>
+            <field name="model">res.config.settings</field>
+            <field name="priority" eval="30"/>
+            <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//app//block[@id='bank_cash']" position="inside">
+                    <setting string="VietQR:">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="x_vietqr_client_id"
+                                       class="col-lg-5 o_light_label"
+                                       string="Client ID:"/>
+                                <field name="x_vietqr_client_id"/>
+                            </div>
+                             <div class="row mt8">
+                                <label for="x_vietqr_api_key"
+                                       class="col-lg-5 o_light_label"
+                                       string="API key:"/>
+                                <field name="x_vietqr_api_key"/>
+                            </div>
+                        </div>
+                    </setting>
+
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

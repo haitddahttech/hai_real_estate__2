@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- PDF Template -->
+    <template id="report_property_detail_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="product">
+                <div class="article o_report_layout_standard">
+                    <div class="page">
+                        <style>
+                            /* Continuous PDF without page breaks */
+                            @page {
+                                size: auto;
+                                margin: 10mm;
+                            }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                font-family: 'DejaVu Sans', 'Noto Sans', Arial, sans-serif;
+                                font-size: 0.7em;
+                            }
+                            * {
+                                font-family: 'DejaVu Sans', 'Noto Sans', Arial, sans-serif;
+                            }
+                            .page {
+                                page-break-after: auto !important;
+                                page-break-inside: auto !important;
+                                page-break-before: auto !important;
+                            }
+                            * {
+                                page-break-inside: auto !important;
+                            }
+                            
+                            .company-info-header {
+                                display: table-cell;
+                                text-align: left;
+                                vertical-align: top;
+                                width: 40%;
+                            }
+                            .company-logo {
+                                max-width: 150px;
+                                max-height: 80px;
+                                margin-bottom: 5px;
+                            }
+                            .company-name {
+                                font-size: 0.9em;
+                                font-weight: bold;
+                                color: #333;
+                                line-height: 1.4;
+                            }
+                            .user-info-wrapper {
+                                display: table;
+                                width: 100%;
+                                margin-bottom: 10px;
+                                margin-top: 15px;
+                            }
+                            .user-info-header {
+                                display: table-cell;
+                                text-align: right;
+                                vertical-align: top;
+                                font-size: 0.9em;
+                                line-height: 1.6;
+                                padding: 5px 0;
+                                width: 40%;
+                            }
+                            .user-info-header strong {
+                                color: #333;
+                                font-size: 1.1em;
+                            }
+                            .user-info-header div {
+                                margin-bottom: 2px;
+                            }
+                            .property-header {
+                                background-color: #ffc107;
+                                padding: 8px;
+                                margin-top: 3px;
+                                margin-bottom: 8px;
+                                border-radius: 3px;
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                flex-wrap: nowrap;
+                            }
+                            .property-section {
+                                margin-bottom: 8px;
+                            }
+                            .property-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin-bottom: 6px;
+                            }
+                            .property-table th {
+                                background-color: #f8f9fa;
+                                padding: 4px 6px;
+                                text-align: left;
+                                border: 1px solid #dee2e6;
+                                font-weight: bold;
+                                font-size: 0.95em;
+                            }
+                            .property-table td {
+                                padding: 3px 6px;
+                                border: 1px solid #dee2e6;
+                                font-size: 0.95em;
+                            }
+                            
+                            /* Payment Timeline Specific Styles */
+                            .payment-timeline-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin-bottom: 5px;
+                            }
+                            .payment-timeline-table th {
+                                background-color: #ffc107;
+                                padding: 3px 4px;
+                                text-align: center;
+                                border: 1px solid #dee2e6;
+                                font-weight: bold;
+                                font-size: 0.85em;
+                            }
+                            .payment-timeline-table td {
+                                padding: 2px 4px;
+                                border: 1px solid #dee2e6;
+                                font-size: 0.85em;
+                            }
+                            .payment-timeline-table .section-title {
+                                padding: 4px 6px;
+                                font-size: 0.95em;
+                            }
+                            .section-title {
+                                background-color: #ffc107;
+                                padding: 12px 15px;
+                                margin-bottom: 10px;
+                                font-weight: bold;
+                                border-radius: 3px;
+                            }
+                            .badge {
+                                display: inline-block;
+                                padding: 5px 10px;
+                                border-radius: 3px;
+                                font-weight: bold;
+                                color: white;
+                            }
+                            .badge-success { background-color: #28a745; }
+                            .badge-danger { background-color: #dc3545; }
+                            .text-right { text-align: right; }
+                            .text-center { text-align: center; }
+                            .fw-bold { font-weight: bold; }
+                        </style>
+                        
+                        <!-- Header with Company Logo and User Info -->
+                        <t t-set="current_user" t-value="env.user"/>
+                        <t t-set="company" t-value="env.company"/>
+                        <div class="user-info-wrapper" style="padding-top:10px; padding-y:20px">
+                            <!-- Company Logo and Name (Left) -->
+                            <div class="company-info-header">
+                                <div t-if="company.logo">
+                                    <img t-att-src="image_data_uri(company.logo)" 
+                                         class="company-logo" 
+                                         t-att-alt="company.name"/>
+                                </div>
+                                <div class="company-name">
+<!--                                    <t t-esc="company.name"/>-->
+                                </div>
+                            </div>
+                            
+                            <!-- User Info (Right) -->
+                            <div class="user-info-header">
+                                <div><strong><t t-esc="current_user.name or 'N/A'"/></strong></div>
+                                <div t-if="current_user.phone">
+                                    <i class="fa fa-phone"></i> 
+                                    <t t-esc="current_user.phone"/>
+                                </div>
+                                <div t-if="current_user.email">
+                                    <i class="fa fa-envelope"></i> 
+                                    <t t-esc="current_user.email"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Header -->
+                        <div class="property-header">
+                            <span style="font-size: 1.5em; font-weight: bold; display: inline-block;">
+                                Mã căn: <t t-esc="product.name"/>
+                            </span>
+                            <span style="display: inline-block;">
+                                <t t-if="product.is_sold">
+                                    <span class="badge badge-danger">ĐÃ BÁN</span>
+                                </t>
+                                <t t-else="">
+                                    <span class="badge badge-success">CÒN TRỐNG</span>
+                                </t>
+                            </span>
+                        </div>
+                        
+                        <!-- Basic Information and Payment Information (2 columns) -->
+                        <div style="display: table; width: 100%; margin-bottom: 20px;">
+                            <!-- Left Column: Basic Information -->
+                            <div style="display: table-cell; width: 48%; vertical-align: top; padding-right: 2%;">
+                                <table class="property-table">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" class="section-title" style="text-align: center;">THÔNG TIN CƠ BẢN</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 40%;"><strong>Mã căn</strong></td>
+                                            <td><t t-esc="product.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Loại Hình</strong></td>
+                                            <td>
+                                                <t t-if="product.property_type == 'townhouse_garden'">Liền kề vườn</t>
+                                                <t t-elif="product.property_type == 'detached_villa'">Biệt thự đơn lập</t>
+                                                <t t-elif="product.property_type == 'semi_detached_villa'">Biệt thự song lập</t>
+                                                <t t-elif="product.property_type == 'shophouse'">Shophouse</t>
+                                                <t t-else="">---</t>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Hướng</strong></td>
+                                            <td>
+                                                <t t-if="product.direction == 'north'">Bắc</t>
+                                                <t t-elif="product.direction == 'northeast'">Đông Bắc</t>
+                                                <t t-elif="product.direction == 'east'">Đông</t>
+                                                <t t-elif="product.direction == 'southeast'">Đông Nam</t>
+                                                <t t-elif="product.direction == 'south'">Nam</t>
+                                                <t t-elif="product.direction == 'southwest'">Tây Nam</t>
+                                                <t t-elif="product.direction == 'west'">Tây</t>
+                                                <t t-elif="product.direction == 'northwest'">Tây Bắc</t>
+                                                <t t-else="">---</t>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>DT đất</strong></td>
+                                            <td><t t-esc="product.area"/> m²</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>DT xây dựng</strong></td>
+                                            <td><t t-esc="product.construction_area or 0"/> m²</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Right Column: Payment Information -->
+                            <div style="display: table-cell; width: 48%; vertical-align: top; padding-left: 2%;">
+                                <table class="property-table">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" class="section-title" style="text-align: center;">THÔNG TIN THANH TOÁN</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 40%;"><strong>Tên TK</strong></td>
+                                            <td><t t-esc="product.env.company.bank_account_holder_name or '---'"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Ngân hàng</strong></td>
+                                            <td><t t-esc="product.env.company.bank_name or '---'"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Số TK</strong></td>
+                                            <td class="fw-bold"><t t-esc="product.env.company.bank_account_number or '---'"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Nội dung thanh toán</strong></td>
+                                            <td>
+                                                <t t-set="site_plan_name" t-value="product.site_plan_polygon_id.site_plan_id.name if product.site_plan_polygon_id and product.site_plan_polygon_id.site_plan_id else 'N/A'"/>
+                                                Thanh toán căn <t t-esc="product.name"/> <t t-esc="site_plan_name"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Financial Information (Full Width) -->
+                        <div class="property-section">
+                            <table class="property-table">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2" class="section-title" style="text-align: center;">THÔNG TIN TÀI CHÍNH</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 40%;"><strong>Giá chưa thuế SDĐ</strong></td>
+                                        <td class="text-right"><t t-esc="'{:,.0f}'.format(product.price_exclude_land_tax or 0)"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Thuế SDĐ</strong></td>
+                                        <td class="text-right"><t t-esc="'{:,.0f}'.format(product.land_tax or 0)"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Giá gồm SDĐ</strong></td>
+                                        <td class="text-right"><t t-esc="'{:,.0f}'.format(product.price_include_land_tax or 0)"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>VAT</strong></td>
+                                        <td class="text-right"><t t-esc="'{:,.0f}'.format(product.vat_tax or 0)"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Quỹ bảo trì</strong></td>
+                                        <td class="text-right"><t t-esc="'{:,.0f}'.format(product.maintenance_fee or 0)"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Đặt Cọc</strong></td>
+                                        <td class="text-right fw-bold"><t t-esc="'{:,.0f}'.format(product.deposit)"/></td>
+                                    </tr>
+                                    <tr style="background-color: #fff3cd;">
+                                        <td><strong>Giá niêm yết</strong></td>
+                                        <td class="text-right fw-bold" style="font-size: 1.2em; color: #dc3545;">
+                                            <t t-esc="'{:,.0f}'.format(product.list_price)"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Payment Timeline -->
+                        <t t-if="product.payment_timeline_ids">
+                            <div class="property-section" style="margin-top: 8px;">
+                                <table class="payment-timeline-table">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="6" class="section-title" style="text-align: center;">LỊCH TRÌNH THANH TOÁN</th>
+                                        </tr>
+                                        <tr style="background-color: #ffc107;">
+                                            <th class="text-center">Kỳ thanh toán</th>
+                                            <th class="text-center">Ngày thanh toán</th>
+                                            <th class="text-center">Số tiền thanh toán</th>
+                                            <th class="text-center">Tiền nhà</th>
+                                            <th class="text-center">VAT</th>
+                                            <th class="text-center">TỔNG TIỀN</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="product.payment_timeline_ids" t-as="timeline">
+                                            <tr>
+                                                <td>
+                                                    <t t-if="timeline.type == 'dat_coc'">Đặt cọc</t>
+                                                    <t t-elif="timeline.type == 'trong_3_ngay'">Trong 3 ngày</t>
+                                                    <t t-elif="timeline.type == 'ky_hop_dong'">Ký Hợp Đồng</t>
+                                                    <t t-elif="timeline.type == 'dot_4'">Đợt 4</t>
+                                                    <t t-elif="timeline.type == 'dot_5'">Đợt 5</t>
+                                                    <t t-elif="timeline.type == 'dot_6'">Đợt 6</t>
+                                                    <t t-elif="timeline.type == 'dot_7'">Đợt 7</t>
+                                                    <t t-elif="timeline.type == 'dot_8'">Đợt 8</t>
+                                                    <t t-elif="timeline.type == 'dot_9'">Đợt 9</t>
+                                                    <t t-elif="timeline.type == 'giao_nha'">Giao nhà</t>
+                                                    <t t-elif="timeline.type == 'quy_bao_tri'">Quỹ bảo trì</t>
+                                                    <t t-elif="timeline.type == 'thong_bao_so_hong'">Thông báo sổ hồng</t>
+                                                    <t t-else=""><t t-esc="timeline.type"/></t>
+                                                </td>
+                                                <td class="text-center">
+                                                    <t t-if="timeline.date">
+                                                        <t t-esc="timeline.date.strftime('%d/%m/%Y')"/>
+                                                    </t>
+                                                </td>
+                                                <td><t t-esc="timeline.name"/></td>
+                                                <td class="text-right">
+                                                    <t t-if="timeline.amount and timeline.amount > 0">
+                                                        <t t-esc="'{:,.0f}'.format(timeline.amount)"/>
+                                                    </t>
+                                                </td>
+                                                <td class="text-right">
+                                                    <t t-if="timeline.vat_amount and timeline.vat_amount > 0">
+                                                        <t t-esc="'{:,.0f}'.format(timeline.vat_amount)"/>
+                                                    </t>
+                                                </td>
+                                                <td class="text-right fw-bold">
+                                                    <t t-if="timeline.total_amount and timeline.total_amount > 0">
+                                                        <t t-esc="'{:,.0f}'.format(timeline.total_amount)"/>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                    <tfoot style="background-color: #fff3cd; font-weight: bold;">
+                                        <tr>
+                                            <td colspan="3" class="text-center" style="color: #dc3545;">TỔNG GIÁ</td>
+                                            <td class="text-right"><t t-esc="'{:,.0f}'.format(sum(product.payment_timeline_ids.mapped('amount')))"/></td>
+                                            <td class="text-right"><t t-esc="'{:,.0f}'.format(sum(product.payment_timeline_ids.mapped('vat_amount')))"/></td>
+                                            <td class="text-right" style="color: #dc3545;"><t t-esc="'{:,.0f}'.format(sum(product.payment_timeline_ids.mapped('total_amount')))"/></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </t>
+                        
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>

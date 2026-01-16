@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Site Plan Form View -->
+    <record id="view_site_plan_form" model="ir.ui.view">
+        <field name="name">site.plan.form</field>
+        <field name="model">site.plan</field>
+        <field name="arch" type="xml">
+            <form string="Bản đồ mặt bằng">
+<!--                <sheet>-->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_portal_map" type="object" class="oe_stat_button" icon="fa-globe" string="Xem Portal Map"/>
+                        <button name="action_view_polygons" type="object" class="oe_stat_button" icon="fa-map-marker">
+                            <field name="polygon_count" widget="statinfo" string="Đa giác"/>
+                        </button>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="name" placeholder="Ví dụ: Vinhomes Grand Park - Giai đoạn 1"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="image" widget="binary" filename="image_filename"/>
+                            <field name="image_filename" invisible="1"/>
+                            <field name="cover_image" widget="image" class="oe_avatar"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <field name="description" placeholder="Nhập mô tả..."/>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Vẽ Bản Đồ" name="draw_polygons">
+                            <div class="alert alert-info" role="alert">
+                                <strong>Hướng dẫn sử dụng:</strong>
+                                <ul>
+                                    <li><strong>Đa giác:</strong> Click chuột lên canvas để thêm điểm, click đúp để hoàn tất</li>
+                                    <li><strong>Hình chữ nhật:</strong> Click và kéo để tạo hình chữ nhật</li>
+                                    <li><strong>Chỉnh sửa:</strong> Click và kéo các điểm của hình để điều chỉnh hình dạng</li>
+                                    <li><strong>Xóa:</strong> Chọn một hình và nhấn nút Xóa (hoặc phím Delete)</li>
+                                    <li><strong>Lưu:</strong> Chọn sản phẩm tương ứng và màu sắc, sau đó nhấn Lưu</li>
+                                </ul>
+                            </div>
+                            
+                            <field name="id" invisible="1"/>
+                            <widget name="site_plan_canvas_widget"/>
+                        </page>
+                        
+                        <page string="Danh sách Đa giác" name="polygons_list">
+                            <field name="polygon_ids" nolabel="1">
+                                <list string="Polygons" editable="bottom">
+                                    <field name="name"/>
+                                    <field name="product_template_id"/>
+                                    <field name="polygon_type"/>
+                                    <field name="color" widget="color"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+<!--                </sheet>-->
+            </form>
+        </field>
+    </record>
+
+    <!-- Site Plan List View -->
+    <record id="view_site_plan_list" model="ir.ui.view">
+        <field name="name">site.plan.list</field>
+        <field name="model">site.plan</field>
+        <field name="arch" type="xml">
+            <list string="Bản đồ mặt bằng">
+                <field name="name"/>
+                <field name="polygon_count"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Site Plan Search View -->
+    <record id="view_site_plan_search" model="ir.ui.view">
+        <field name="name">site.plan.search</field>
+        <field name="model">site.plan</field>
+        <field name="arch" type="xml">
+            <search string="Tìm Bản đồ mặt bằng">
+                <field name="name"/>
+                <filter string="Đang hoạt động" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Đã lưu trữ" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Site Plan Action -->
+    <record id="action_site_plan" model="ir.actions.act_window">
+        <field name="name">Bản đồ mặt bằng</field>
+        <field name="res_model">site.plan</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo bản đồ mặt bằng đầu tiên của bạn
+            </p>
+            <p>
+                Tải lên ảnh quy hoạch và vẽ các lô đất để đại diện cho bất động sản.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Menu Items -->
+    <!-- Root Menu -->
+    <menuitem id="menu_real_estate_root"
+              name="Bất Động Sản"
+              web_icon="real_estate_site_plan,static/description/icon_building.svg"
+              sequence="10"/>
+
+    <!-- Shortcut to Landing Page -->
+    <menuitem id="menu_landing_page_shortcut"
+              name="Xem Landing Page"
+
+              action="action_landing_page"
+              sequence="5"/>
+    
+    <!-- Backend Management Menus -->
+    <menuitem id="menu_site_plans"
+              name="Bản Đồ Mặt Bằng"
+              parent="menu_real_estate_root"
+              action="action_site_plan"
+              sequence="10"/>
+    
+    <!-- Configuration Submenu -->
+    <menuitem id="menu_configuration"
+              name="Cấu Hình"
+              parent="menu_real_estate_root"
+              sequence="100"/>
+    
+    <!-- Portal Maps Action (URL redirect) -->
+    <record id="action_portal_maps" model="ir.actions.act_url">
+        <field name="name">Xem Portal</field>
+        <field name="url">/my/site-plans</field>
+        <field name="target">new</field>
+    </record>
+    
+    <menuitem id="menu_portal_maps"
+              name="Xem Portal"
+              parent="menu_configuration"
+              action="action_portal_maps"
+              sequence="10"/>
+    
+    <!-- Landing Page Action (URL redirect) -->
+    <record id="action_landing_page" model="ir.actions.act_url">
+        <field name="name">Landing Page</field>
+        <field name="url">/real-estate</field>
+        <field name="target">new</field>
+    </record>
+    
+    <menuitem id="menu_landing_page"
+              name="Landing Page"
+              parent="menu_configuration"
+              action="action_landing_page"
+              sequence="20"/>
+
+    <!-- Polygons Action -->
+    <record id="action_site_plan_polygons" model="ir.actions.act_window">
+        <field name="name">Lô Đất</field>
+        <field name="res_model">site.plan.polygon</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+    
+    <menuitem id="menu_polygons"
+              name="Lô Đất"
+              parent="menu_real_estate_root"
+              action="action_site_plan_polygons"
+              sequence="20"/>
+    
+    <!-- Real Estate Products Action -->
+    <record id="action_real_estate_products" model="ir.actions.act_window">
+        <field name="name">Sản Phẩm BĐS</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('site_plan_polygon_id', '!=', False)]</field>
+        <field name="context">{'search_default_is_real_estate': 1}</field>
+    </record>
+    
+    <menuitem id="menu_real_estate_products"
+              name="Sản Phẩm BĐS"
+              parent="menu_real_estate_root"
+              action="action_real_estate_products"
+              sequence="30"/>
+
+    
+    <!-- Polygon Form View -->
+    <record id="view_site_plan_polygon_form" model="ir.ui.view">
+        <field name="name">site.plan.polygon.form</field>
+        <field name="model">site.plan.polygon</field>
+        <field name="arch" type="xml">
+            <form string="Lô đất">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="site_plan_id"/>
+                            <field name="product_template_id"/>
+                        </group>
+                        <group>
+                            <field name="polygon_type"/>
+                            <field name="color" widget="color"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="coordinates" widget="text"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Polygon list View -->
+    <record id="view_site_plan_polygon_list" model="ir.ui.view">
+        <field name="name">site.plan.polygon.list</field>
+        <field name="model">site.plan.polygon</field>
+        <field name="arch" type="xml">
+            <list string="Danh sách Lô đất">
+                <field name="name"/>
+                <field name="site_plan_id"/>
+                <field name="product_template_id"/>
+                <field name="polygon_type"/>
+                <field name="color" widget="color"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+</odoo>

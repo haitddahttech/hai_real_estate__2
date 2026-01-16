@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+<!--&lt;!&ndash;        <record id="action_meeting_plan" model="ir.actions.act_window">&ndash;&gt;-->
+<!--&lt;!&ndash;            <field name="name">Plan Meeting</field>&ndash;&gt;-->
+<!--&lt;!&ndash;            <field name="res_model">res.partner</field>&ndash;&gt;-->
+<!--&lt;!&ndash;            <field name="view_mode">calendar</field>&ndash;&gt;-->
+<!--&lt;!&ndash;            <field name="search_view_id" ref="base.view_res_partner_filter"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            <field name="context">{'default_is_company': False}</field>&ndash;&gt;-->
+<!--&lt;!&ndash;            <field name="help" type="html">&ndash;&gt;-->
+<!--&lt;!&ndash;              <p class="o_view_nocontent_smiling_face">&ndash;&gt;-->
+<!--&lt;!&ndash;                Create a Contact in your address book&ndash;&gt;-->
+<!--&lt;!&ndash;              </p><p>&ndash;&gt;-->
+<!--&lt;!&ndash;                Odoo helps you track all activities related to your contacts.&ndash;&gt;-->
+<!--&lt;!&ndash;              </p>&ndash;&gt;-->
+<!--&lt;!&ndash;            </field>&ndash;&gt;-->
+<!--&lt;!&ndash;        </record>&ndash;&gt;-->
+
+<!--        <record id="action_report_sale_by_sale" model="ir.actions.act_window">-->
+<!--            <field name="name">Report sale by sale</field>-->
+<!--            <field name="res_model">res.partner</field>-->
+<!--            <field name="view_mode">pivot,graph,list,form</field>-->
+<!--            <field name="search_view_id" ref="base.view_res_partner_filter"/>-->
+<!--            <field name="view_ids" eval="[(5, 0, 0),-->
+<!--                        (0, 0, {'view_mode': 'pivot', 'view_id': ref('res_partner_pivot_view_customer_manager')}),-->
+<!--                        (0, 0, {'view_mode': 'graph', 'view_id': ref('view_partner_form_inherit_graph_report')}),-->
+<!--                        ]"/>-->
+<!--            <field name="help" type="html">-->
+<!--              <p class="o_view_nocontent_smiling_face">-->
+<!--                Create a Contact in your address book-->
+<!--              </p><p>-->
+<!--                Odoo helps you track all activities related to your contacts.-->
+<!--              </p>-->
+<!--            </field>-->
+<!--        </record>-->
+
+<!--        <record id="action_report_sale_by_customer" model="ir.actions.act_window">-->
+<!--            <field name="name">Report sale by customer</field>-->
+<!--            <field name="res_model">res.partner</field>-->
+<!--            <field name="view_mode">pivot,graph,list,form</field>-->
+<!--            <field name="search_view_id" ref="base.view_res_partner_filter"/>-->
+<!--            <field name="context">{'search_default_salesperson': True}</field>-->
+<!--            <field name="view_ids" eval="[(5, 0, 0),-->
+<!--                        (0, 0, {'view_mode': 'pivot', 'view_id': ref('customer_manager.res_partner_pivot_view_customer_manager_by_customer')}),-->
+<!--                        (0, 0, {'view_mode': 'graph', 'view_id': ref('customer_manager.view_partner_form_inherit_graph_report_by_customer')}),-->
+<!--                            (0, 0, {'view_mode': 'list'}),-->
+<!--                            (0, 0, {'view_mode': 'form'}),-->
+<!--            ]"/>-->
+<!--            <field name="help" type="html">-->
+<!--              <p class="o_view_nocontent_smiling_face">-->
+<!--                Create a Contact in your address book-->
+<!--              </p><p>-->
+<!--                Odoo helps you track all activities related to your contacts.-->
+<!--              </p>-->
+<!--            </field>-->
+<!--        </record>-->
+
+
+<!--        <menuitem id="menu_sale_meeting_plan"-->
+<!--          name="Sale Meeting Plan"-->
+<!--          sequence="99"-->
+<!--          web_icon="customer_manager,static/description/planning.png"-->
+<!--          action="customer_manager.action_meeting_plan"/>-->
+
+<!--        <menuitem id="menu_sale_report_custom"-->
+<!--          name="Sale Report"-->
+<!--          sequence="99"-->
+<!--          web_icon="customer_manager,static/description/dashboard.png"-->
+<!--          action="customer_manager.action_report_sale_by_sale"/>-->
+
+<!--        <menuitem id="menu_sale_report_custom_by_customer"-->
+<!--          name="Sale Report By Customer"-->
+<!--          sequence="99"-->
+<!--          web_icon="customer_manager,static/description/icon_sale.png"-->
+<!--          action="customer_manager.action_report_sale_by_customer"/>-->
+
+        <record id="contacts.action_contacts" model="ir.actions.act_window">
+            <field name="context">{'default_is_company': False, 'default_user_id': uid}</field>
+        </record>
+
+        <record id="view_partner_form_inherit_graph_report_by_customer" model="ir.ui.view">
+            <field name="name">res.partner.form.inherit.graph.report.by.customer</field>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <graph string="Customer Analysis">
+                    <field name="name" type="row"/>
+                    <field name="transaction_amount" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+            <!-- Thêm tab Graph vào form view res.partner -->
+<!--        <record id="view_partner_form_inherit_graph_report" model="ir.ui.view">-->
+<!--            <field name="name">res.partner.form.inherit.graph.report</field>-->
+<!--            <field name="model">res.partner</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <graph string="Sales Analysis" sample="1" disable_linking="1">-->
+<!--                    <field name="user_id" type="row"/>-->
+<!--                    <field name="name" type="measure"/>-->
+<!--                    <field name="id" type="measure" string="Số Khách Hàng" operator="count"/>-->
+<!--                    <field name="transaction_amount" type="measure"/>-->
+<!--                </graph>-->
+<!--            </field>-->
+<!--        </record>-->
+
+<!--        <record id="res_partner_calendar_view_leads" model="ir.ui.view">-->
+<!--            <field name="name">res.partner.calendar.lead</field>-->
+<!--            <field name="model">res.partner</field>-->
+<!--            <field name="priority" eval="2"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <calendar string="Leads Generation" create="0" date_start="appointment_date" event_limit="5">-->
+<!--                    <field name="name"/>-->
+<!--                    <field name="email"/>-->
+<!--                    <field name="phone"/>-->
+<!--                    <field name="user_id"/>-->
+<!--                    <field name="appointment_address"/>-->
+<!--                    <field name="appointment_note"/>-->
+<!--                </calendar>-->
+<!--            </field>-->
+<!--        </record>-->
+
+<!--        <record id="res_partner_pivot_view_customer_manager_by_customer" model="ir.ui.view">-->
+<!--            <field name="name">res.partner.pivot.customer.manager.by.customer</field>-->
+<!--            <field name="model">res.partner</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <pivot string="Partners Analysis">-->
+<!--                    <field name="name" type="row"/>-->
+<!--                    <field name="customer_sale_state" type="row"/>-->
+<!--                    <field name="count_follower_product" type="measure"/>-->
+<!--                    <field name="count_bought_product" type="measure"/>-->
+<!--                    <field name="transaction_amount" type="measure"/>-->
+<!--                </pivot>-->
+<!--            </field>-->
+<!--        </record>-->
+
+<!--        <record id="res_partner_pivot_view_customer_manager" model="ir.ui.view">-->
+<!--            <field name="name">res.partner.pivot.customer.manager</field>-->
+<!--            <field name="model">res.partner</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <pivot string="Partners Analysis">-->
+<!--                    <field name="user_id" type="row"/>-->
+<!--                    <field name="customer_sale_state" type="row"/>-->
+<!--                    <field name="name" type="row"/>-->
+<!--                    <field name="count_follower_product" type="measure"/>-->
+<!--                    <field name="count_bought_product" type="measure"/>-->
+<!--                    <field name="pass_change" type="measure"/>-->
+<!--                    <field name="transaction_amount" type="measure"/>-->
+<!--                </pivot>-->
+<!--            </field>-->
+<!--        </record>-->
+
+        <record id="view_partner_form_customer_manager" model="ir.ui.view">
+            <field name="name">res.partner.form.customer.manager</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="assign_sale_date" widget="datetime"/>
+                </xpath>
+                <xpath expr="//field[@name='function']" position="before">
+                    <field name="appointment_date" widget="datetime"/>
+                    <field name="appointment_address"/>
+                    <field name="appointment_note"/>
+                    <field name="company_currency_id" invisible="1"/>
+                    <field name="transaction_amount" options="{'currency_field': 'company_currency_id'}"/>
+                </xpath>
+                <xpath expr="//page[@name='contact_addresses']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//sheet" position="before">
+                    <header>
+                        <field name="has_group_admin" invisible="1"/>
+                        <field name="edit_state" widget="statusbar" decoration-success="edit_state == 'draft'" statusbar_visible=""/>
+                        <field name="customer_sale_state" widget="statusbar" statusbar_visible=""/>
+                        <!--Edit State buttons:-->
+                        <button name="action_disable_edit" string="Disable Edit" type="object" class="oe_highlight" invisible="edit_state in ['manager_edit'] or not has_group_admin"/>
+                        <button name="action_request_edit" string="Request Edit" type="object" class="oe_highlight" invisible="edit_state in ['draft', 'request_edit'] or has_group_admin"/>
+                        <button name="action_enable_edit" string="Enable Edit" type="object" class="oe_highlight" invisible="edit_state in ['draft'] or not has_group_admin"/>
+                        <!--Sale State buttons-->
+                        <button name="action_not_contact_yet" string="Mark as Not Contact Yet"
+                                invisible="1" type="object"/>
+                        <button name="action_cannot_contact" string="Mark as Cannot Contact"
+                                invisible="customer_sale_state != 'not_contact_yet'" type="object"/>
+                        <button name="action_potential_customers" string="Mark as Potential Customer"
+                                invisible="customer_sale_state not in ('can_not_contact', 'not_contact_yet', 'non_potential_customers')" type="object" class="oe_highlight"/>
+                        <button name="action_non_potential_customers" string="Mark as Non-Potential Customer"
+                                invisible="customer_sale_state not in ('can_not_contact', 'not_contact_yet', 'potential_customers', 'caring', 'finalize', 'deposited')"  type="object"/>
+                        <button name="action_caring"
+                                invisible="customer_sale_state in ('caring', 'not_contact_yet', 'can_not_contact', 'non_potential_customers')" string="Mark as caring" type="object" class="oe_highlight"/>
+                        <button name="action_finalize"
+                                invisible="customer_sale_state != 'caring'" string="Mark as Finalize" type="object" class="oe_highlight"/>
+                        <button name="action_deposited"
+                                invisible="customer_sale_state != 'finalize'" string="Mark as Deposited" type="object" class="oe_highlight"/>
+                        <button name="action_passed" string="Mark as Passed"
+                                invisible="customer_sale_state not in ('finalize', 'deposited')" type="object" class="oe_highlight"/>
+                        <button name="action_after_sale_service" string="Mark as After Sale Service"
+                                invisible="customer_sale_state != 'passed'" type="object" class="oe_highlight"/>
+                    </header>
+                </xpath>
+                <xpath expr="//field[@name='company_type']" position="attributes">
+                    <attribute name="readonly">not has_group_admin and edit_state != 'draft'</attribute>
+                </xpath>
+                <xpath expr="//field[@name='name'][1]" position="attributes">
+                    <attribute name="readonly">not has_group_admin and edit_state != 'draft'</attribute>
+                </xpath>
+                <xpath expr="//field[@name='name'][2]" position="attributes">
+                    <attribute name="readonly">not has_group_admin and edit_state != 'draft'</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='phone']" position="attributes">
+                    <attribute name="readonly">not has_group_admin and edit_state != 'draft'</attribute>
+                </xpath>
+                <xpath expr="//field[@name='email']" position="attributes">
+                    <attribute name="readonly">not has_group_admin and edit_state != 'draft'</attribute>
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="attributes">
+                    <attribute name="readonly">not has_group_admin</attribute>
+                </xpath>
+
+                <xpath expr="//div[hasclass('o_address_format')]" position="attributes">
+                    <attribute name="readonly">not has_group_admin and edit_state != 'draft'</attribute>
+                </xpath>
+
+                <xpath expr="//page[@name='internal_notes']" position="before">
+                    <page string="Sale information" name="sale_information">
+                        <group>
+                            <group name="gr1_sale_infor" string="Interested Products">
+                                <field name="follower_product_ids" string="">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="categ_id"/>
+                                        <field name="list_price"/>
+                                    </list>
+                                </field>
+                            </group>
+                            <group name="gr2_sale_infor" string="Bought Products">
+                                <field name="x_bought_product_ids" string="" readonly="1">
+                                    <list>
+                                        <control>
+                                            <create name="add_new" invisible="1"/>
+                                        </control>
+                                        <field name="name"/>
+                                        <field name="categ_id"/>
+                                        <field name="list_price"/>
+                                    </list>
+                                </field>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_partner_list_inherit_customer_manager" model="ir.ui.view">
+            <field name="name">res.partner.list</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//list//field[@name='country_id']" position="attributes">
+                    <attribute name="column_invisible">1</attribute>
+                </xpath>
+                <xpath expr="//list//field[@name='email']" position="after">
+                    <field name="user_id" widget="many2one_avatar_user"/>
+                    <field name="assign_sale_date" string="Số ngày từ khi sale nhận" widget="remaining_days"
+                           decoration-warning="(assign_sale_date &lt; (context_today() - datetime.timedelta(days=60)).strftime('%%Y-%%m-%%d')) and (assign_sale_date >= (context_today() - datetime.timedelta(days=30)).strftime('%%Y-%%m-%%d'))"
+                           decoration-danger="(assign_sale_date &lt;= (context_today() - datetime.timedelta(days=60)).strftime('%%Y-%%m-%%d'))"/>
+                </xpath>
+                <xpath expr="//list//field[@name='phone']" position="after">
+                    <field name="transaction_amount" sum="Total Transaction Amount" optional="show"/>
+                    <field name="edit_state" widget="badge" decoration-success="edit_state == 'draft'"/>
+                    <field name="customer_sale_state" widget="badge" decoration-warning="customer_sale_state == 'non_potential_customers'"/>
+                </xpath>
+            </field>
+        </record>
+<!--        <record id="search_view_bank_qr" model="ir.ui.view">-->
+<!--            <field name="name">res.partner.search.qr</field>-->
+<!--            <field name="model">res.partner</field>-->
+<!--            <field name="inherit_id" ref="base.res_bank_view_search"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//field[@name='name']" position="before">-->
+<!--                    <field name="x_code" string="Code"/>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
+
+        <record id="view_res_partner_filter_inherit_customer_manager" model="ir.ui.view">
+            <field name="name">res.partner.search.inherit.customer.manager</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter" />
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='salesperson']" position="after">
+                    <filter name="salesperson" string="Khách hàng" domain="[]" context="{'group_by' : 'name'}" />
+                </xpath>
+            </field>
+        </record>
+
+<!--        <record id="contacts.action_contacts" model="ir.actions.act_window">-->
+<!--            <field name="res_model">res.partner</field>-->
+<!--            <field name="view_mode">list,pivot,kanban,form,activity,calendar</field>-->
+<!--        </record>-->
+    </data>
+</odoo>

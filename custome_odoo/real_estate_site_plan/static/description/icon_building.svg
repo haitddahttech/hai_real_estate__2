@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="30" fill="#3498db"/>
+  
+  <!-- Building icon -->
+  <g fill="#ffffff">
+    <!-- Main building -->
+    <rect x="20" y="18" width="24" height="28" rx="1"/>
+    
+    <!-- Windows -->
+    <rect x="24" y="22" width="4" height="4" fill="#3498db"/>
+    <rect x="30" y="22" width="4" height="4" fill="#3498db"/>
+    <rect x="36" y="22" width="4" height="4" fill="#3498db"/>
+    
+    <rect x="24" y="28" width="4" height="4" fill="#3498db"/>
+    <rect x="30" y="28" width="4" height="4" fill="#3498db"/>
+    <rect x="36" y="28" width="4" height="4" fill="#3498db"/>
+    
+    <rect x="24" y="34" width="4" height="4" fill="#3498db"/>
+    <rect x="30" y="34" width="4" height="4" fill="#3498db"/>
+    <rect x="36" y="34" width="4" height="4" fill="#3498db"/>
+    
+    <!-- Door -->
+    <rect x="28" y="40" width="8" height="6" fill="#3498db"/>
+  </g>
+</svg>

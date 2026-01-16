@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Wizard Form View -->
+        <record id="view_change_partner_user_wizard_form" model="ir.ui.view">
+            <field name="name">change.partner.user.wizard.form</field>
+            <field name="model">change.partner.user.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Change Salesperson">
+                    <group>
+                        <group>
+                            <field name="partner_count" readonly="1" string="Số lượng khách hàng cần thay đổi nhân viên sale"/>
+                            <field name="new_user_id" string="Nhân viên Sale mới"
+                                   options="{'no_create': True, 'no_open': True}"
+                                   placeholder="Chọn nhân viên sale mới "/>
+                        </group>
+                        <group>
+                            <field name="partner_ids" string="Các khách hàng cần thay đổi nhân viên Sale" widget="many2many_tags" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <footer>
+                        <button name="action_change_user" 
+                                string="Xác nhận"
+                                type="object" 
+                                class="btn-primary"/>
+                        <button string="Hủy"
+                                class="btn-secondary" 
+                                special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Add Action Button to Partner List View -->
+        <record id="view_partner_tree_change_salesperson_button" model="ir.ui.view">
+            <field name="name">res.partner.list.change.salesperson.button</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//list" position="inside">
+                    <header>
+                        <button name="action_change_salesperson_wizard" 
+                                string="Đổi nhân viên Sale phụ trách"
+                                type="object"
+                                class="btn-primary"
+                                icon="fa-user"/>
+                        <button name="action_not_contact_yet" string="Đánh dấu là chưa liên hệ" invisible="1" type="object"/>
+                        <button name="action_cannot_contact" string="Đánh dấu là không thể liên hệ" type="object"/>
+                        <button name="action_potential_customers" string="Đánh dấu là khách hàng tiềm năng" type="object" class="oe_highlight"/>
+                        <button name="action_non_potential_customers" string="Đánh dấu là khách hàng không tiềm năng" type="object"/>
+                        <button name="action_caring" string="Đánh dấu là đang chăm sóc" type="object" class="oe_highlight"/>
+                        <button name="action_finalize" string="Đánh dấu là đã chốt" type="object" class="oe_highlight"/>
+                        <button name="action_deposited" string="Đánh dấu là đã đặt cọc" type="object" class="oe_highlight"/>
+                        <button name="action_passed" string="Đánh dấu là thành công" type="object" class="oe_highlight"/>
+                        <button name="action_after_sale_service" string="Đánh dấu là chăm sóc sau khi bán thành công" type="object" class="oe_highlight"/>
+                    </header>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
+

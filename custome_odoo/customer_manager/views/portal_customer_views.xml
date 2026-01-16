@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template: Danh sách khách hàng -->
+    <template id="portal_my_customers" name="My Customers">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Khách hàng</t>
+            </t>
+            
+            <t t-if="not customers">
+                <div class="alert alert-warning mt-3" role="alert">
+                    <p class="mb-0">
+                        <i class="fa fa-info-circle"/> Không tìm thấy khách hàng nào.
+                    </p>
+                </div>
+            </t>
+            
+            <t t-if="customers" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>Tên khách hàng</th>
+                        <th>Số điện thoại</th>
+                        <th>Email</th>
+                        <th>Trạng thái</th>
+                        <th class="text-right">Giá trị GD</th>
+                        <th class="text-center">Người phụ trách</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="customers" t-as="customer">
+                        <tr>
+                            <td>
+                                <a t-attf-href="/my/customer/#{customer.id}">
+                                    <t t-esc="customer.name"/>
+                                </a>
+                                <t t-if="customer.ref">
+                                    <br/>
+                                    <small class="text-muted">
+                                        <i class="fa fa-hashtag"/> <t t-esc="customer.ref"/>
+                                    </small>
+                                </t>
+                            </td>
+                            <td>
+                                <t t-if="customer.phone">
+                                    <i class="fa fa-phone"/> <t t-esc="customer.phone"/>
+                                </t>
+                            </td>
+                            <td>
+                                <t t-if="customer.email">
+                                    <a t-attf-href="mailto:#{customer.email}">
+                                        <t t-esc="customer.email"/>
+                                    </a>
+                                </t>
+                            </td>
+                            <td>
+                                <t t-if="customer.customer_sale_state">
+                                    <span t-attf-class="badge badge-{{
+                                        'success' if customer.customer_sale_state in ['deposited', 'finalize'] else
+                                        'warning' if customer.customer_sale_state in ['caring', 'potential_customers'] else
+                                        'info' if customer.customer_sale_state == 'after_sale_service' else
+                                        'secondary'
+                                    }}">
+                                        <t t-if="customer.customer_sale_state == 'not_contact_yet'">Chưa liên hệ</t>
+                                        <t t-elif="customer.customer_sale_state == 'can_not_contact'">Không liên hệ được</t>
+                                        <t t-elif="customer.customer_sale_state == 'potential_customers'">Tiềm năng</t>
+                                        <t t-elif="customer.customer_sale_state == 'non_potential_customers'">Không tiềm năng</t>
+                                        <t t-elif="customer.customer_sale_state == 'caring'">Đang chăm sóc</t>
+                                        <t t-elif="customer.customer_sale_state == 'finalize'">Chốt đơn</t>
+                                        <t t-elif="customer.customer_sale_state == 'deposited'">Đã cọc</t>
+                                        <t t-elif="customer.customer_sale_state == 'passed'">Đã qua</t>
+                                        <t t-elif="customer.customer_sale_state == 'after_sale_service'">Chăm sóc sau bán</t>
+                                    </span>
+                                </t>
+                            </td>
+                            <td class="text-right">
+                                <t t-if="customer.transaction_amount">
+                                    <strong>
+                                        <t t-esc="customer.transaction_amount" t-options="{'widget': 'monetary', 'display_currency': customer.company_currency_id}"/>
+                                    </strong>
+                                </t>
+                                <t t-else="">
+                                    <span class="text-muted">-</span>
+                                </t>
+                            </td>
+                            <td class="text-center">
+                                <t t-if="customer.user_id">
+                                    <span class="badge badge-info">
+                                        <t t-esc="customer.user_id.name"/>
+                                    </span>
+                                </t>
+                                <t t-else="">
+                                    <span class="text-muted">-</span>
+                                </t>
+                            </td>
+                            <td class="text-right">
+                                <a t-attf-href="/my/customer/#{customer.id}" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-eye"/> Xem
+                                </a>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </t>
+        </t>
+    </template>
+    
+    <!-- Template: Chi tiết khách hàng với Edit Form -->
+    <template id="portal_customer_detail" name="Customer Detail">
+        <t t-call="portal.portal_layout">
+            <t t-set="o" t-value="customer"/>
+            <t t-set="wrapwrap_classes" t-value="'o_portal_bg_dark'"/>
+            
+            <div class="container mt-3">
+                <!-- Messages -->
+                <t t-if="request.params.get('updated')">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fa fa-check-circle"/> Cập nhật thông tin thành công!
+                        <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+                    </div>
+                </t>
+                <t t-if="request.params.get('requested')">
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        <i class="fa fa-info-circle"/> Yêu cầu chỉnh sửa đã được gửi. Vui lòng chờ quản lý phê duyệt.
+                        <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+                    </div>
+                </t>
+                <t t-if="request.params.get('error')">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fa fa-exclamation-circle"/> <t t-esc="request.params.get('error')"/>
+                        <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+                    </div>
+                </t>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <!-- Card Header with Edit State Badge -->
+                            <div class="card-header bg-primary text-white">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <h4 class="mb-0">
+                                            <i class="fa fa-user"/> <t t-esc="customer.name"/>
+                                        </h4>
+                                        <t t-if="customer.ref">
+                                            <small>Mã: <t t-esc="customer.ref"/></small>
+                                        </t>
+                                    </div>
+                                    <div class="col-md-6 text-right">
+                                        <!-- Edit State Badge -->
+                                        <span t-attf-class="badge badge-{{
+                                            'success' if customer.edit_state == 'draft' else
+                                            'warning' if customer.edit_state == 'request_edit' else
+                                            'danger'
+                                        }} mr-2" style="font-size: 1em; padding: 0.5em 1em;">
+                                            <i class="fa fa-lock"/> 
+                                            <t t-if="customer.edit_state == 'draft'">Có thể chỉnh sửa</t>
+                                            <t t-elif="customer.edit_state == 'request_edit'">Đang chờ duyệt</t>
+                                            <t t-elif="customer.edit_state == 'manager_edit'">Đã khóa</t>
+                                        </span>
+                                        
+                                        <a href="/my/customers" class="btn btn-sm btn-light">
+                                            <i class="fa fa-arrow-left"/> Quay lại
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <!-- Edit/View Toggle Buttons -->
+                                <div class="mb-3 text-right">
+                                    <t t-if="customer.edit_state == 'draft'">
+                                        <button type="button" class="btn btn-primary" id="editCustomerBtn">
+                                            <i class="fa fa-edit"/> Chỉnh sửa thông tin
+                                        </button>
+                                    </t>
+                                    <t t-elif="customer.edit_state == 'manager_edit'">
+                                        <form method="POST" t-attf-action="/my/customer/#{customer.id}/request_edit" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <button type="submit" class="btn btn-warning">
+                                                <i class="fa fa-unlock-alt"/> Yêu cầu chỉnh sửa
+                                            </button>
+                                        </form>
+                                    </t>
+                                    <t t-elif="customer.edit_state == 'request_edit'">
+                                        <button type="button" class="btn btn-secondary" disabled="">
+                                            <i class="fa fa-clock-o"/> Đang chờ phê duyệt
+                                        </button>
+                                    </t>
+                                </div>
+                                
+                                <!-- View Mode -->
+                                <div id="customerViewMode">
+                                    <div class="row">
+                                        <!-- Thông tin cơ bản -->
+                                        <div class="col-md-6">
+                                            <h5 class="border-bottom pb-2 mb-3">
+                                                <i class="fa fa-address-card"/> Thông tin cơ bản
+                                            </h5>
+                                            <table class="table table-sm">
+                                                <tbody>
+                                                    <tr>
+                                                        <th style="width: 40%">Tên:</th>
+                                                        <td><t t-esc="customer.name"/></td>
+                                                    </tr>
+                                                    <tr t-if="customer.phone">
+                                                        <th><i class="fa fa-phone"/> Điện thoại:</th>
+                                                        <td><a t-attf-href="tel:#{customer.phone}"><t t-esc="customer.phone"/></a></td>
+                                                    </tr>
+                                                    <tr t-if="customer.email">
+                                                        <th><i class="fa fa-envelope"/> Email:</th>
+                                                        <td><a t-attf-href="mailto:#{customer.email}"><t t-esc="customer.email"/></a></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        
+                                        <!-- Địa chỉ -->
+                                        <div class="col-md-6">
+                                            <h5 class="border-bottom pb-2 mb-3">
+                                                <i class="fa fa-map-marker"/> Địa chỉ
+                                            </h5>
+                                            <table class="table table-sm">
+                                                <tbody>
+                                                    <tr t-if="customer.street">
+                                                        <th style="width: 40%">Đường:</th>
+                                                        <td><t t-esc="customer.street"/></td>
+                                                    </tr>
+                                                    <tr t-if="customer.city">
+                                                        <th>Thành phố:</th>
+                                                        <td><t t-esc="customer.city"/></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Thông tin cuộc hẹn -->
+                                    <div class="row mt-4">
+                                        <div class="col-12">
+                                            <h5 class="border-bottom pb-2 mb-3">
+                                                <i class="fa fa-calendar"/> Thông tin cuộc hẹn
+                                            </h5>
+                                            <table class="table table-sm">
+                                                <tbody>
+                                                    <tr>
+                                                        <th style="width: 20%">Ngày hẹn:</th>
+                                                        <td>
+                                                            <t t-if="customer.appointment_date">
+                                                                <i class="fa fa-clock-o"/> <t t-esc="customer.appointment_date" t-options="{'widget': 'datetime'}"/>
+                                                            </t>
+                                                            <t t-else=""><span class="text-muted">Chưa có</span></t>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Địa điểm:</th>
+                                                        <td>
+                                                            <t t-if="customer.appointment_address"><t t-esc="customer.appointment_address"/></t>
+                                                            <t t-else=""><span class="text-muted">Chưa có</span></t>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Nội dung:</th>
+                                                        <td>
+                                                            <t t-if="customer.appointment_note"><t t-esc="customer.appointment_note"/></t>
+                                                            <t t-else=""><span class="text-muted">Chưa có</span></t>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Ghi chú -->
+                                    <div class="row mt-4" t-if="customer.comment">
+                                        <div class="col-12">
+                                            <h5 class="border-bottom pb-2 mb-3">
+                                                <i class="fa fa-comment"/> Ghi chú
+                                            </h5>
+                                            <p><t t-esc="customer.comment"/></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Edit Mode (Hidden by default) -->
+                                <div id="customerEditMode" style="display: none;">
+                                    <form method="POST" t-attf-action="/my/customer/#{customer.id}/update">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        
+                                        <div class="row">
+                                            <!-- Thông tin cơ bản -->
+                                            <div class="col-md-6">
+                                                <h5 class="border-bottom pb-2 mb-3">
+                                                    <i class="fa fa-address-card"/> Thông tin cơ bản
+                                                </h5>
+                                                
+                                                <div class="form-group">
+                                                    <label for="name">Tên khách hàng <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" id="name" name="name" 
+                                                           t-att-value="customer.name" required=""/>
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="phone"><i class="fa fa-phone"/> Điện thoại</label>
+                                                    <input type="tel" class="form-control" id="phone" name="phone" 
+                                                           t-att-value="customer.phone or ''"/>
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="email"><i class="fa fa-envelope"/> Email</label>
+                                                    <input type="email" class="form-control" id="email" name="email" 
+                                                           t-att-value="customer.email or ''"/>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Địa chỉ -->
+                                            <div class="col-md-6">
+                                                <h5 class="border-bottom pb-2 mb-3">
+                                                    <i class="fa fa-map-marker"/> Địa chỉ
+                                                </h5>
+                                                
+                                                <div class="form-group">
+                                                    <label for="street">Đường</label>
+                                                    <input type="text" class="form-control" id="street" name="street" 
+                                                           t-att-value="customer.street or ''"/>
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="city">Thành phố</label>
+                                                    <input type="text" class="form-control" id="city" name="city" 
+                                                           t-att-value="customer.city or ''"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Thông tin cuộc hẹn -->
+                                        <div class="row mt-4">
+                                            <div class="col-12">
+                                                <h5 class="border-bottom pb-2 mb-3">
+                                                    <i class="fa fa-calendar"/> Thông tin cuộc hẹn
+                                                </h5>
+                                            </div>
+                                            
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="appointment_date"><i class="fa fa-clock-o"/> Ngày hẹn</label>
+                                                    <input type="datetime-local" class="form-control" id="appointment_date" name="appointment_date"
+                                                           t-att-value="customer.appointment_date and customer.appointment_date.strftime('%Y-%m-%dT%H:%M') or ''"/>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-8">
+                                                <div class="form-group">
+                                                    <label for="appointment_address"><i class="fa fa-map-marker"/> Địa điểm hẹn</label>
+                                                    <input type="text" class="form-control" id="appointment_address" name="appointment_address"
+                                                           t-att-value="customer.appointment_address or ''" placeholder="Nhập địa điểm hẹn..."/>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-12">
+                                                <div class="form-group">
+                                                    <label for="appointment_note"><i class="fa fa-file-text-o"/> Nội dung cuộc hẹn</label>
+                                                    <textarea class="form-control" id="appointment_note" name="appointment_note" 
+                                                              rows="3" placeholder="Nhập nội dung cuộc hẹn..."><t t-esc="customer.appointment_note or ''"/></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Ghi chú -->
+                                        <div class="row mt-4">
+                                            <div class="col-12">
+                                                <h5 class="border-bottom pb-2 mb-3">
+                                                    <i class="fa fa-comment"/> Ghi chú
+                                                </h5>
+                                                <div class="form-group">
+                                                    <textarea class="form-control" id="comment" name="comment" 
+                                                              rows="4" placeholder="Nhập ghi chú..."><t t-esc="customer.comment or ''"/></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Buttons -->
+                                        <div class="form-group text-right mt-4">
+                                            <button type="button" class="btn btn-secondary" id="cancelEditBtn">
+                                                <i class="fa fa-times"/> Hủy
+                                            </button>
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fa fa-save"/> Lưu thay đổi
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <!-- Thêm menu item vào portal -->
+    <template id="portal_my_home_menu_customers" name="Portal My Home Menu: Customers" inherit_id="portal.portal_my_home" priority="30">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Khách hàng</t>
+                <t t-set="url" t-value="'/my/customers'"/>
+                <t t-set="placeholder_count" t-value="'customer_count'"/>
+            </t>
+        </xpath>
+    </template>
+</odoo>

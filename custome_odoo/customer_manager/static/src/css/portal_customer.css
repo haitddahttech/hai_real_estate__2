@@ -1,0 +1,92 @@
+/* Portal Customer Manager Styles */
+
+.o_portal_customer_list {
+    margin-top: 20px;
+}
+
+.o_portal_customer_card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.o_portal_customer_card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.o_portal_customer_detail .card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.o_portal_customer_detail .card-header {
+    border-radius: 8px 8px 0 0;
+}
+
+.o_portal_customer_detail table th {
+    font-weight: 600;
+    color: #495057;
+}
+
+.o_portal_customer_detail table td {
+    color: #212529;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .o_portal_customer_detail .card-header .row {
+        flex-direction: column;
+    }
+
+    .o_portal_customer_detail .card-header .text-right {
+        text-align: left !important;
+        margin-top: 10px;
+    }
+}
+
+/* Product stats cards */
+.o_portal_customer_detail .card.bg-light {
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.o_portal_customer_detail .card.bg-light:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.o_portal_customer_detail .card.bg-light h3 {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Status badges */
+.badge {
+    font-size: 0.85em;
+    padding: 0.4em 0.8em;
+    font-weight: 500;
+}
+
+/* Section headers */
+.o_portal_customer_detail h5 {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.o_portal_customer_detail h5 i {
+    margin-right: 8px;
+    color: #3498db;
+}
+
+/* Table improvements */
+.o_portal_customer_detail .table-sm th {
+    font-weight: 600;
+    color: #555;
+    padding: 8px 12px;
+}
+
+.o_portal_customer_detail .table-sm td {
+    padding: 8px 12px;
+}

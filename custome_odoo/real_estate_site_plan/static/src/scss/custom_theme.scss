@@ -1,0 +1,182 @@
+/**
+ * Custom Theme - Soft Yellow Primary Color
+ * Primary color: #c9a63f (Soft pastel yellow)
+ */
+
+// Override Odoo's primary color variables
+$o-brand-odoo: #c9a63f !default;
+$o-brand-primary: #c9a63f !default;
+
+// Additional color variations
+$o-brand-lighten: lighten(#c9a63f, 10%) !default;
+$o-brand-darken: darken(#c9a63f, 10%) !default;
+
+// Override Bootstrap primary color
+.btn-primary {
+    background-color: #c9a63f !important;
+    border-color: #c9a63f !important;
+
+    &:hover,
+    &:focus,
+    &:active {
+        background-color: darken(#c9a63f, 10%) !important;
+        border-color: darken(#c9a63f, 10%) !important;
+    }
+}
+
+// Links
+a {
+    color: #c9a63f;
+
+    &:hover {
+        color: darken(#c9a63f, 15%);
+    }
+}
+
+// Navbar
+.o_main_navbar {
+    background-color: #c9a63f !important;
+}
+
+// Buttons and badges
+.badge-primary {
+    background-color: #c9a63f !important;
+}
+
+.bg-primary {
+    background-color: #c9a63f !important;
+}
+
+.text-primary {
+    color: #c9a63f !important;
+}
+
+// Form controls focus
+.form-control:focus,
+.form-select:focus {
+    border-color: #c9a63f !important;
+    box-shadow: 0 0 0 0.25rem rgba(201, 166, 63, 0.25) !important;
+}
+
+// Checkboxes and radios
+.form-check-input:checked {
+    background-color: #c9a63f !important;
+    border-color: #c9a63f !important;
+}
+
+// Odoo specific elements
+.o_form_statusbar>.o_statusbar_status.o_arrow_button.btn-primary {
+    background-color: #c9a63f !important;
+    border-color: #c9a63f !important;
+}
+
+.o_kanban_record .oe_kanban_colorpicker span[data-color="1"] {
+    background-color: #c9a63f !important;
+}
+
+// Menu items active state
+.o_menu_sections .o_nav_entry.active {
+    background-color: rgba(201, 166, 63, 0.1) !important;
+    color: #c9a63f !important;
+}
+
+// Stat buttons
+.oe_stat_button {
+    &:hover {
+        background-color: rgba(201, 166, 63, 0.1) !important;
+    }
+}
+
+// Progress bars
+.progress-bar {
+    background-color: #c9a63f !important;
+}
+
+// Tabs
+.nav-tabs .nav-link.active {
+    color: #c9a63f !important;
+    border-bottom-color: #c9a63f !important;
+}
+
+// Alerts
+.alert-primary {
+    background-color: rgba(201, 166, 63, 0.1) !important;
+    border-color: #c9a63f !important;
+    color: darken(#c9a63f, 30%) !important;
+}
+
+// Portal Navbar - Center Menu
+.navbar .container {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-nav {
+
+    // Ensure navbar items are centered
+    &.mx-auto {
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    &#site_plans_nav {
+        flex-grow: 1;
+        justify-content: center;
+        display: flex;
+    }
+}
+
+#top_menu {
+    margin-left: 0 !important;
+}
+
+
+// Site Plans Dropdown Styling
+#sitePlansDropdown {
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 0.25rem;
+    }
+}
+
+.dropdown-menu {
+    // Smooth dropdown animation
+    animation: fadeInDown 0.3s ease-in-out;
+
+    .dropdown-item {
+        padding: 0.5rem 1.5rem;
+        transition: all 0.2s ease;
+
+        i {
+            width: 20px;
+            text-align: center;
+            margin-right: 0.5rem;
+        }
+
+        &:hover {
+            background-color: rgba(201, 166, 63, 0.1);
+            color: #c9a63f;
+            padding-left: 1.75rem;
+        }
+    }
+
+    .dropdown-divider {
+        margin: 0.5rem 0;
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

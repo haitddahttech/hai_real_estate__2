@@ -91,6 +91,10 @@
         </field>
     </record>
     
+    <!-- ========================================== -->
+    <!-- ACTIONS - Define all actions first -->
+    <!-- ========================================== -->
+    
     <!-- Site Plan Action -->
     <record id="action_site_plan" model="ir.actions.act_window">
         <field name="name">Bản đồ mặt bằng</field>
@@ -107,59 +111,6 @@
         </field>
     </record>
     
-    <!-- Menu Items -->
-    <!-- Root Menu -->
-    <menuitem id="menu_real_estate_root"
-              name="Bất Động Sản"
-              web_icon="real_estate_site_plan,static/description/icon_building.svg"
-              sequence="10"/>
-
-    <!-- Shortcut to Landing Page -->
-    <menuitem id="menu_landing_page_shortcut"
-              name="Xem Landing Page"
-
-              action="action_landing_page"
-              sequence="5"/>
-    
-    <!-- Backend Management Menus -->
-    <menuitem id="menu_site_plans"
-              name="Bản Đồ Mặt Bằng"
-              parent="menu_real_estate_root"
-              action="action_site_plan"
-              sequence="10"/>
-    
-    <!-- Configuration Submenu -->
-    <menuitem id="menu_configuration"
-              name="Cấu Hình"
-              parent="menu_real_estate_root"
-              sequence="100"/>
-    
-    <!-- Portal Maps Action (URL redirect) -->
-    <record id="action_portal_maps" model="ir.actions.act_url">
-        <field name="name">Xem Portal</field>
-        <field name="url">/my/site-plans</field>
-        <field name="target">new</field>
-    </record>
-    
-    <menuitem id="menu_portal_maps"
-              name="Xem Portal"
-              parent="menu_configuration"
-              action="action_portal_maps"
-              sequence="10"/>
-    
-    <!-- Landing Page Action (URL redirect) -->
-    <record id="action_landing_page" model="ir.actions.act_url">
-        <field name="name">Landing Page</field>
-        <field name="url">/real-estate</field>
-        <field name="target">new</field>
-    </record>
-    
-    <menuitem id="menu_landing_page"
-              name="Landing Page"
-              parent="menu_configuration"
-              action="action_landing_page"
-              sequence="20"/>
-
     <!-- Polygons Action -->
     <record id="action_site_plan_polygons" model="ir.actions.act_window">
         <field name="name">Lô Đất</field>
@@ -167,12 +118,6 @@
         <field name="view_mode">list,form</field>
         <field name="context">{'search_default_active': 1}</field>
     </record>
-    
-    <menuitem id="menu_polygons"
-              name="Lô Đất"
-              parent="menu_real_estate_root"
-              action="action_site_plan_polygons"
-              sequence="20"/>
     
     <!-- Real Estate Products Action -->
     <record id="action_real_estate_products" model="ir.actions.act_window">
@@ -183,11 +128,66 @@
         <field name="context">{'search_default_is_real_estate': 1}</field>
     </record>
     
+    <!-- Portal Maps Action (URL redirect) -->
+    <record id="action_portal_maps" model="ir.actions.act_url">
+        <field name="name">Xem Portal</field>
+        <field name="url">/my/site-plans</field>
+        <field name="target">new</field>
+    </record>
+    
+    <!-- Landing Page Action (URL redirect) -->
+    <record id="action_landing_page" model="ir.actions.act_url">
+        <field name="name">Landing Page</field>
+        <field name="url">/real-estate</field>
+        <field name="target">new</field>
+    </record>
+    
+    <!-- ========================================== -->
+    <!-- MENUS - Define all menus after actions -->
+    <!-- ========================================== -->
+    
+    <!-- Root Menu -->
+    <menuitem id="menu_real_estate_root"
+              name="Bất Động Sản"
+              web_icon="real_estate_site_plan,static/description/icon_building.svg"
+              sequence="10"/>
+
+    <!-- Backend Management Menus -->
+    <menuitem id="menu_site_plans"
+              name="Bản Đồ Mặt Bằng"
+              parent="menu_real_estate_root"
+              action="action_site_plan"
+              sequence="10"/>
+    
+    <menuitem id="menu_polygons"
+              name="Lô Đất"
+              parent="menu_real_estate_root"
+              action="action_site_plan_polygons"
+              sequence="20"/>
+    
     <menuitem id="menu_real_estate_products"
               name="Sản Phẩm BĐS"
               parent="menu_real_estate_root"
               action="action_real_estate_products"
               sequence="30"/>
+    
+    <!-- Configuration Submenu -->
+    <menuitem id="menu_configuration"
+              name="Cấu Hình"
+              parent="menu_real_estate_root"
+              sequence="100"/>
+    
+    <menuitem id="menu_portal_maps"
+              name="Xem Portal"
+              parent="menu_configuration"
+              action="action_portal_maps"
+              sequence="10"/>
+    
+    <menuitem id="menu_landing_page"
+              name="Landing Page"
+              parent="menu_configuration"
+              action="action_landing_page"
+              sequence="20"/>
 
     
     <!-- Polygon Form View -->

@@ -147,6 +147,9 @@
                             .fw-bold { font-weight: bold; }
                         </style>
                         
+                        <!-- Main Container with Padding -->
+                        <div style="padding: 20px;">
+                        
                         <!-- Header with Company Logo and User Info -->
                         <t t-set="current_user" t-value="env.user"/>
                         <t t-set="company" t-value="env.company"/>
@@ -390,6 +393,7 @@
                             </div>
                         </t>
                         
+                        </div> <!-- End Main Container with Padding -->
                     </div>
                 </div>
             </t>

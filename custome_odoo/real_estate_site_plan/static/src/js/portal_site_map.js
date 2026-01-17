@@ -460,10 +460,43 @@
             popup.style.maxWidth = '300px';
             popup.style.minWidth = '260px';
             popup.style.cursor = 'move';
+            popup.style.overflow = 'visible'; // Allow ribbon to overflow
 
-            const soldBadgeLabel = product.is_sold ? 'Đã bán' : 'Còn trống';
-            const soldBadgeClass = product.is_sold ? 'bg-danger' : 'bg-success';
-            const soldBadge = `<span class="badge ${soldBadgeClass} text-white" style="font-size: 0.7rem; padding: 0.3rem 0.6rem;">${soldBadgeLabel}</span>`;
+
+            // Ribbon for sold status
+            const ribbonColor = product.is_sold ? '#dc3545' : '#28a745';
+            const ribbonText = product.is_sold ? 'ĐÃ BÁN' : 'CÒN TRỐNG';
+            const ribbonHTML = `
+                <div class="status-ribbon" style="
+                    position: absolute;
+                    top: -8px;
+                    right: -5px;
+                    background: ${ribbonColor};
+                    color: white;
+                    padding: 5px 15px;
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                    z-index: 10;
+                    transform: rotate(0deg);
+                    border-radius: 3px 0 0 3px;
+                ">
+                    ${ribbonText}
+                    <div style="
+                        position: absolute;
+                        right: 0;
+                        bottom: -5px;
+                        width: 0;
+                        height: 0;
+                        border-left: 5px solid transparent;
+                        border-right: 0px solid transparent;
+                        border-top: 5px solid ${ribbonColor};
+                        filter: brightness(0.7);
+                    "></div>
+                </div>
+            `;
 
             const propertyTypeBadge = product.property_type
                 ? `<span class="badge badge-outline-info badge-outline ms-1" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">${product.property_type}</span>`
@@ -513,6 +546,7 @@
                 : '';
 
             popup.innerHTML = `
+                ${ribbonHTML}
                 <div class="card-header border-0 pb-2" style="cursor: move; background: ${bgColor}; color: ${textColor};">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="flex-grow-1">
@@ -525,7 +559,6 @@
                             ${buyerInfo}
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            ${soldBadge}
                             <button type="button" class="btn-close close-popup-btn" style="cursor: pointer; background: white; border-radius: 50%; padding: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); opacity: 0.8;"></button>
                         </div>
                     </div>

@@ -461,6 +461,7 @@
             popup.style.minWidth = '260px';
             popup.style.cursor = 'move';
             popup.style.overflow = 'visible'; // Allow ribbon to overflow
+            popup.style.setProperty('border', `3px solid ${polygon.color || '#3498db'}`, 'important'); // Border matches polygon color
 
 
             // Ribbon for sold status

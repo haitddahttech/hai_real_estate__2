@@ -272,6 +272,10 @@
         }
 
         function drawArrows() {
+            // Get scroll offset for absolute positioning
+            const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+
             state.activePopups.forEach((popupData) => {
                 const polygon = state.polygons[popupData.polygonIndex];
                 const popup = popupData.element;
@@ -280,7 +284,7 @@
                 const canvasRect = canvas.getBoundingClientRect();
                 const points = polygon.points;
 
-                // Get popup center
+                // Get popup center (viewport coordinates)
                 const popupRect = popup.getBoundingClientRect();
                 const popupCenterX = popupRect.left + popupRect.width / 2;
                 const popupCenterY = popupRect.top + popupRect.height / 2;
@@ -351,8 +355,9 @@
                 const arrowAngle = Math.atan2(arrowDy, arrowDx);
                 const length = Math.sqrt(arrowDx * arrowDx + arrowDy * arrowDy);
 
-                arrow.style.left = extendedStartX + 'px';
-                arrow.style.top = extendedStartY + 'px';
+                // Convert viewport coordinates to document coordinates (add scroll offset)
+                arrow.style.left = (extendedStartX + scrollX) + 'px';
+                arrow.style.top = (extendedStartY + scrollY) + 'px';
                 arrow.style.width = length + 'px';
                 arrow.style.height = '3px';
                 arrow.style.transform = `rotate(${arrowAngle}rad)`;

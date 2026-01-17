@@ -165,7 +165,7 @@ class ProductTemplate(models.Model):
                 'name': '5%',
                 'amount': currency.round(product.price_include_land_tax * 0.05) - product.deposit,
                 'vat_amount': 0.0,
-                'bank_amount': currency.round(total_price_incl_vat * 0.20),
+                'bank_amount': 0,
                 'bank_note': 'KH 20%',
             }
             paid_amount += vals_2['amount']
@@ -179,7 +179,7 @@ class ProductTemplate(models.Model):
                 'bank_amount': 0.0,
                 'bank_note': 'KH 20%',
             }
-            vals_1_2_3_total = vals_1['amount'] + vals_2['amount'] + vals_3['amount'] + vals_3['vat_amount']
+            vals_1_2_3_total = currency.round(product.price_include_land_tax * 0.05) + currency.round(product.price_include_land_tax * 0.20)
             vals_1['bank_amount'] = vals_1_2_3_total
 
             vals_4 = {

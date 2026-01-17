@@ -261,18 +261,18 @@
             ctx.lineWidth = (isSelected ? 3 : 2) / state.scale;
             ctx.stroke();
 
-            // Draw label - font size scales inversely with zoom
-            const centerX = points.reduce((sum, p) => sum + p.x * scaleX, 0) / points.length;
-            const centerY = points.reduce((sum, p) => sum + p.y * scaleY, 0) / points.length;
+            // Draw label - DISABLED: No longer showing polygon names on portal view
+            // const centerX = points.reduce((sum, p) => sum + p.x * scaleX, 0) / points.length;
+            // const centerY = points.reduce((sum, p) => sum + p.y * scaleY, 0) / points.length;
 
-            ctx.fillStyle = '#000';
-            // Font size: static value that scales with the map (zoom in = bigger text)
-            // Base size set to small value so it looks neat at 1x zoom
-            const fontSize = 5;
-            ctx.font = `bold ${fontSize}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(polygon.name, centerX, centerY);
+            // ctx.fillStyle = '#000';
+            // // Font size: static value that scales with the map (zoom in = bigger text)
+            // // Base size set to small value so it looks neat at 1x zoom
+            // const fontSize = 5;
+            // ctx.font = `bold ${fontSize}px Arial`;
+            // ctx.textAlign = 'center';
+            // ctx.textBaseline = 'middle';
+            // ctx.fillText(polygon.name, centerX, centerY);
         }
 
         function drawArrows() {
@@ -509,6 +509,13 @@
                 console.warn('Could not get color from image:', e);
             }
 
+            // Buyer info display
+            const buyerInfo = product.buyer_name
+                ? `<div class="mt-1" style="font-size: 0.7rem; opacity: 0.9;">
+                       <i class="fa fa-user" style="font-size: 0.65rem;"></i> ${product.buyer_name}
+                   </div>`
+                : '';
+
             popup.innerHTML = `
                 <div class="card-header border-0 pb-2" style="cursor: move; background: ${bgColor}; color: ${textColor};">
                     <div class="d-flex justify-content-between align-items-start">
@@ -519,6 +526,7 @@
                                 ${propertyTypeBadge}
                                 ${directionBadge}
                             </div>
+                            ${buyerInfo}
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             ${soldBadge}

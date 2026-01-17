@@ -105,9 +105,11 @@ class SitePlanPortal(CustomerPortal):
                         'price': float(product.list_price) if product.list_price else 0.0,
                         'area': float(product.area) if product.area else 0.0,
                         'deposit': float(product.deposit) if product.deposit else 0.0,
+                        'construction_area': float(product.construction_area) if hasattr(product, 'construction_area') and product.construction_area else 0.0,
                         'price_per_m2': float(product.price_per_m2) if product.price_per_m2 else 0.0,
                         'vat_tax': float(product.vat_tax) if hasattr(product, 'vat_tax') and product.vat_tax else 0.0,
                         'is_sold': bool(product.is_sold),
+                        'buyer_name': product.buyer_id.name if product.buyer_id else '',
                         'currency_symbol': product.currency_id.symbol if product.currency_id else '$',
                     }
                 })

@@ -179,7 +179,7 @@ class ProductTemplate(models.Model):
                 'bank_amount': 0.0,
                 'bank_note': 'KH 20%',
             }
-            vals_1_2_3_total = currency.round(product.price_include_land_tax * 0.05) + currency.round(product.price_include_land_tax * 0.20)
+            vals_1_2_3_total = currency.round(product.price_include_land_tax * 0.20) + currency.round(product.vat_tax * 0.20)
             vals_1['bank_amount'] = vals_1_2_3_total
 
             vals_4 = {

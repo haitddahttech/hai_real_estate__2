@@ -280,10 +280,15 @@
                                     <h4 class="mb-0">Mã căn: <t t-esc="product.name"/></h4>
                                 </div>
                                 
-                                <!-- Center: Current User Name -->
+                                <!-- Center: Current User Name & Phone -->
                                 <div class="text-center" style="font-size: 0.95rem; color: #495057;">
                                     <i class="fa fa-user me-1" style="font-size: 0.85rem;"></i>
                                     <span class="fw-semibold"><t t-esc="request.env.user.name"/></span>
+                                    <t t-if="request.env.user.phone">
+                                        <span class="mx-2">|</span>
+                                        <i class="fa fa-phone me-1" style="font-size: 0.8rem;"></i>
+                                        <span class="fw-normal"><t t-esc="request.env.user.phone"/></span>
+                                    </t>
                                 </div>
                                 
                                 <!-- Right: Status Badge -->

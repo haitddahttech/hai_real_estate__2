@@ -77,12 +77,8 @@
 
             canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
-            // Scroll event to update arrows when page scrolls
-            window.addEventListener('scroll', () => {
-                if (state.activePopups.length > 0) {
-                    draw(); // Redraw arrows to match new scroll position
-                }
-            }, { passive: true });
+            // Scroll event removed - popups now stay fixed when scrolling
+            // Previously: window.addEventListener('scroll', ...) caused popups to move
 
             // Zoom buttons
             const zoomInBtn = document.getElementById('zoomIn');
@@ -362,7 +358,7 @@
                 arrow.style.transform = `rotate(${arrowAngle}rad)`;
                 arrow.style.transformOrigin = '0 50%';
                 arrow.style.background = '#e74c3c';
-                arrow.style.position = 'fixed';
+                arrow.style.position = 'absolute'; // Changed from 'fixed' - arrow now scrolls with page
                 arrow.style.zIndex = '999';
                 arrow.style.pointerEvents = 'none';
                 arrow.style.display = 'block';
@@ -459,7 +455,7 @@
 
             const popup = document.createElement('div');
             popup.className = 'card shadow-lg property-popup';
-            popup.style.position = 'fixed';
+            popup.style.position = 'absolute'; // Changed from 'fixed' - popup now scrolls with page
             popup.style.zIndex = '1000';
             popup.style.maxWidth = '300px';
             popup.style.minWidth = '260px';
@@ -692,7 +688,7 @@
             const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
             const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
 
-            // Point in screen pixels
+            // Point in screen pixels (viewport coordinates)
             const screenX = canvasRect.left + (centerX * scaleX + state.offset.x) * state.scale;
             // const screenY = canvasRect.top + (centerY * scaleY + state.offset.y) * state.scale;
 
@@ -721,11 +717,18 @@
             // Stack vertically if multiple popups (don't overlap)
             popupY += (stackIndex * verticalSpacing);
 
-            // Bounds checking (keep within viewport)
-            const minX = 10;
-            const maxX = window.innerWidth - popupWidth - 10;
-            const minY = 10;
-            const maxY = window.innerHeight - popupHeight - 10;
+            // Convert viewport coordinates to document coordinates (add scroll offset)
+            const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+
+            popupX += scrollX;
+            popupY += scrollY;
+
+            // Bounds checking (keep within document, accounting for scroll)
+            const minX = scrollX + 10;
+            const maxX = scrollX + window.innerWidth - popupWidth - 10;
+            const minY = scrollY + 10;
+            const maxY = scrollY + window.innerHeight - popupHeight - 10;
 
             popup.style.left = Math.max(minX, Math.min(popupX, maxX)) + 'px';
             popup.style.top = Math.max(minY, Math.min(popupY, maxY)) + 'px';

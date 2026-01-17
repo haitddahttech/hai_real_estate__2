@@ -251,7 +251,7 @@
             <div class="site-plan-header">
                 <div class="container">
                     <div class="row align-items-center">
-                        <div class="col-md-9">
+                        <div class="col-md-8">
                             <h1 class="site-plan-title">
                                 <i class="fa fa-map-marker text-warning"/> <t t-esc="site_plan.name"/>
                             </h1>
@@ -261,10 +261,18 @@
                                 </p>
                             </t>
                         </div>
-                        <div class="col-md-3 text-end">
-                            <a href="/my/site-plans" class="back-btn">
-                                <i class="fa fa-arrow-left"/> Quay lại
-                            </a>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex justify-content-end flex-wrap gap-2">
+                                <a href="https://www.google.com/maps/d/viewer?mid=1merAHKqWMeZOJfeA-OCTJ2nlcXALB4Id&amp;usp=sharing" 
+                                   target="_blank" 
+                                   class="back-btn"
+                                   style="background: #1a73e8;">
+                                    <i class="fa fa-map-marker"/> Xem trên Google Maps
+                                </a>
+                                <a href="/my/site-plans" class="back-btn">
+                                    <i class="fa fa-arrow-left"/> Quay lại
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -656,10 +656,25 @@
                     const touch = e.touches[0];
                     currentX = touch.clientX - initialX;
                     currentY = touch.clientY - initialY;
-                    const maxX = window.innerWidth - popup.offsetWidth;
-                    const maxY = window.innerHeight - popup.offsetHeight;
-                    currentX = Math.max(0, Math.min(currentX, maxX));
-                    currentY = Math.max(0, Math.min(currentY, maxY));
+
+                    // Keep popup within document (not just viewport)
+                    const docWidth = Math.max(
+                        document.documentElement.scrollWidth,
+                        document.body.scrollWidth
+                    );
+                    const docHeight = Math.max(
+                        document.documentElement.scrollHeight,
+                        document.body.scrollHeight
+                    );
+
+                    const minX = 0;
+                    const maxX = docWidth - popup.offsetWidth;
+                    const minY = 0;
+                    const maxY = docHeight - popup.offsetHeight;
+
+                    currentX = Math.max(minX, Math.min(currentX, maxX));
+                    currentY = Math.max(minY, Math.min(currentY, maxY));
+
                     popup.style.left = currentX + 'px';
                     popup.style.top = currentY + 'px';
                     draw();
@@ -693,12 +708,27 @@
                     currentX = e.clientX - initialX;
                     currentY = e.clientY - initialY;
 
-                    // Keep popup within viewport
-                    const maxX = window.innerWidth - popup.offsetWidth;
-                    const maxY = window.innerHeight - popup.offsetHeight;
+                    // Keep popup within document (not just viewport)
+                    // Allow dragging to any part of the page
+                    const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+                    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
 
-                    currentX = Math.max(0, Math.min(currentX, maxX));
-                    currentY = Math.max(0, Math.min(currentY, maxY));
+                    const docWidth = Math.max(
+                        document.documentElement.scrollWidth,
+                        document.body.scrollWidth
+                    );
+                    const docHeight = Math.max(
+                        document.documentElement.scrollHeight,
+                        document.body.scrollHeight
+                    );
+
+                    const minX = 0;
+                    const maxX = docWidth - popup.offsetWidth;
+                    const minY = 0;
+                    const maxY = docHeight - popup.offsetHeight;
+
+                    currentX = Math.max(minX, Math.min(currentX, maxX));
+                    currentY = Math.max(minY, Math.min(currentY, maxY));
 
                     popup.style.left = currentX + 'px';
                     popup.style.top = currentY + 'px';

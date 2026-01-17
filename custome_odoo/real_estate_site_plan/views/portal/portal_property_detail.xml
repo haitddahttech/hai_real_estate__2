@@ -757,6 +757,7 @@
                                         const listPriceElement = document.getElementById('listPriceValue');
                                         const finalPriceElement = document.getElementById('finalPriceValue');
                                         const savingsElement = document.getElementById('totalSavings');
+                                        const productId = <t t-esc="product.id"/>;
                                         
                                         if (!listPriceElement || !finalPriceElement) return;
                                         
@@ -764,6 +765,36 @@
                                         
                                         function formatNumber(num) {
                                             return num.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                                        }
+                                        
+                                        function saveSelectedDiscounts() {
+                                            const selectedIds = [];
+                                            checkboxes.forEach(cb => {
+                                                if (cb.checked) {
+                                                    selectedIds.push(parseInt(cb.getAttribute('data-id')));
+                                                }
+                                            });
+                                            
+                                            // Save to backend via AJAX
+                                            fetch(`/my/property/${productId}/save_discounts`, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                },
+                                                body: JSON.stringify({
+                                                    jsonrpc: '2.0',
+                                                    method: 'call',
+                                                    params: {
+                                                        discount_ids: selectedIds
+                                                    }
+                                                })
+                                            }).then(response => response.json())
+                                              .then(data => {
+                                                  if (data.result &amp;&amp; data.result.success) {
+                                                      console.log('Discounts saved:', data.result.selected_count);
+                                                  }
+                                              })
+                                              .catch(error => console.error('Error saving discounts:', error));
                                         }
                                         
                                         function calculatePrice() {
@@ -784,6 +815,9 @@
                                             const finalPrice = Math.max(0, listPrice - totalDiscount);
                                             finalPriceElement.innerText = formatNumber(finalPrice);
                                             savingsElement.innerText = formatNumber(totalDiscount);
+                                            
+                                            // Save selected discounts to backend
+                                            saveSelectedDiscounts();
                                         }
                                         
                                         checkboxes.forEach(cb => {

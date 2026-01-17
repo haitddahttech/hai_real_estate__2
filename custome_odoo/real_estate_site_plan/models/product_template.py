@@ -80,8 +80,20 @@ class ProductTemplate(models.Model):
     
     discount_config_ids = fields.Many2many(
         comodel_name='product.discount.config',
+        relation='product_discount_available_rel',
+        column1='product_id',
+        column2='discount_id',
         string='Giảm giá được phép',
         help='Các chương trình giảm giá có thể áp dụng cho sản phẩm này'
+    )
+    
+    selected_discount_ids = fields.Many2many(
+        comodel_name='product.discount.config',
+        relation='product_discount_selected_rel',
+        column1='product_id',
+        column2='discount_id',
+        string='Giảm giá đã chọn',
+        help='Các chương trình giảm giá đã được chọn để áp dụng (hiển thị trong PDF)'
     )
     
     final_price = fields.Monetary(

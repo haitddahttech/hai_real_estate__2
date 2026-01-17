@@ -95,17 +95,45 @@
             if (zoomSlider) {
                 zoomSlider.addEventListener('input', (e) => {
                     const newScale = parseFloat(e.target.value);
+
+                    // Get display dimensions
+                    const displayWidth = state.displayWidth || 1200;
+                    const displayHeight = state.displayHeight || 800;
+
+                    // Image center in reference space (1200x800)
+                    const imageCenterX = 600;  // Half of 1200
+                    const imageCenterY = 400;  // Half of 800
+
+                    // Scale to display size
+                    const scaleX = displayWidth / 1200;
+                    const scaleY = displayHeight / 800;
+                    const displayCenterX = imageCenterX * scaleX;
+                    const displayCenterY = imageCenterY * scaleY;
+
+                    // Get current screen position of image center
+                    const oldScale = state.scale;
+                    const screenX = (displayCenterX + state.offset.x) * oldScale;
+                    const screenY = (displayCenterY + state.offset.y) * oldScale;
+
+                    // Update scale
                     state.scale = newScale;
+
+                    // Calculate new offset to keep image center at same screen position
+                    state.offset.x = screenX / newScale - displayCenterX;
+                    state.offset.y = screenY / newScale - displayCenterY;
+
                     updateZoomDisplay();
                     draw();
                 });
             }
+        }
 
-            // Update zoom display
-            function updateZoomDisplay() {
-                if (zoomSlider) zoomSlider.value = state.scale;
-                if (zoomLevel) zoomLevel.textContent = Math.round(state.scale * 100) + '%';
-            }
+        // Update zoom display - moved outside to be accessible by all functions
+        function updateZoomDisplay() {
+            const zoomSlider = document.getElementById('zoomSlider');
+            const zoomLevel = document.getElementById('zoomLevel');
+            if (zoomSlider) zoomSlider.value = state.scale;
+            if (zoomLevel) zoomLevel.textContent = Math.round(state.scale * 100) + '%';
         }
 
         function setCanvasSize() {
@@ -1035,20 +1063,34 @@
         }
 
         function zoom(factor) {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
+            // Get display dimensions
+            const displayWidth = state.displayWidth || 1200;
+            const displayHeight = state.displayHeight || 800;
+
+            // Image center in reference space (1200x800)
+            const imageCenterX = 600;  // Half of 1200
+            const imageCenterY = 400;  // Half of 800
+
+            // Scale to display size
+            const scaleX = displayWidth / 1200;
+            const scaleY = displayHeight / 800;
+            const displayCenterX = imageCenterX * scaleX;
+            const displayCenterY = imageCenterY * scaleY;
 
             const oldScale = state.scale;
             const newScale = Math.max(1.0, Math.min(10, oldScale * factor));
 
             if (oldScale === newScale) return;
 
-            const worldPosX = centerX / oldScale - state.offset.x;
-            const worldPosY = centerY / oldScale - state.offset.y;
+            // Get current screen position of image center
+            const screenX = (displayCenterX + state.offset.x) * oldScale;
+            const screenY = (displayCenterY + state.offset.y) * oldScale;
 
             state.scale = newScale;
-            state.offset.x = centerX / newScale - worldPosX;
-            state.offset.y = centerY / newScale - worldPosY;
+
+            // Calculate new offset to keep image center at same screen position
+            state.offset.x = screenX / newScale - displayCenterX;
+            state.offset.y = screenY / newScale - displayCenterY;
 
             updateZoomDisplay();
             draw(); // Only redraw canvas and arrows

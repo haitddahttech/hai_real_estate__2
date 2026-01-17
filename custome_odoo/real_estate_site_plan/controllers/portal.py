@@ -166,3 +166,26 @@ class SitePlanPortal(CustomerPortal):
         ]
         
         return request.make_response(pdf_content, headers=pdfhttpheaders)
+
+    @http.route(['/my/property/<int:product_id>/save_discounts'], type='json', auth='user', methods=['POST'])
+    def save_selected_discounts(self, product_id, discount_ids=None, **kw):
+        """Save selected discounts to product"""
+        try:
+            product = request.env['product.template'].sudo().browse(product_id)
+            if not product.exists():
+                return {'success': False, 'error': 'Product not found'}
+            
+            # Update selected_discount_ids
+            discount_ids = discount_ids or []
+            product.write({
+                'selected_discount_ids': [(6, 0, discount_ids)]  # Replace all with new selection
+            })
+            
+            return {
+                'success': True,
+                'message': 'Discounts saved successfully',
+                'selected_count': len(discount_ids)
+            }
+        except Exception as e:
+            _logger.error(f"Error saving discounts: {str(e)}")
+            return {'success': False, 'error': str(e)}

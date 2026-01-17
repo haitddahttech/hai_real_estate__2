@@ -11,13 +11,13 @@
                             /* Continuous PDF without page breaks */
                             @page {
                                 size: auto;
-                                margin: 10mm;
+                                margin: 8mm;
                             }
                             body {
                                 margin: 0;
                                 padding: 0;
                                 font-family: 'DejaVu Sans', 'Noto Sans', Arial, sans-serif;
-                                font-size: 0.7em;
+                                font-size: 0.65em;
                             }
                             * {
                                 font-family: 'DejaVu Sans', 'Noto Sans', Arial, sans-serif;
@@ -38,105 +38,105 @@
                                 width: 40%;
                             }
                             .company-logo {
-                                max-width: 150px;
-                                max-height: 80px;
-                                margin-bottom: 5px;
+                                max-width: 120px;
+                                max-height: 60px;
+                                margin-bottom: 3px;
                             }
                             .company-name {
-                                font-size: 0.9em;
+                                font-size: 0.85em;
                                 font-weight: bold;
                                 color: #333;
-                                line-height: 1.4;
+                                line-height: 1.3;
                             }
                             .user-info-wrapper {
                                 display: table;
                                 width: 100%;
-                                margin-bottom: 10px;
-                                margin-top: 15px;
+                                margin-bottom: 6px;
+                                margin-top: 8px;
                             }
                             .user-info-header {
                                 display: table-cell;
                                 text-align: right;
                                 vertical-align: top;
-                                font-size: 0.9em;
-                                line-height: 1.6;
-                                padding: 5px 0;
+                                font-size: 0.85em;
+                                line-height: 1.4;
+                                padding: 3px 0;
                                 width: 40%;
                             }
                             .user-info-header strong {
                                 color: #333;
-                                font-size: 1.1em;
+                                font-size: 1.05em;
                             }
                             .user-info-header div {
-                                margin-bottom: 2px;
+                                margin-bottom: 1px;
                             }
                             .property-header {
                                 background-color: #ffc107;
-                                padding: 8px;
-                                margin-top: 3px;
-                                margin-bottom: 8px;
-                                border-radius: 3px;
+                                padding: 5px;
+                                margin-top: 2px;
+                                margin-bottom: 5px;
+                                border-radius: 2px;
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
                                 flex-wrap: nowrap;
                             }
                             .property-section {
-                                margin-bottom: 8px;
+                                margin-bottom: 5px;
                             }
                             .property-table {
                                 width: 100%;
                                 border-collapse: collapse;
-                                margin-bottom: 6px;
+                                margin-bottom: 4px;
                             }
                             .property-table th {
                                 background-color: #f8f9fa;
-                                padding: 4px 6px;
+                                padding: 2px 4px;
                                 text-align: left;
                                 border: 1px solid #dee2e6;
                                 font-weight: bold;
-                                font-size: 0.95em;
+                                font-size: 0.9em;
                             }
                             .property-table td {
-                                padding: 3px 6px;
+                                padding: 2px 4px;
                                 border: 1px solid #dee2e6;
-                                font-size: 0.95em;
+                                font-size: 0.9em;
                             }
                             
                             /* Payment Timeline Specific Styles */
                             .payment-timeline-table {
                                 width: 100%;
                                 border-collapse: collapse;
-                                margin-bottom: 5px;
+                                margin-bottom: 3px;
                             }
                             .payment-timeline-table th {
                                 background-color: #ffc107;
-                                padding: 3px 4px;
+                                padding: 2px 3px;
                                 text-align: center;
                                 border: 1px solid #dee2e6;
                                 font-weight: bold;
-                                font-size: 0.85em;
+                                font-size: 0.75em;
                             }
                             .payment-timeline-table td {
-                                padding: 2px 4px;
+                                padding: 1px 3px;
                                 border: 1px solid #dee2e6;
-                                font-size: 0.85em;
+                                font-size: 0.75em;
                             }
                             .payment-timeline-table .section-title {
-                                padding: 4px 6px;
-                                font-size: 0.95em;
+                                padding: 3px 4px;
+                                font-size: 0.85em;
                             }
                             .section-title {
                                 background-color: #ffc107;
-                                padding: 12px 15px;
-                                margin-bottom: 10px;
+                                padding: 6px 8px;
+                                margin-bottom: 5px;
                                 font-weight: bold;
-                                border-radius: 3px;
+                                border-radius: 2px;
                             }
                             .badge {
                                 display: inline-block;
-                                padding: 5px 10px;
-                                border-radius: 3px;
+                                padding: 3px 8px;
+                                border-radius: 2px;
                                 font-weight: bold;
                                 color: white;
                             }
@@ -147,8 +147,9 @@
                             .fw-bold { font-weight: bold; }
                         </style>
                         
+                        
                         <!-- Main Container with Padding -->
-                        <div style="padding: 20px;">
+                        <div style="padding: 12px;">
                         
                         <!-- Header with Company Logo and User Info -->
                         <t t-set="current_user" t-value="env.user"/>
@@ -328,18 +329,24 @@
                                 <table class="payment-timeline-table">
                                     <thead>
                                         <tr>
-                                            <th colspan="6" class="section-title" style="text-align: center;">LỊCH TRÌNH THANH TOÁN</th>
+                                            <th colspan="8" class="section-title" style="text-align: center;">LỊCH TRÌNH THANH TOÁN</th>
                                         </tr>
                                         <tr style="background-color: #ffc107;">
-                                            <th class="text-center">Kỳ thanh toán</th>
-                                            <th class="text-center">Ngày thanh toán</th>
-                                            <th class="text-center">Số tiền thanh toán</th>
-                                            <th class="text-center">Tiền nhà</th>
-                                            <th class="text-center">VAT</th>
-                                            <th class="text-center">TỔNG TIỀN</th>
+                                            <th class="text-center" rowspan="2">Kỳ thanh toán</th>
+                                            <th class="text-center" rowspan="2">Ngày thanh toán</th>
+                                            <th class="text-center" rowspan="2">Số tiền thanh toán</th>
+                                            <th class="text-center" rowspan="2">Tiền nhà</th>
+                                            <th class="text-center" rowspan="2">VAT</th>
+                                            <th class="text-center" rowspan="2">TỔNG TIỀN</th>
+                                            <th class="text-center" colspan="2">HỖ TRỢ NGÂN HÀNG</th>
+                                        </tr>
+                                        <tr style="background-color: #ffc107;">
+                                            <th class="text-center">Số tiền</th>
+                                            <th class="text-center">Ghi chú</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <t t-set="processed_notes" t-value="[]"/>
                                         <t t-foreach="product.payment_timeline_ids" t-as="timeline">
                                             <tr>
                                                 <td>
@@ -378,6 +385,24 @@
                                                         <t t-esc="'{:,.0f}'.format(timeline.total_amount)"/>
                                                     </t>
                                                 </td>
+                                                
+                                                <!-- Bank Support Columns with Rowspan -->
+                                                <t t-if="timeline.bank_note not in processed_notes">
+                                                    <t t-set="group_lines" t-value="product.payment_timeline_ids.filtered(lambda l: l.bank_note == timeline.bank_note)"/>
+                                                    <t t-set="dummy" t-value="processed_notes.append(timeline.bank_note)"/>
+                                                    
+                                                    <td t-att-rowspan="len(group_lines)" 
+                                                        t-att-style="'background-color: #4dd0e1;' if timeline.type in ['dat_coc', 'quy_bao_tri'] else ''"
+                                                        class="text-right fw-bold">
+                                                        <t t-set="note_total" t-value="sum(group_lines.mapped('bank_amount'))"/>
+                                                        <t t-if="note_total > 0">
+                                                            <t t-esc="'{:,.0f}'.format(note_total)"/>
+                                                        </t>
+                                                    </td>
+                                                    <td t-att-rowspan="len(group_lines)" class="fw-bold" style="color: #dc3545;">
+                                                        <t t-esc="timeline.bank_note"/>
+                                                    </td>
+                                                </t>
                                             </tr>
                                         </t>
                                     </tbody>
@@ -387,11 +412,111 @@
                                             <td class="text-right"><t t-esc="'{:,.0f}'.format(sum(product.payment_timeline_ids.mapped('amount')))"/></td>
                                             <td class="text-right"><t t-esc="'{:,.0f}'.format(sum(product.payment_timeline_ids.mapped('vat_amount')))"/></td>
                                             <td class="text-right" style="color: #dc3545;"><t t-esc="'{:,.0f}'.format(sum(product.payment_timeline_ids.mapped('total_amount')))"/></td>
+                                            <td class="text-right"><t t-esc="'{:,.0f}'.format(sum(product.payment_timeline_ids.mapped('bank_amount')))"/></td>
+                                            <td class="text-center">100%</td>
                                         </tr>
                                     </tfoot>
                                 </table>
                             </div>
                         </t>
+                        
+                        <!-- Discount Programs and Final Price (2 columns) -->
+                        <div style="display: table; width: 100%; margin-top: 8px;">
+                            <!-- Left Column: Discount Programs -->
+                            <div style="display: table-cell; width: 58%; vertical-align: top; padding-right: 2%;">
+                                <t t-if="product.selected_discount_ids">
+                                    <table class="property-table">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="3" class="section-title" style="text-align: center; padding: 6px;">CHƯƠNG TRÌNH GIẢM GIÁ CÓ THỂ ÁP DỤNG</th>
+                                            </tr>
+                                            <tr style="background-color: #f8f9fa;">
+                                                <th class="text-center" style="width: 50%; padding: 3px 4px;">Tên chương trình</th>
+                                                <th class="text-center" style="width: 25%; padding: 3px 4px;">Loại</th>
+                                                <th class="text-center" style="width: 25%; padding: 3px 4px;">Giá trị</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="product.selected_discount_ids" t-as="discount">
+                                                <tr>
+                                                    <td style="padding: 2px 4px;"><t t-esc="discount.name"/></td>
+                                                    <td class="text-center" style="padding: 2px 4px;">
+                                                        <t t-if="discount.discount_type == 'percent'">Phần trăm</t>
+                                                        <t t-else="">Số tiền</t>
+                                                    </td>
+                                                    <td class="text-right fw-bold" style="padding: 2px 4px; color: #28a745;">
+                                                        <t t-if="discount.discount_type == 'percent'">
+                                                            <t t-esc="discount.discount_value"/>%
+                                                        </t>
+                                                        <t t-else="">
+                                                            <t t-esc="'{:,.0f}'.format(discount.discount_value)"/>
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-else="">
+                                    <table class="property-table">
+                                        <thead>
+                                            <tr>
+                                                <th class="section-title" style="text-align: center; padding: 6px;">CHƯƠNG TRÌNH GIẢM GIÁ CÓ THỂ ÁP DỤNG</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="text-center" style="padding: 8px; color: #6c757d; font-style: italic;">
+                                                    Chưa chọn chương trình giảm giá nào
+                                                    <br/>
+                                                    <small>(Vào form sản phẩm → Tab "Cấu hình Giảm Giá" → Chọn "Giảm giá đã chọn")</small>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                            
+                            <!-- Right Column: Final Price -->
+                            <div style="display: table-cell; width: 38%; vertical-align: top; padding-left: 2%;">
+                                <table class="property-table">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" class="section-title" style="text-align: center; padding: 6px;">GIÁ CUỐI CÙNG</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 50%; padding: 3px 6px;"><strong>Giá niêm yết</strong></td>
+                                            <td class="text-right" style="padding: 3px 6px;">
+                                                <t t-esc="'{:,.0f}'.format(product.list_price)"/>
+                                            </td>
+                                        </tr>
+                                        <t t-set="total_discount" t-value="0"/>
+                                        <t t-foreach="product.selected_discount_ids" t-as="discount">
+                                            <t t-if="discount.discount_type == 'percent'">
+                                                <t t-set="total_discount" t-value="total_discount + (product.list_price * discount.discount_value / 100)"/>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-set="total_discount" t-value="total_discount + discount.discount_value"/>
+                                            </t>
+                                        </t>
+                                        <tr t-if="total_discount > 0">
+                                            <td style="padding: 3px 6px;"><strong>Tổng giảm giá</strong></td>
+                                            <td class="text-right" style="padding: 3px 6px; color: #dc3545; font-weight: bold;">
+                                                - <t t-esc="'{:,.0f}'.format(total_discount)"/>
+                                            </td>
+                                        </tr>
+                                        <tr style="background-color: #28a745; color: white;">
+                                            <td style="padding: 6px; font-weight: bold; font-size: 1.1em;">SAU GIẢM GIÁ</td>
+                                            <td class="text-right" style="padding: 6px; font-weight: bold; font-size: 1.2em;">
+                                                <t t-esc="'{:,.0f}'.format(product.list_price - total_discount)"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                         
                         </div> <!-- End Main Container with Padding -->
                     </div>

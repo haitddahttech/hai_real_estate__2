@@ -65,13 +65,24 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Cấu hình Giảm Giá" name="discount_config">
                     <group>
-                        <field name="discount_config_ids" widget="many2many_tags">
-                            <list>
-                                <field name="name"/>
-                                <field name="discount_type"/>
-                                <field name="discount_value"/>
-                            </list>
-                        </field>
+                        <group string="Giảm giá được phép (hiển thị trên portal)">
+                            <field name="discount_config_ids" widget="many2many_tags" nolabel="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="discount_type"/>
+                                    <field name="discount_value"/>
+                                </list>
+                            </field>
+                        </group>
+                        <group string="Giảm giá đã chọn (hiển thị trong PDF)">
+                            <field name="selected_discount_ids" widget="many2many_tags" nolabel="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="discount_type"/>
+                                    <field name="discount_value"/>
+                                </list>
+                            </field>
+                        </group>
                     </group>
                 </page>
             </xpath>

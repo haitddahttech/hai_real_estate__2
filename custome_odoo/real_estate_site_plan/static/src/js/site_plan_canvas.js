@@ -601,7 +601,7 @@ export class SitePlanCanvasWidget extends Component {
 
         // Stroke - adjust line width based on scale
         this.ctx.strokeStyle = isSelected ? '#e74c3c' : color;
-        this.ctx.lineWidth = (isSelected ? 3 : 2) / this.state.scale;
+        this.ctx.lineWidth = (isSelected ? 2 : 1) / this.state.scale;
         this.ctx.stroke();
 
         // Draw points - adjust radius based on scale
@@ -634,16 +634,12 @@ export class SitePlanCanvasWidget extends Component {
             return;
         }
 
-        // Get list of products already assigned to any polygon
-        const usedPolygons = await this.orm.searchRead(
+        // Get list of products already assigned to any polygon (excluding decorations)
+        const usedProductIds = await this.orm.searchRead(
             'site.plan.polygon',
-            [],
+            [['product_template_id.is_decoration', '=', false]],
             ['product_template_id']
-        );
-        // Filter out falsy values (false, null, undefined, 0)
-        const usedProductIds = usedPolygons
-            .map(p => p.product_template_id[0])
-            .filter(id => id); // Remove falsy values
+        ).then(polygons => polygons.map(p => p.product_template_id[0]).filter(id => id));
 
         // Open Odoo's product selection dialog with filter
         this.dialog.add(SelectCreateDialog, {

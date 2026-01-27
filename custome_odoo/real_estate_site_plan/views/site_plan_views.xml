@@ -19,6 +19,7 @@
                         <group>
                             <field name="name" placeholder="Ví dụ: Vinhomes Grand Park - Giai đoạn 1"/>
                             <field name="active" widget="boolean_toggle"/>
+                            <field name="deposit_date"/>
                         </group>
                         <group>
                             <field name="image" widget="binary" filename="image_filename"/>
@@ -93,9 +94,7 @@
     
     <!-- ========================================== -->
     <!-- ACTIONS - Define all actions first -->
-    <!-- ========================================== -->
-    
-    <!-- Site Plan Action -->
+    <!-- ========================================== -->    <!-- Site Plan Action -->
     <record id="action_site_plan" model="ir.actions.act_window">
         <field name="name">Bản đồ mặt bằng</field>
         <field name="res_model">site.plan</field>
@@ -134,6 +133,13 @@
         <field name="url">/my/site-plans</field>
         <field name="target">new</field>
     </record>
+
+    <!-- Portal Maps Action Current(URL redirect) -->
+    <record id="action_portal_maps_current" model="ir.actions.act_url">
+        <field name="name">Xem Portal</field>
+        <field name="url">/my/site-plans</field>
+        <field name="target">self</field>
+    </record>
     
     <!-- Landing Page Action (URL redirect) -->
     <record id="action_landing_page" model="ir.actions.act_url">
@@ -141,55 +147,7 @@
         <field name="url">/real-estate</field>
         <field name="target">new</field>
     </record>
-    
-    <!-- ========================================== -->
-    <!-- MENUS - Define all menus after actions -->
-    <!-- ========================================== -->
-    
-    <!-- Root Menu -->
-    <menuitem id="menu_real_estate_root"
-              name="Bất Động Sản"
-              web_icon="real_estate_site_plan,static/description/icon_building.svg"
-              sequence="10"/>
 
-    <!-- Backend Management Menus -->
-    <menuitem id="menu_site_plans"
-              name="Bản Đồ Mặt Bằng"
-              parent="menu_real_estate_root"
-              action="action_site_plan"
-              sequence="10"/>
-    
-    <menuitem id="menu_polygons"
-              name="Lô Đất"
-              parent="menu_real_estate_root"
-              action="action_site_plan_polygons"
-              sequence="20"/>
-    
-    <menuitem id="menu_real_estate_products"
-              name="Sản Phẩm BĐS"
-              parent="menu_real_estate_root"
-              action="action_real_estate_products"
-              sequence="30"/>
-    
-    <!-- Configuration Submenu -->
-    <menuitem id="menu_configuration"
-              name="Cấu Hình"
-              parent="menu_real_estate_root"
-              sequence="100"/>
-    
-    <menuitem id="menu_portal_maps"
-              name="Xem Portal"
-              parent="menu_configuration"
-              action="action_portal_maps"
-              sequence="10"/>
-    
-    <menuitem id="menu_landing_page"
-              name="Landing Page"
-              parent="menu_configuration"
-              action="action_landing_page"
-              sequence="20"/>
-
-    
     <!-- Polygon Form View -->
     <record id="view_site_plan_polygon_form" model="ir.ui.view">
         <field name="name">site.plan.polygon.form</field>

@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
+
+    <template id="layout_real_estate_site_plan" name="Main layout" inherit_id="website.layout">
+        <!-- Page options -->
+        <xpath expr="//div[hasclass('o_frontend_to_backend_buttons')]" position="replace">
+            <div class="o_frontend_to_backend_buttons d-flex">
+                <a href="/odoo"
+                   class="o_frontend_to_backend_apps_btn fa fa-th d-flex align-items-center justify-content-center text-decoration-none"
+                   >
+                </a>
+            </div>
+        </xpath>
+    </template>
+
     <!-- Real Estate Landing Page -->
     <template id="portal_landing_page" name="Real Estate Landing Page">
         <t t-call="website.layout">

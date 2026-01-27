@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <menuitem id="menu_house_manager"
-              name="House Manager"
+              name="Quản lý Nhà"
               sequence="99"
               web_icon="customer_manager,static/description/icon.jpg"
               action="stock.product_template_action_product"/>
@@ -25,13 +25,13 @@
 <!--    </record>-->
 
     <menuitem id="menu_categ_manager"
-              name="House Categ Manager"
+              name="Quản lý Danh mục Nhà"
               sequence="99"
               web_icon="customer_manager,static/description/logo_danh_muc.jpg"
               action="product.product_category_action_form"/>
 
     <menuitem id="menu_user_account_manager"
-              name="User Manager"
+              name="Quản lý Người dùng"
               sequence="99"
               web_icon="customer_manager,static/description/icon_user.png"
               groups="base.group_system"
@@ -146,23 +146,9 @@
             </xpath>
             <xpath expr="//div[@name='options']" position="inside">
                 <span class="d-inline-block">
-                    <label for="is_sold">Status</label>
+                    <label for="is_sold">Đã bán</label>
                     <field name="is_sold" readonly="0" widget="boolean_toggle"/>
                 </span>
-            </xpath>
-            <xpath expr="//group[@name='group_general']" position="inside">
-                <field name="buyer_id"/>
-                <field name="customer_follower_ids" readonly="1" force_save="1" options="{'no_open': True, 'no_create': True}" on_change="1" can_create="True" can_write="True">
-                    <list string="Followers">
-                        <control>
-                            <create name="add_new" invisible="1"/>
-                        </control>
-                        <field name="name"/>
-                        <field name="email"/>
-                        <field name="phone"/>
-                        <field name="customer_sale_state" widget="badge"/>
-                    </list>
-                </field>
             </xpath>
         </field>
     </record>

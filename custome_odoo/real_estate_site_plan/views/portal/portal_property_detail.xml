@@ -342,6 +342,12 @@
                                                             <t t-elif="product.direction == 'southwest'">Tây Nam</t>
                                                             <t t-elif="product.direction == 'west'">Tây</t>
                                                             <t t-elif="product.direction == 'northwest'">Tây Bắc</t>
+                                                            <t t-elif="product.direction == 'north_east'">Bắc - Đông</t>
+                                                            <t t-elif="product.direction == 'east_west'">Đông - Tây</t>
+                                                            <t t-elif="product.direction == 'south_north'">Nam - Bắc</t>
+                                                            <t t-elif="product.direction == 'south_east'">Nam - Đông</t>
+                                                            <t t-elif="product.direction == 'west_east'">Tây - Đông</t>
+                                                            <t t-elif="product.direction == 'southwest_northeast'">Tây Nam - Đông Bắc</t>
                                                             <t t-else="">---</t>
                                                         </td>
                                                     </tr>
@@ -444,10 +450,17 @@
                                                         </td>
                                                     </tr>
                                                     <tr>
+                                                        <td class="ps-3 py-2 text-muted">Swift Code</td>
+                                                        <td class="pe-3 py-2 text-end fw-bold text-primary">
+                                                            <t t-esc="request.env.company.swift_code or '---'"/>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
                                                         <td colspan="2" class="ps-3 pe-3 py-2">
                                                             <div class="text-muted small mb-1">Nội dung thanh toán:</div>
                                                             <div class="fw-semibold text-dark bg-light p-2 rounded border" style="font-size: 0.8rem; word-break: break-word;">
-                                                                <t t-set="site_plan_name" t-value="product.site_plan_polygon_id.site_plan_id.name if product.site_plan_polygon_id and product.site_plan_polygon_id.site_plan_id else 'N/A'"/>
+                                                                <t t-set="site_plan_name" t-value="product.site_plan_polygon_ids[0].site_plan_id.name if product.site_plan_polygon_ids and product.site_plan_polygon_ids[0].site_plan_id else 'N/A'"/>
                                                                 Thanh toán căn <t t-esc="product.name"/> <t t-esc="site_plan_name"/>
                                                             </div>
                                                         </td>

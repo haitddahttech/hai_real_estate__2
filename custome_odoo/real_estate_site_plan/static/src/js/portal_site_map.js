@@ -91,6 +91,10 @@
             if (zoomOutBtn) zoomOutBtn.addEventListener('click', zoomOut);
             if (resetZoomBtn) resetZoomBtn.addEventListener('click', resetZoom);
 
+            // Download screenshot button
+            const downloadBtn = document.getElementById('downloadScreenshot');
+            if (downloadBtn) downloadBtn.addEventListener('click', downloadScreenshot);
+
             // Zoom slider
             if (zoomSlider) {
                 zoomSlider.addEventListener('input', (e) => {
@@ -167,22 +171,53 @@
             // Store scale factor
             state.resolutionScale = RESOLUTION_SCALE;
 
-            // Enable high-quality image smoothing for smooth rendering
-            // With 3x resolution, smoothing makes images look better
+            // Enable high-quality image smoothing
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
 
             // Calculate scale factor from backend canvas to current display size
-            // Backend canvas: 1200x800
             state.canvasScaleX = displayWidth / 1200;
             state.canvasScaleY = displayHeight / 800;
 
-            // Reset zoom scale and offset
-            if (state.imageLoaded) {
+            // Reset zoom scale and offset if first load
+            if (state.imageLoaded && !state.cachedImage) {
+                // Create downsampled version for better quality when zoomed out
+                createDownsampledImage();
+
                 state.scale = 1;
                 state.offset = { x: 0, y: 0 };
                 draw();
+            } else {
+                draw();
             }
+        }
+
+        function createDownsampledImage() {
+            if (!state.image) return;
+
+            // Create an offscreen canvas for the cached image (approx 50% size or fixed reasonable size)
+            // Target width around 2000px is usually good balance
+            const targetWidth = Math.min(state.image.width, 2048);
+            const scale = targetWidth / state.image.width;
+
+            if (scale >= 1) {
+                state.cachedImage = state.image; // No need to cache if image is small
+                return;
+            }
+
+            const offCanvas = document.createElement('canvas');
+            offCanvas.width = state.image.width * scale;
+            offCanvas.height = state.image.height * scale;
+
+            const offCtx = offCanvas.getContext('2d');
+            offCtx.imageSmoothingEnabled = true;
+            offCtx.imageSmoothingQuality = 'high';
+
+            // Step-down scaling (optional, but 1-step high quality is usually enough for 50%)
+            offCtx.drawImage(state.image, 0, 0, offCanvas.width, offCanvas.height);
+
+            state.cachedImage = offCanvas;
+            state.cachedImageScale = scale; // Remember scale factor (e.g., 0.5)
         }
 
         function loadImage() {
@@ -190,6 +225,7 @@
             img.onload = function () {
                 state.image = img;
                 state.imageLoaded = true;
+                state.cachedImage = null; // Reset cache
 
                 // Resize canvas to match image aspect ratio
                 setCanvasSize();
@@ -212,16 +248,16 @@
             // Save and transform
             ctx.save();
 
-            // Apply resolution scale first (canvas is 3x larger than display)
+            // Apply resolution scale first
             const resScale = state.resolutionScale || 1;
             ctx.scale(resScale, resScale);
 
-            // Get display dimensions (CSS pixels)
+            // Get display dimensions
             const rect = canvas.getBoundingClientRect();
             const displayWidth = parseFloat(canvas.style.width) || rect.width;
             const displayHeight = parseFloat(canvas.style.height) || rect.height;
 
-            // Store in state for use in drawPolygonScaled
+            // Store in state
             state.displayWidth = displayWidth;
             state.displayHeight = displayHeight;
 
@@ -229,9 +265,20 @@
             ctx.scale(state.scale, state.scale);
             ctx.translate(state.offset.x, state.offset.y);
 
-            // Draw image at display size
+            // Draw image
             if (state.imageLoaded && state.image) {
-                ctx.drawImage(state.image, 0, 0, displayWidth, displayHeight);
+                // Smart drawing based on User Request:
+                // Zoom <= 130%: Use downsampled image (smoother, faster)
+                // Zoom > 130%: Use original image (sharpest details)
+
+                if (state.cachedImage && state.cachedImage !== state.image && state.scale <= 1.3) {
+                    // Use downsampled image
+                    // We need to draw it to match the dimensions of the original image
+                    ctx.drawImage(state.cachedImage, 0, 0, displayWidth, displayHeight);
+                } else {
+                    // Use original image (High res)
+                    ctx.drawImage(state.image, 0, 0, displayWidth, displayHeight);
+                }
             }
 
 
@@ -282,7 +329,7 @@
 
             // Stroke
             ctx.strokeStyle = isSelected ? '#e74c3c' : strokeColor;
-            ctx.lineWidth = (isSelected ? 3 : 2) / state.scale;
+            ctx.lineWidth = (isSelected ? 1 : 0.5) / state.scale;
             ctx.stroke();
 
             // Draw label - DISABLED: No longer showing polygon names on portal view
@@ -305,96 +352,84 @@
             const scrollY = window.pageYOffset || document.documentElement.scrollTop;
 
             state.activePopups.forEach((popupData) => {
-                const polygon = state.polygons[popupData.polygonIndex];
                 const popup = popupData.element;
-                const arrow = popupData.arrow;
-
-                const canvasRect = canvas.getBoundingClientRect();
-                const points = polygon.points;
-
-                // Get popup center (viewport coordinates)
                 const popupRect = popup.getBoundingClientRect();
                 const popupCenterX = popupRect.left + popupRect.width / 2;
                 const popupCenterY = popupRect.top + popupRect.height / 2;
 
-                // Find closest point on polygon edge (in screen coordinates)
-                let minDist = Infinity;
-                let closestPoint = { x: 0, y: 0 };
+                popupData.origins.forEach((origin) => {
+                    const polygon = state.polygons[origin.polygonIndex];
+                    const arrow = origin.arrow;
 
-                for (let i = 0; i < points.length; i++) {
-                    const p1 = points[i];
-                    const p2 = points[(i + 1) % points.length];
+                    const canvasRect = canvas.getBoundingClientRect();
+                    const points = polygon.points;
 
-                    // Convert polygon points from reference space (1200x800) to screen coordinates
-                    // Step 1: Get display dimensions (CSS pixels, not canvas pixels)
+                    // Find closest point on polygon edge (in screen coordinates)
+                    let minDist = Infinity;
+                    let closestPoint = { x: 0, y: 0 };
+
                     const displayWidth = parseFloat(canvas.style.width) || canvasRect.width;
                     const displayHeight = parseFloat(canvas.style.height) || canvasRect.height;
-
-                    // Step 2: Scale from reference (1200x800) to display size
                     const scaleX = displayWidth / 1200;
                     const scaleY = displayHeight / 800;
 
-                    const canvasX1 = p1.x * scaleX;
-                    const canvasY1 = p1.y * scaleY;
-                    const canvasX2 = p2.x * scaleX;
-                    const canvasY2 = p2.y * scaleY;
+                    for (let i = 0; i < points.length; i++) {
+                        const p1 = points[i];
+                        const p2 = points[(i + 1) % points.length];
 
-                    // Step 3: Apply zoom and pan (in display space)
-                    const zoomedX1 = (canvasX1 + state.offset.x) * state.scale;
-                    const zoomedY1 = (canvasY1 + state.offset.y) * state.scale;
-                    const zoomedX2 = (canvasX2 + state.offset.x) * state.scale;
-                    const zoomedY2 = (canvasY2 + state.offset.y) * state.scale;
+                        const canvasX1 = p1.x * scaleX;
+                        const canvasY1 = p1.y * scaleY;
+                        const canvasX2 = p2.x * scaleX;
+                        const canvasY2 = p2.y * scaleY;
 
-                    // Step 4: Add canvas offset to get screen coordinates
-                    const x1 = canvasRect.left + zoomedX1;
-                    const y1 = canvasRect.top + zoomedY1;
-                    const x2 = canvasRect.left + zoomedX2;
-                    const y2 = canvasRect.top + zoomedY2;
+                        const zoomedX1 = (canvasX1 + state.offset.x) * state.scale;
+                        const zoomedY1 = (canvasY1 + state.offset.y) * state.scale;
+                        const zoomedX2 = (canvasX2 + state.offset.x) * state.scale;
+                        const zoomedY2 = (canvasY2 + state.offset.y) * state.scale;
 
-                    // Find closest point on this edge segment
-                    const edgePoint = closestPointOnSegment(x1, y1, x2, y2, popupCenterX, popupCenterY);
-                    const dist = Math.sqrt(
-                        (edgePoint.x - popupCenterX) ** 2 + (edgePoint.y - popupCenterY) ** 2
-                    );
+                        const x1 = canvasRect.left + zoomedX1;
+                        const y1 = canvasRect.top + zoomedY1;
+                        const x2 = canvasRect.left + zoomedX2;
+                        const y2 = canvasRect.top + zoomedY2;
 
-                    if (dist < minDist) {
-                        minDist = dist;
-                        closestPoint = edgePoint;
+                        const edgePoint = closestPointOnSegment(x1, y1, x2, y2, popupCenterX, popupCenterY);
+                        const dist = Math.sqrt((edgePoint.x - popupCenterX) ** 2 + (edgePoint.y - popupCenterY) ** 2);
+
+                        if (dist < minDist) {
+                            minDist = dist;
+                            closestPoint = edgePoint;
+                        }
                     }
-                }
 
-                // Calculate angle from polygon to popup
-                const dx = popupCenterX - closestPoint.x;
-                const dy = popupCenterY - closestPoint.y;
-                const angle = Math.atan2(dy, dx);
+                    const dx = popupCenterX - closestPoint.x;
+                    const dy = popupCenterY - closestPoint.y;
+                    const angle = Math.atan2(dy, dx);
 
-                // Extend the start point outward to account for stroke width
-                // Polygon has stroke width of 2-3px, so extend by ~2px
-                const strokeOffset = 2;
-                const extendedStartX = closestPoint.x + Math.cos(angle) * strokeOffset;
-                const extendedStartY = closestPoint.y + Math.sin(angle) * strokeOffset;
+                    const strokeOffset = 2;
+                    const extendedStartX = closestPoint.x + Math.cos(angle) * strokeOffset;
+                    const extendedStartY = closestPoint.y + Math.sin(angle) * strokeOffset;
 
-                // Find intersection point on popup edge
-                const popupEdgePoint = getPopupEdgePoint(popupRect, angle);
+                    const popupEdgePoint = getPopupEdgePoint(popupRect, angle);
+                    const arrowDx = popupEdgePoint.x - extendedStartX;
+                    const arrowDy = popupEdgePoint.y - extendedStartY;
+                    const arrowAngle = Math.atan2(arrowDy, arrowDx);
+                    const length = Math.sqrt(arrowDx * arrowDx + arrowDy * arrowDy);
 
-                // Draw arrow from extended point to popup edge
-                const arrowDx = popupEdgePoint.x - extendedStartX;
-                const arrowDy = popupEdgePoint.y - extendedStartY;
-                const arrowAngle = Math.atan2(arrowDy, arrowDx);
-                const length = Math.sqrt(arrowDx * arrowDx + arrowDy * arrowDy);
+                    const wrapper = document.querySelector('.canvas-wrapper') || document.body;
+                    const wrapperRect = wrapper.getBoundingClientRect();
 
-                // Convert viewport coordinates to document coordinates (add scroll offset)
-                arrow.style.left = (extendedStartX + scrollX) + 'px';
-                arrow.style.top = (extendedStartY + scrollY) + 'px';
-                arrow.style.width = length + 'px';
-                arrow.style.height = '3px';
-                arrow.style.transform = `rotate(${arrowAngle}rad)`;
-                arrow.style.transformOrigin = '0 50%';
-                arrow.style.background = '#e74c3c';
-                arrow.style.position = 'absolute'; // Changed from 'fixed' - arrow now scrolls with page
-                arrow.style.zIndex = '999';
-                arrow.style.pointerEvents = 'none';
-                arrow.style.display = 'block';
+                    arrow.style.left = (extendedStartX - wrapperRect.left) + 'px';
+                    arrow.style.top = (extendedStartY - wrapperRect.top) + 'px';
+                    arrow.style.width = length + 'px';
+                    arrow.style.height = '1.5px';
+                    arrow.style.transform = `rotate(${arrowAngle}rad)`;
+                    arrow.style.transformOrigin = '0 50%';
+                    arrow.style.background = '#e74c3c';
+                    arrow.style.position = 'absolute';
+                    arrow.style.zIndex = '999';
+                    arrow.style.pointerEvents = 'none';
+                    arrow.style.display = 'block';
+                });
             });
         }
 
@@ -457,29 +492,81 @@
             const pos = getMousePos(e);
             const clickedIndex = findPolygonAt(pos);
 
-            console.log('Canvas clicked at:', pos);
-            console.log('Clicked polygon index:', clickedIndex);
-
             if (clickedIndex !== -1) {
-                const existingIndex = state.selectedPolygons.indexOf(clickedIndex);
+                const polygon = state.polygons[clickedIndex];
+                const productId = polygon.product.id;
 
-                console.log('Polygon found:', state.polygons[clickedIndex]);
-                console.log('Existing index:', existingIndex);
+                const selectedIdx = state.selectedPolygons.indexOf(clickedIndex);
 
-                if (existingIndex === -1) {
-                    if (state.selectedPolygons.length >= MAX_POPUPS) {
-                        removePopup(0);
-                    }
-
-                    state.selectedPolygons.push(clickedIndex);
-                    console.log('Showing popup for polygon:', clickedIndex);
-                    showPopup(state.polygons[clickedIndex], clickedIndex);
+                if (selectedIdx !== -1) {
+                    // DESELECT
+                    removePolygonSelection(clickedIndex);
                 } else {
-                    console.log('Removing popup for polygon:', clickedIndex);
-                    removePopup(existingIndex);
+                    // SELECT
+                    // Find if a popup for this product already exists
+                    let popupData = state.activePopups.find(p => p.productId === productId);
+
+                    if (popupData) {
+                        // Popup exists, just add this polygon as an origin
+                        state.selectedPolygons.push(clickedIndex);
+                        addOriginToPopup(popupData, clickedIndex);
+                    } else {
+                        // Create new popup
+                        if (state.activePopups.length >= MAX_POPUPS) {
+                            // Prune oldest popup (including all its origins)
+                            const oldestPopup = state.activePopups[0];
+                            // Remove all its polygon indices from selectedPolygons
+                            oldestPopup.origins.forEach(orig => {
+                                const idx = state.selectedPolygons.indexOf(orig.polygonIndex);
+                                if (idx !== -1) state.selectedPolygons.splice(idx, 1);
+                            });
+                            removePopup(0);
+                        }
+
+                        state.selectedPolygons.push(clickedIndex);
+                        showPopup(polygon, clickedIndex);
+                    }
                 }
 
                 draw();
+            }
+        }
+
+        function addOriginToPopup(popupData, polygonIndex) {
+            const arrow = document.createElement('div');
+            arrow.className = 'popup-arrow';
+            arrow.style.display = 'none';
+
+            const wrapper = document.querySelector('.canvas-wrapper') || document.body;
+            wrapper.appendChild(arrow);
+
+            popupData.origins.push({
+                polygonIndex: polygonIndex,
+                arrow: arrow
+            });
+        }
+
+        function removePolygonSelection(polygonIndex) {
+            // Find which popup owns this polygon
+            const popupIndex = state.activePopups.findIndex(p => p.origins.some(o => o.polygonIndex === polygonIndex));
+            if (popupIndex !== -1) {
+                const popupData = state.activePopups[popupIndex];
+                const originIndex = popupData.origins.findIndex(o => o.polygonIndex === polygonIndex);
+
+                if (originIndex !== -1) {
+                    // Remove arrow element
+                    popupData.origins[originIndex].arrow.remove();
+                    popupData.origins.splice(originIndex, 1);
+                }
+
+                // If it was the last origin, remove the whole popup
+                if (popupData.origins.length === 0) {
+                    removePopup(popupIndex);
+                }
+
+                // Remove from selected list
+                const idx = state.selectedPolygons.indexOf(polygonIndex);
+                if (idx !== -1) state.selectedPolygons.splice(idx, 1);
             }
         }
 
@@ -488,13 +575,13 @@
 
             const popup = document.createElement('div');
             popup.className = 'card shadow-lg property-popup';
-            popup.style.position = 'absolute'; // Changed from 'fixed' - popup now scrolls with page
+            popup.style.position = 'absolute';
             popup.style.zIndex = '1000';
-            popup.style.maxWidth = '300px';
-            popup.style.minWidth = '260px';
+            popup.style.maxWidth = product.is_decoration ? '600px' : '300px';
+            popup.style.minWidth = product.is_decoration ? '520px' : '260px';
             popup.style.cursor = 'move';
-            popup.style.overflow = 'visible'; // Allow ribbon to overflow
-            popup.style.setProperty('border', `3px solid ${polygon.color || '#3498db'}`, 'important'); // Border matches polygon color
+            popup.style.overflow = 'visible';
+            popup.style.setProperty('border', `1.5px solid ${polygon.color || '#3498db'}`, 'important');
 
 
             // Ribbon for sold status
@@ -537,7 +624,7 @@
                 : '';
 
             const directionBadge = product.direction
-                ? `<span class="badge badge-outline-primary badge-outline ms-1" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">${product.direction}</span>`
+                ? `<span class="badge badge-outline-primary badge-outline" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">${product.direction}</span>`
                 : '';
 
             // Get color from image at polygon center
@@ -579,7 +666,47 @@
                    </div>`
                 : '';
 
-            popup.innerHTML = `
+            let popupContent = '';
+
+            if (product.is_decoration) {
+                // Simplified popup for decoration (name and images)
+                let imageHtml = '';
+                if (product.attachments && product.attachments.length > 0) {
+                    imageHtml = `
+                        <div class="decoration-images mt-2 d-flex overflow-auto gap-3 pb-2" style="scrollbar-width: thin;">
+                            ${product.attachments.map(att => `
+                                <img src="${att.url}" 
+                                     alt="${att.name}" 
+                                     style="width: 200px; height: 200px; object-fit: cover; border-radius: 8px; cursor: pointer;"
+                                     class="decoration-thumb"
+                                     onclick="window.open('${att.url}', '_blank')"
+                                />
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                popupContent = `
+                    <div class="card-header border-0 pb-2" style="cursor: move; background: ${bgColor}; color: ${textColor};">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">${product.name}</h6>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <button type="button" class="close-popup-btn" style="cursor: pointer; background: #e9ecef; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s; color: #333;">
+                                    <i class="fa fa-times" style="font-size: 0.85rem;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-2 pb-3">
+                        ${product.decoration_note ? `<div class="decoration-note mb-3 p-2 bg-light border-start border-4 border-info text-dark" style="font-size: 0.9rem; line-height: 1.4; border-radius: 4px;">${product.decoration_note}</div>` : ''}
+                        ${imageHtml || '<p class="text-muted small mb-0">Không có ảnh minh họa</p>'}
+                    </div>
+                `;
+            } else {
+                // Full Popup for Real Estate
+                popupContent = `
                 ${ribbonHTML}
                 <div class="card-header border-0 pb-2" style="cursor: move; background: ${bgColor}; color: ${textColor};">
                     <div class="d-flex justify-content-between align-items-start">
@@ -588,17 +715,26 @@
                             <div class="d-flex align-items-center gap-2">
                                 <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">${product.name}</h6>
                                 ${propertyTypeBadge}
-                                ${directionBadge}
                             </div>
                             ${buyerInfo}
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            <button type="button" class="btn-close close-popup-btn" style="cursor: pointer; background: white; border-radius: 50%; padding: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); opacity: 0.8;"></button>
+                            <button type="button" class="close-popup-btn" style="cursor: pointer; background: #e9ecef; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s; color: #333;">
+                                <i class="fa fa-times" style="font-size: 0.85rem;"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
                 <div class="card-body pt-2 pb-3">
                     <div class="px-0">
+                        <div class="d-flex justify-content-between mb-1 pb-1 border-bottom border-light">
+                            <span class="text-dark fw-medium" style="font-size: 0.8rem;">Loại hình</span>
+                            <span class="fw-bold text-dark" style="font-size: 0.85rem;">${product.property_type || '---'}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1 pb-1 border-bottom border-light">
+                            <span class="text-dark fw-medium" style="font-size: 0.8rem;">Hướng</span>
+                            <span class="fw-bold text-dark" style="font-size: 0.85rem;">${product.direction || '---'}</span>
+                        </div>
                         <div class="d-flex justify-content-between mb-1 pb-1 border-bottom border-light">
                             <span class="text-dark fw-medium" style="font-size: 0.8rem;">Diện tích đất</span>
                             <span class="fw-bold text-dark" style="font-size: 0.85rem;">${product.area} m²</span>
@@ -617,28 +753,38 @@
                         </div>
                     </div>
                     <div class="mt-3">
-                        <a href="/my/property/${product.id}" class="btn btn-dark w-100 py-1 fw-bold" style="border-radius: 6px; font-size: 0.8rem; letter-spacing: 0.3px;">
+                        <a href="/my/property/${product.id}" class="btn btn-success w-100 py-2 fw-bold" style="border-radius: 6px; font-size: 0.8rem; letter-spacing: 0.3px; border: none; background: linear-gradient(135deg, #28a745 0%, #218838 100%); transition: all 0.3s ease;">
                             CHI TIẾT <i class="fa fa-arrow-right ms-1 small"></i>
                         </a>
                     </div>
                 </div>
-            `;
+                `;
+            }
+
+            popup.innerHTML = popupContent;
 
             const arrow = document.createElement('div');
             arrow.className = 'popup-arrow';
             arrow.style.display = 'none';
 
-            document.body.appendChild(popup);
-            document.body.appendChild(arrow);
+            const wrapper = document.querySelector('.canvas-wrapper') || document.body;
+            wrapper.appendChild(popup);
+            wrapper.appendChild(arrow);
 
             positionPopup(popup, polygon, state.activePopups.length);
 
-            // Close button
+            // Close button rewritten
             popup.querySelector('.close-popup-btn').addEventListener('click', (e) => {
                 e.stopPropagation();
-                const index = state.activePopups.findIndex(p => p.element === popup);
-                if (index !== -1) {
-                    removePopup(index);
+                const popupIdx = state.activePopups.findIndex(p => p.element === popup);
+                if (popupIdx !== -1) {
+                    const popupData = state.activePopups[popupIdx];
+                    // Remove all associated polygon indices from selection
+                    popupData.origins.forEach(orig => {
+                        const selIdx = state.selectedPolygons.indexOf(orig.polygonIndex);
+                        if (selIdx !== -1) state.selectedPolygons.splice(selIdx, 1);
+                    });
+                    removePopup(popupIdx);
                     draw();
                 }
             });
@@ -647,9 +793,12 @@
             makeDraggable(popup);
 
             state.activePopups.push({
+                productId: product.id,
                 element: popup,
-                arrow: arrow,
-                polygonIndex: polygonIndex
+                origins: [{
+                    polygonIndex: polygonIndex,
+                    arrow: arrow
+                }]
             });
 
             draw();
@@ -685,21 +834,29 @@
                     currentX = touch.clientX - initialX;
                     currentY = touch.clientY - initialY;
 
-                    // Keep popup within document (not just viewport)
-                    const docWidth = Math.max(
-                        document.documentElement.scrollWidth,
-                        document.body.scrollWidth
-                    );
-                    const docHeight = Math.max(
-                        document.documentElement.scrollHeight,
-                        document.body.scrollHeight
-                    );
+                    // *** Giới hạn popup TRONG CANVAS khi kéo trên mobile ***
+                    const canvasRect = canvas.getBoundingClientRect();
+                    const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+                    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
 
-                    const minX = 0;
-                    const maxX = docWidth - popup.offsetWidth;
-                    const minY = 0;
-                    const maxY = docHeight - popup.offsetHeight;
+                    // Canvas bounds trong document coordinates
+                    const canvasLeft = canvasRect.left + scrollX;
+                    const canvasRight = canvasRect.right + scrollX;
+                    const canvasTop = canvasRect.top + scrollY;
+                    const canvasBottom = canvasRect.bottom + scrollY;
 
+                    // Popup dimensions
+                    const popupWidth = popup.offsetWidth;
+                    const popupHeight = popup.offsetHeight;
+                    const edgeMargin = 20;
+
+                    // Bounds trong canvas
+                    const minX = canvasLeft + edgeMargin;
+                    const maxX = canvasRight - popupWidth - edgeMargin;
+                    const minY = canvasTop + edgeMargin;
+                    const maxY = canvasBottom - popupHeight - edgeMargin;
+
+                    // Clamp position
                     currentX = Math.max(minX, Math.min(currentX, maxX));
                     currentY = Math.max(minY, Math.min(currentY, maxY));
 
@@ -722,8 +879,10 @@
                     return; // Don't drag when clicking close button
                 }
 
-                initialX = e.clientX - popup.offsetLeft;
-                initialY = e.clientY - popup.offsetTop;
+                // Get offset inside popup (mouse pos - popup pos)
+                const rect = popup.getBoundingClientRect();
+                initialX = e.clientX - rect.left;
+                initialY = e.clientY - rect.top;
 
                 isDragging = true;
                 popup.style.zIndex = '1001'; // Bring to front
@@ -733,28 +892,30 @@
                 if (isDragging) {
                     e.preventDefault();
 
-                    currentX = e.clientX - initialX;
-                    currentY = e.clientY - initialY;
+                    const wrapper = document.querySelector('.canvas-wrapper') || document.body;
+                    const wrapperRect = wrapper.getBoundingClientRect();
+                    const canvasRect = canvas.getBoundingClientRect();
 
-                    // Keep popup within document (not just viewport)
-                    // Allow dragging to any part of the page
-                    const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
-                    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+                    // Calculate new position relative to wrapper
+                    currentX = (e.clientX - initialX) - wrapperRect.left;
+                    currentY = (e.clientY - initialY) - wrapperRect.top;
 
-                    const docWidth = Math.max(
-                        document.documentElement.scrollWidth,
-                        document.body.scrollWidth
-                    );
-                    const docHeight = Math.max(
-                        document.documentElement.scrollHeight,
-                        document.body.scrollHeight
-                    );
+                    // Canvas bounds relative to wrapper
+                    const canvasRelX = canvasRect.left - wrapperRect.left;
+                    const canvasRelY = canvasRect.top - wrapperRect.top;
 
-                    const minX = 0;
-                    const maxX = docWidth - popup.offsetWidth;
-                    const minY = 0;
-                    const maxY = docHeight - popup.offsetHeight;
+                    // Popup dimensions
+                    const popupWidth = popup.offsetWidth;
+                    const popupHeight = popup.offsetHeight;
+                    const edgeMargin = 20;
 
+                    // Bounds within canvas
+                    const minX = canvasRelX + edgeMargin;
+                    const maxX = canvasRelX + canvasRect.width - popupWidth - edgeMargin;
+                    const minY = canvasRelY + edgeMargin;
+                    const maxY = canvasRelY + canvasRect.height - popupHeight - edgeMargin;
+
+                    // Clamp position
                     currentX = Math.max(minX, Math.min(currentX, maxX));
                     currentY = Math.max(minY, Math.min(currentY, maxY));
 
@@ -787,12 +948,11 @@
 
             // Point in screen pixels (viewport coordinates)
             const screenX = canvasRect.left + (centerX * scaleX + state.offset.x) * state.scale;
-            // const screenY = canvasRect.top + (centerY * scaleY + state.offset.y) * state.scale;
 
             const popupWidth = 300;
-            const popupHeight = 220; // Reduced - sold badge moved to header
+            const popupHeight = 220;
             const edgeMargin = 20;
-            const verticalSpacing = 230; // Space between stacked popups (height + 10px gap)
+            const verticalSpacing = 230; // Space between stacked popups
 
             let popupX, popupY;
 
@@ -814,30 +974,39 @@
             // Stack vertically if multiple popups (don't overlap)
             popupY += (stackIndex * verticalSpacing);
 
-            // Convert viewport coordinates to document coordinates (add scroll offset)
-            const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
-            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+            // Get wrapper position (viewport)
+            const wrapper = document.querySelector('.canvas-wrapper') || document.body;
+            const wrapperRect = wrapper.getBoundingClientRect();
 
-            popupX += scrollX;
-            popupY += scrollY;
+            // Convert viewport coordinates to relative to wrapper
+            let relativeX = popupX - wrapperRect.left;
+            let relativeY = popupY - wrapperRect.top;
 
-            // Bounds checking (keep within document, accounting for scroll)
-            const minX = scrollX + 10;
-            const maxX = scrollX + window.innerWidth - popupWidth - 10;
-            const minY = scrollY + 10;
-            const maxY = scrollY + window.innerHeight - popupHeight - 10;
+            // Calculate canvas bounds relative to wrapper
+            const canvasRelX = canvasRect.left - wrapperRect.left;
+            const canvasRelY = canvasRect.top - wrapperRect.top;
 
-            popup.style.left = Math.max(minX, Math.min(popupX, maxX)) + 'px';
-            popup.style.top = Math.max(minY, Math.min(popupY, maxY)) + 'px';
+            // Limit within canvas bounds (relative to wrapper)
+            const minX = canvasRelX + edgeMargin;
+            const maxX = canvasRelX + canvasRect.width - popupWidth - edgeMargin;
+            const minY = canvasRelY + edgeMargin;
+            const maxY = canvasRelY + canvasRect.height - popupHeight - edgeMargin;
+
+            // Clamp position
+            relativeX = Math.max(minX, Math.min(relativeX, maxX));
+            relativeY = Math.max(minY, Math.min(relativeY, maxY));
+
+            popup.style.left = relativeX + 'px';
+            popup.style.top = relativeY + 'px';
         }
 
         function removePopup(index) {
             const popupData = state.activePopups[index];
             if (popupData) {
                 popupData.element.remove();
-                popupData.arrow.remove();
+                // Remove all arrows associated with this popup
+                popupData.origins.forEach(orig => orig.arrow.remove());
                 state.activePopups.splice(index, 1);
-                state.selectedPolygons.splice(index, 1);
             }
         }
 
@@ -1001,6 +1170,7 @@
                 state.offset.x = midX / newScale - worldPosX;
                 state.offset.y = midY / newScale - worldPosY;
 
+                updateZoomDisplay();
                 draw();
             }
         }
@@ -1051,6 +1221,7 @@
             state.offset.x = mouseX / newScale - worldPosX;
             state.offset.y = mouseY / newScale - worldPosY;
 
+            updateZoomDisplay();
             draw(); // Only redraw canvas and arrows
         }
 
@@ -1101,6 +1272,61 @@
             state.offset = { x: 0, y: 0 };
             updateZoomDisplay();
             draw();
+        }
+
+        async function downloadScreenshot() {
+            try {
+                const btn = document.getElementById('downloadScreenshot');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang chụp...';
+                btn.disabled = true;
+
+                // Simply capture the canvas wrapper
+                const canvasWrapper = document.querySelector('.canvas-wrapper');
+
+                if (!canvasWrapper) {
+                    alert('Không tìm thấy canvas!');
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                    return;
+                }
+
+                // Optimization for screenshot
+                canvasWrapper.classList.add('taking-screenshot');
+
+                // Capture canvas wrapper directly (includes canvas only, not popups)
+                const screenshot = await html2canvas(canvasWrapper, {
+                    backgroundColor: '#f8f9fa',
+                    scale: 3,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                });
+
+                canvasWrapper.classList.remove('taking-screenshot');
+
+                // Download
+                screenshot.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                    link.download = `site-plan-${timestamp}.png`;
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url);
+
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                }, 'image/png');
+
+            } catch (error) {
+                console.error('Screenshot error:', error);
+                alert('Lỗi: ' + error.message);
+
+                const btn = document.getElementById('downloadScreenshot');
+                btn.innerHTML = '<i class="fa fa-camera"></i> Chụp màn hình';
+                btn.disabled = false;
+            }
         }
 
         function formatNumber(num) {

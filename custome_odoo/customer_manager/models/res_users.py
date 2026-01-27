@@ -56,8 +56,8 @@ class ResUsers(models.Model):
         if partner_manager_group:
             for user in users:
                 # Command (4, id): LINK/ADD group without removing existing groups
-                if partner_manager_group not in user.groups_id:
-                    user.groups_id = [(4, partner_manager_group.id)]
+                if partner_manager_group not in user.group_ids:
+                    user.group_ids = [(4, partner_manager_group.id)]
         
         return users
 
@@ -70,12 +70,12 @@ class ResUsers(models.Model):
         res = super(ResUsers, self).default_get(fields_list)
         
         # Add group_partner_manager to default groups_id
-        if 'groups_id' in fields_list:
+        if 'group_ids' in fields_list:
             partner_manager_group = self.env.ref('base.group_partner_manager', raise_if_not_found=False)
             
             if partner_manager_group:
                 # Get existing default groups (from parent classes)
-                existing_groups = res.get('groups_id', [])
+                existing_groups = res.get('group_ids', [])
                 
                 # Extract group IDs from existing commands
                 group_ids = [cmd[1] for cmd in existing_groups if cmd[0] in (4, 6)]
@@ -84,9 +84,9 @@ class ResUsers(models.Model):
                 if partner_manager_group.id not in group_ids:
                     if not existing_groups:
                         # No existing groups, just add ours
-                        res['groups_id'] = [(4, partner_manager_group.id)]
+                        res['group_ids'] = [(4, partner_manager_group.id)]
                     else:
                         # APPEND to existing groups (not replace)
-                        res['groups_id'] = existing_groups + [(4, partner_manager_group.id)]
+                        res['group_ids'] = existing_groups + [(4, partner_manager_group.id)]
         
         return res

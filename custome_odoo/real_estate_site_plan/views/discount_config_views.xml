@@ -49,13 +49,6 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <!-- Menu Item (under Configuration) -->
-    <menuitem id="menu_product_discount_config"
-              name="Giảm Giá"
-              parent="menu_configuration"
-              action="action_product_discount_config"
-              sequence="20"/>
-
     <!-- Extend Product Template Form View to add Discount Many2many -->
     <record id="view_product_template_form_discount_inherit" model="ir.ui.view">
         <field name="name">product.template.form.discount.inherit</field>

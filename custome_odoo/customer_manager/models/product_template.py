@@ -10,7 +10,7 @@ class ProductTemplate(models.Model):
     #         ],)
 
     is_sold = fields.Boolean(
-        string='Is Sold',
+        string='Đã bán',
         compute='_compute_is_sold',
         store=True,
         tracking=True,

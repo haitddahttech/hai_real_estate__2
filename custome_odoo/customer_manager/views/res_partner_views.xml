@@ -57,19 +57,19 @@
 
 
 <!--        <menuitem id="menu_sale_meeting_plan"-->
-<!--          name="Sale Meeting Plan"-->
+<!--          name="Kế hoạch Họp bán hàng"-->
 <!--          sequence="99"-->
 <!--          web_icon="customer_manager,static/description/planning.png"-->
 <!--          action="customer_manager.action_meeting_plan"/>-->
 
 <!--        <menuitem id="menu_sale_report_custom"-->
-<!--          name="Sale Report"-->
+<!--          name="Báo cáo Bán hàng"-->
 <!--          sequence="99"-->
 <!--          web_icon="customer_manager,static/description/dashboard.png"-->
 <!--          action="customer_manager.action_report_sale_by_sale"/>-->
 
 <!--        <menuitem id="menu_sale_report_custom_by_customer"-->
-<!--          name="Sale Report By Customer"-->
+<!--          name="Báo cáo Bán hàng theo Khách hàng"-->
 <!--          sequence="99"-->
 <!--          web_icon="customer_manager,static/description/icon_sale.png"-->
 <!--          action="customer_manager.action_report_sale_by_customer"/>-->

@@ -19,13 +19,17 @@ This module allows you to:
     'depends': [
         'product',
         'web',
+        'base',
         'portal',
         'website',
         'customer_manager',
     ],
     'data': [
+        'security/security.xml',
+        'security/ir_rules.xml',
         'security/ir.model.access.csv',
         'data/website_menu.xml',
+        'views/discount_config_views.xml',
         'views/site_plan_views.xml',
         'views/product_product_views.xml',
         'views/res_company_views.xml',
@@ -33,9 +37,9 @@ This module allows you to:
         'views/portal/portal_templates.xml',
         'views/portal/portal_site_plan_detail.xml',
         'views/portal/portal_property_detail.xml',
-        'views/discount_config_views.xml',
         'reports/property_detail_report.xml',
         'reports/property_detail_template.xml',
+        'views/menu.xml',
     ],
     'assets': {
         'web.assets_backend': [

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- ========================================== -->
+    <!-- RECORD RULES - SITE PLAN                   -->
+    <!-- ========================================== -->
+    
+    <!-- Portal users: Can only read active site plans -->
+    <record id="site_plan_portal_rule" model="ir.rule">
+        <field name="name">Site Plan: Portal users see only active</field>
+        <field name="model_id" ref="model_site_plan"/>
+        <field name="domain_force">[('active', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    
+    <!-- Internal Users: Full read, can create and write -->
+    <record id="site_plan_user_rule" model="ir.rule">
+        <field name="name">Site Plan: Users can read/write all</field>
+        <field name="model_id" ref="model_site_plan"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    
+    <!-- System/Admin: Full access including delete -->
+    <record id="site_plan_system_rule" model="ir.rule">
+        <field name="name">Site Plan: Admin have full access</field>
+        <field name="model_id" ref="model_site_plan"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+    
+    <!-- ========================================== -->
+    <!-- RECORD RULES - SITE PLAN POLYGON           -->
+    <!-- ========================================== -->
+    
+    <!-- Portal users: Can only read active polygons of active site plans -->
+    <record id="polygon_portal_rule" model="ir.rule">
+        <field name="name">Polygon: Portal users see only active</field>
+        <field name="model_id" ref="model_site_plan_polygon"/>
+        <field name="domain_force">[('active', '=', True), ('site_plan_id.active', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    
+    <!-- Internal Users: Full read, can create and write -->
+    <record id="polygon_user_rule" model="ir.rule">
+        <field name="name">Polygon: Users can read/write all</field>
+        <field name="model_id" ref="model_site_plan_polygon"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    
+    <!-- System/Admin: Full access including delete -->
+    <record id="polygon_system_rule" model="ir.rule">
+        <field name="name">Polygon: Admin have full access</field>
+        <field name="model_id" ref="model_site_plan_polygon"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+    
+    <!-- ========================================== -->
+    <!-- RECORD RULES - PAYMENT TIMELINE            -->
+    <!-- ========================================== -->
+    
+    <!-- Portal users: Read only -->
+    <record id="payment_timeline_portal_rule" model="ir.rule">
+        <field name="name">Payment Timeline: Portal users read only</field>
+        <field name="model_id" ref="model_payment_timeline"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    
+    <!-- Internal Users: Read/Write/Create -->
+    <record id="payment_timeline_user_rule" model="ir.rule">
+        <field name="name">Payment Timeline: Users can read/write</field>
+        <field name="model_id" ref="model_payment_timeline"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    
+    <!-- System/Admin: Full access -->
+    <record id="payment_timeline_system_rule" model="ir.rule">
+        <field name="name">Payment Timeline: Admin have full access</field>
+        <field name="model_id" ref="model_payment_timeline"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+    
+    <!-- ========================================== -->
+    <!-- RECORD RULES - DISCOUNT CONFIG             -->
+    <!-- ========================================== -->
+    
+    <!-- Portal users: Read active only -->
+    <record id="discount_config_portal_rule" model="ir.rule">
+        <field name="name">Discount Config: Portal users read active</field>
+        <field name="model_id" ref="model_product_discount_config"/>
+        <field name="domain_force">[('active', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    
+    <!-- Internal Users: Read only -->
+    <record id="discount_config_user_rule" model="ir.rule">
+        <field name="name">Discount Config: Users read only</field>
+        <field name="model_id" ref="model_product_discount_config"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    
+    <!-- System/Admin: Full access -->
+    <record id="discount_config_system_rule" model="ir.rule">
+        <field name="name">Discount Config: Admin have full access</field>
+        <field name="model_id" ref="model_product_discount_config"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+</odoo>

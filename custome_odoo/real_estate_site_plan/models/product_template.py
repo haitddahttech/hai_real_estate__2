@@ -8,10 +8,19 @@ from dateutil.relativedelta import relativedelta
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    site_plan_polygon_ids = fields.One2many(
+        comodel_name='site.plan.polygon',
+        inverse_name='product_template_id',
+        string='Site Plan Polygons',
+        help='The polygons on the site plan linked to this product'
+    )
+
     site_plan_polygon_id = fields.Many2one(
         comodel_name='site.plan.polygon',
         string='Site Plan Polygon',
-        help='The polygon on the site plan linked to this product',
+        compute='_compute_site_plan_polygon_id',
+        store=True,
+        help='Primary polygon (for backward compatibility)',
         ondelete='set null'
     )
     
@@ -19,16 +28,55 @@ class ProductTemplate(models.Model):
         string='Is Real Estate',
         compute='_compute_is_real_estate',
         store=True,
-        help='Indicates if this product is linked to a site plan polygon'
+        help='Indicates if this product is linked to one or more site plan polygons'
+    )
+    
+    is_decoration = fields.Boolean(
+        string='Là vật trang trí',
+        help='Đánh dấu sản phẩm này là vật trang trí trên bản đồ (cây, hồ nước, tiện ích...) '
+             'để có thể gán cho nhiều polygon và hiển thị thông tin rút gọn.'
     )
 
-    color = fields.Char(
-        string='Color',
-        compute='_compute_color',
+    decoration_note = fields.Text(
+        string='Mô tả về vật trang trí',
+        help='Nội dung giới thiệu hoặc mô tả ngắn sẽ hiển thị trên popup bản đồ.'
+    )
+
+    real_estate_color = fields.Char(
+        string='Màu sắc',
+        compute='_compute_real_estate_color',
         store=True,
         readonly=False,
-        help='Hex color code for polygon display (inherited from category by default)'
+        help='Mã màu Hex cho polygon (mặc định lấy từ danh mục)'
     )
+
+    def _auto_init(self):
+        """
+        FIX: If the 'color' column in DB is Char (due to previous incorrect version),
+        rename it to avoid Odoo base trying to convert it to Integer and crashing.
+        """
+        # Check product_template
+        self.env.cr.execute("""
+            SELECT data_type FROM information_schema.columns 
+            WHERE table_name = 'product_template' AND column_name = 'color'
+        """)
+        res = self.env.cr.fetchone()
+        if res and res[0] in ('character varying', 'text'):
+            # This is our poisoned column, rename it
+            self.env.cr.execute("ALTER TABLE product_template RENAME COLUMN color TO color_hex_backup")
+            self.env.cr.commit() # Commit rename immediately
+        
+        # Check product_category (also inherited and potentially poisoned)
+        self.env.cr.execute("""
+            SELECT data_type FROM information_schema.columns 
+            WHERE table_name = 'product_category' AND column_name = 'color'
+        """)
+        res = self.env.cr.fetchone()
+        if res and res[0] in ('character varying', 'text'):
+            self.env.cr.execute("ALTER TABLE product_category RENAME COLUMN color TO color_hex_backup")
+            self.env.cr.commit()
+
+        return super()._auto_init()
     
     # Real Estate specific fields
     area = fields.Float(
@@ -133,6 +181,12 @@ class ProductTemplate(models.Model):
             ('southwest', 'Tây Nam'),
             ('west', 'Tây'),
             ('northwest', 'Tây Bắc'),
+            ('north_east', 'Bắc - Đông'),
+            ('east_west', 'Đông - Tây'),
+            ('south_north', 'Nam - Bắc'),
+            ('south_east', 'Nam - Đông'),
+            ('west_east', 'Tây - Đông'),
+            ('southwest_northeast', 'Tây Nam - Đông Bắc'),
         ],
         string='Hướng',
         help='Hướng của bất động sản'
@@ -156,6 +210,10 @@ class ProductTemplate(models.Model):
         currency = self.env.company.currency_id
         for product in self:
             deposit_date = product.deposit_date or fields.Date.today()
+            if not product.site_plan_polygon_ids:
+                fixed_deposit_date = product.deposit_date or fields.Date.today()
+            else:
+                fixed_deposit_date = product.site_plan_polygon_ids[0].site_plan_id.deposit_date or fields.Date.today()
             paid_amount = 0.0
             total_price_incl_vat = product.price_include_land_tax + product.vat_tax + product.maintenance_fee
             
@@ -173,7 +231,7 @@ class ProductTemplate(models.Model):
             vals_2 = {
                 'product_tmpl_id': product.id,
                 'type': 'trong_3_ngay',
-                'date': deposit_date + relativedelta(days=3),#15/12
+                'date': deposit_date + relativedelta(days=2),#15/12
                 'name': '5%',
                 'amount': currency.round(product.price_include_land_tax * 0.05) - product.deposit,
                 'vat_amount': 0.0,
@@ -194,86 +252,86 @@ class ProductTemplate(models.Model):
             vals_1_2_3_total = currency.round(product.price_include_land_tax * 0.20) + currency.round(product.vat_tax * 0.20)
             vals_1['bank_amount'] = vals_1_2_3_total
 
-            vals_4 = {
-                'product_tmpl_id': product.id,
-                'type': 'dot_4',
-                'date': deposit_date + relativedelta(months=2),#10/02
-                'name': '5% +VAT tương ứng',
-                'amount': currency.round(product.price_include_land_tax * 0.05),
-                'vat_amount': currency.round(product.vat_tax * 0.05),
-                'bank_amount': currency.round(product.price_include_land_tax * 0.3 + product.vat_tax * 0.30),
-                'bank_note': 'NGÂN HÀNG 30% KHÔNG LÃI, ÂN HẠN GỐC',
-            }
-            vals_5 = {
-                'product_tmpl_id': product.id,
-                'type': 'dot_5',
-                'date': deposit_date + relativedelta(months=4),#10/04
-                'name': '5% +VAT tương ứng',
-                'amount': currency.round(product.price_include_land_tax * 0.05),
-                'vat_amount': currency.round(product.vat_tax * 0.05),
-                'bank_amount': 0.0,
-                'bank_note': 'NGÂN HÀNG 30% KHÔNG LÃI, ÂN HẠN GỐC',
-            }
-            vals_6 = {
-                'product_tmpl_id': product.id,
-                'type': 'dot_6',
-                'date': deposit_date + relativedelta(months=6),#10/06
-                'name': '5% +VAT tương ứng',
-                'amount': currency.round(product.price_include_land_tax * 0.05),
-                'vat_amount': currency.round(product.vat_tax * 0.05),
-                'bank_amount': 0.0,
-                'bank_note': 'NGÂN HÀNG 30% KHÔNG LÃI, ÂN HẠN GỐC',
-            }
-            vals_7 = {
-                'product_tmpl_id': product.id,
-                'type': 'dot_7',
-                'date': deposit_date + relativedelta(months=9),#10/09
-                'name': '5% +VAT tương ứng',
-                'amount': currency.round(product.price_include_land_tax * 0.05),
-                'vat_amount': currency.round(product.vat_tax * 0.05),
-                'bank_amount': 0.0,
-                'bank_note': 'NGÂN HÀNG 30% KHÔNG LÃI, ÂN HẠN GỐC',
-            }
-            vals_8 = {
-                'product_tmpl_id': product.id,
-                'type': 'dot_8',
-                'date': deposit_date + relativedelta(months=12),#10/12
-                'name': '5% +VAT tương ứng',
-                'amount': currency.round(product.price_include_land_tax * 0.05),
-                'vat_amount': currency.round(product.vat_tax * 0.05),
-                'bank_amount': 0.0,
-                'bank_note': 'NGÂN HÀNG 30% KHÔNG LÃI, ÂN HẠN GỐC',
-            }
-            vals_9 = {
-                'product_tmpl_id': product.id,
-                'type': 'dot_9',
-                'date': deposit_date + relativedelta(months=15),#10/03
-                'name': '5% +VAT tương ứng',
-                'amount': currency.round(product.price_include_land_tax * 0.05),
-                'vat_amount': currency.round(product.vat_tax * 0.05),
-                'bank_amount': 0.0,
-                'bank_note': 'NGÂN HÀNG 30% KHÔNG LÃI, ÂN HẠN GỐC',
-            }
+            # Logic gộp tiền cho các đợt từ 4 đến 9
+            today = fields.Date.today()
+            accumulated_amount = 0.0
+            accumulated_share = 0.0
+            accumulated_vat = 0.0
+            accumulated_bank = 0.0
+            
+            # Danh sách cấu hình các đợt 4-9
+            milestone_configs = [
+                {'type': 'dot_4', 'months': 2, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0.3, 'bank_vat_share': 0.3, 'bank_note': 'NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI'},
+                {'type': 'dot_5', 'months': 4, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': 'NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI'},
+                {'type': 'dot_6', 'months': 6, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': 'NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI'},
+                {'type': 'dot_7', 'months': 9, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': 'NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI'},
+                {'type': 'dot_8', 'months': 12, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': 'NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI'},
+                {'type': 'dot_9', 'months': 15, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': 'NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI'},
+            ]
+            
+            timeline_vals_list = [
+                (0, 0, vals_1),
+                (0, 0, vals_2),
+                (0, 0, vals_3),
+            ]
+            
+            for config in milestone_configs:
+                m_date = fixed_deposit_date + relativedelta(months=config['months'])
+                m_share = config['share']
+                m_amount = currency.round(product.price_include_land_tax * config['share'])
+                m_vat = currency.round(product.vat_tax * config['vat_share'])
+                m_bank = currency.round(product.price_include_land_tax * config['bank_share'] + product.vat_tax * config['bank_vat_share'])
+                
+                if m_date < today:
+                    # Nếu đợt này đã quá hạn, gom tiền vào biến tích lũy
+                    accumulated_amount += m_amount
+                    accumulated_share += m_share
+                    accumulated_vat += m_vat
+                    accumulated_bank += m_bank
+                else:
+                    # Nếu đợt này ở tương lai, cộng dồn tiền tích lũy vào đây
+                    accumulated_share += m_share
+                    vals_m = {
+                        'product_tmpl_id': product.id,
+                        'type': config['type'],
+                        'date': m_date,
+                        'name': str(accumulated_share * 100) + '% +VAT tương ứng',
+                        'amount': m_amount + accumulated_amount,
+                        'vat_amount': m_vat + accumulated_vat,
+                        'bank_amount': m_bank + accumulated_bank,
+                        'bank_note': config['bank_note'],
+                    }
+                    timeline_vals_list.append((0, 0, vals_m))
+                    # Reset biến tích lũy sau khi đã gộp
+                    accumulated_amount = 0.0
+                    accumulated_vat = 0.0
+                    accumulated_bank = 0.0
+
+            # Xử lý Đợt 10 (Giao nhà) - Nhận phần tiền tích lũy còn lại nếu tất cả 4-9 đều quá hạn
             vals_10 = {
                 'product_tmpl_id': product.id,
                 'type': 'giao_nha',
-                'date': deposit_date + relativedelta(months=18),#10/06
+                'date': fixed_deposit_date + relativedelta(months=18),
                 'name': '45% +VAT còn lại',
-                'amount': currency.round(product.price_include_land_tax * 0.45),
-                'vat_amount': currency.round(product.vat_tax * 0.50),
-                'bank_amount': currency.round(product.price_include_land_tax * 0.35 + product.vat_tax * 0.40),
+                'amount': currency.round(product.price_include_land_tax * 0.45) + accumulated_amount,
+                'vat_amount': currency.round(product.vat_tax * 0.50) + accumulated_vat,
+                'bank_amount': currency.round(product.price_include_land_tax * 0.35 + product.vat_tax * 0.40) + accumulated_bank,
                 'bank_note': 'NGÂN HÀNG 35%',
             }
+            timeline_vals_list.append((0, 0, vals_10))
+
             vals_11 = {
                 'product_tmpl_id': product.id,
                 'type': 'quy_bao_tri',
-                'date': deposit_date + relativedelta(months=18),#10/06
+                'date': fixed_deposit_date + relativedelta(months=18),
                 'name': '0.5%',
                 'amount': currency.round(product.maintenance_fee),
                 'vat_amount': 0.0,
                 'bank_amount': currency.round(product.price_include_land_tax * 0.10 + product.vat_tax * 0.10 + product.maintenance_fee),
                 'bank_note': 'KH 10% + QBT',
             }
+            timeline_vals_list.append((0, 0, vals_11))
+
             vals_12 = {
                 'product_tmpl_id': product.id,
                 'type': 'thong_bao_so_hong',
@@ -284,20 +342,7 @@ class ProductTemplate(models.Model):
                 'bank_amount': currency.round(product.price_include_land_tax * 0.05),
                 'bank_note': 'NGÂN HÀNG 5%',
             }
-            timeline_vals_list = [
-                (0, 0, vals_1),
-                (0, 0, vals_2),
-                (0, 0, vals_3),
-                (0, 0, vals_4),
-                (0, 0, vals_5),
-                (0, 0, vals_6),
-                (0, 0, vals_7),
-                (0, 0, vals_8),
-                (0, 0, vals_9),
-                (0, 0, vals_10),
-                (0, 0, vals_11),
-                (0, 0, vals_12)
-            ]
+            timeline_vals_list.append((0, 0, vals_12))
             # Clear existing timelines
             product.payment_timeline_ids.unlink()
             # Create new timelines
@@ -306,24 +351,29 @@ class ProductTemplate(models.Model):
             })
 
 
-    @api.depends('is_real_estate')
+    @api.depends('site_plan_polygon_ids')
+    def _compute_site_plan_polygon_id(self):
+        for product in self:
+            product.site_plan_polygon_id = product.site_plan_polygon_ids[0] if product.site_plan_polygon_ids else False
+
+    @api.depends('site_plan_polygon_ids')
     def _compute_is_real_estate(self):
         for product in self:
-            product.is_real_estate = bool(product.site_plan_polygon_id)
+            product.is_real_estate = bool(product.site_plan_polygon_ids)
     
     @api.depends('list_price')
     def _compute_final_price(self):
         for product in self:
             product.final_price = product.list_price
 
-    @api.depends('categ_id', 'categ_id.color')
-    def _compute_color(self):
+    @api.depends('categ_id', 'categ_id.real_estate_color')
+    def _compute_real_estate_color(self):
         """Auto-fill color from category if not set"""
         for product in self:
-            if not product.color and product.categ_id and product.categ_id.color:
-                product.color = product.categ_id.color
-            elif not product.color:
-                product.color = '#3498db'  # Default blue
+            if not product.real_estate_color and product.categ_id and product.categ_id.real_estate_color:
+                product.real_estate_color = product.categ_id.real_estate_color
+            elif not product.real_estate_color:
+                product.real_estate_color = '#3498db'  # Default blue
     
     @api.depends('list_price', 'area')
     def _compute_price_per_m2(self):
@@ -337,9 +387,7 @@ class ProductTemplate(models.Model):
     @api.depends('price_exclude_land_tax', 'land_tax')
     def _compute_price_include_land_tax(self):
         for product in self:
-            product.sudo().write({
-                'price_include_land_tax':product.price_exclude_land_tax + product.land_tax
-            })
+            product.price_include_land_tax = product.price_exclude_land_tax + product.land_tax
 
     # @api.depends('price_include_land_tax')
     # def _inverse_price_exclude_land_tax(self):

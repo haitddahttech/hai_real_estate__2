@@ -11,8 +11,8 @@ class SitePlanPolygon(models.Model):
     _order = 'name'
     
     _sql_constraints = [
-        ('unique_product_template', 'UNIQUE(product_template_id)', 
-         'Mỗi sản phẩm chỉ được gán cho một lô đất!'),
+        # ('unique_product_template', 'UNIQUE(product_template_id)', 
+        #  'Mỗi sản phẩm chỉ được gán cho một lô đất!'),
     ]
 
     name = fields.Char(
@@ -76,16 +76,21 @@ class SitePlanPolygon(models.Model):
         """Compute list of products already assigned to polygons"""
         for record in self:
             # Get all products already assigned to polygons (excluding current record)
+            # EXCLUDING decoration products from unavailable list
             assigned_products = self.env['site.plan.polygon'].search([
                 ('id', '!=', record.id),
-                ('active', '=', True)
+                ('active', '=', True),
+                ('product_template_id.is_decoration', '=', False)
             ]).mapped('product_template_id')
             record.unavailable_product_template_ids = assigned_products
     
     @api.constrains('product_template_id')
     def _check_unique_product(self):
-        """Ensure each product is only assigned to one polygon"""
+        """Ensure each product is only assigned to one polygon, unless it's a decoration"""
         for record in self:
+            if record.product_template_id.is_decoration:
+                continue
+                
             domain = [
                 ('product_template_id', '=', record.product_template_id.id),
                 ('id', '!=', record.id),
@@ -94,17 +99,21 @@ class SitePlanPolygon(models.Model):
             if self.search_count(domain) > 0:
                 raise ValidationError(
                     f'Sản phẩm "{record.product_template_id.name}" đã được gán cho lô đất khác. '
-                    'Mỗi sản phẩm chỉ được gán cho 1 lô.'
+                    'Mỗi sản phẩm chỉ được gán cho 1 lô (trừ vật trang trí).'
                 )
     
-    @api.constrains('name', 'site_plan_id')
+    @api.constrains('name', 'site_plan_id', 'product_template_id')
     def _check_unique_name_per_site_plan(self):
-        """Ensure polygon names are unique within a site plan"""
+        """Ensure polygon names are unique within a site plan, except for decorations"""
         for record in self:
+            if record.product_template_id.is_decoration:
+                continue
+
             domain = [
                 ('name', '=', record.name),
                 ('site_plan_id', '=', record.site_plan_id.id),
-                ('id', '!=', record.id)
+                ('id', '!=', record.id),
+                ('product_template_id.is_decoration', '=', False)
             ]
             if self.search_count(domain) > 0:
                 raise ValidationError(
@@ -148,8 +157,8 @@ class SitePlanPolygon(models.Model):
             
             # Auto-fill color from product if not provided
             if 'color' not in vals or not vals.get('color'):
-                if product.color:
-                    vals['color'] = product.color
+                if product.real_estate_color:
+                    vals['color'] = product.real_estate_color
                 else:
                     vals['color'] = '#3498db'  # Default blue color
         
@@ -163,7 +172,7 @@ class SitePlanPolygon(models.Model):
 
         if 'name' in vals:
             for record in self:
-                if record.product_template_id:
+                if record.product_template_id and not record.product_template_id.is_decoration:
                     record.product_template_id.write({'name': vals['name']})
         
         return super().write(vals)

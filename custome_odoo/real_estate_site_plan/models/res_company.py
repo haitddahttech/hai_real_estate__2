@@ -21,3 +21,7 @@ class ResCompany(models.Model):
         string='Số tài khoản',
         help='Số tài khoản ngân hàng của công ty'
     )
+    swift_code = fields.Char(
+        string='SWIFT Code',
+        help='Mã SWIFT của ngân hàng'
+    )

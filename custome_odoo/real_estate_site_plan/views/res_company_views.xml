@@ -13,6 +13,7 @@
                 <field name="bank_account_holder_name" placeholder="Công ty TNHH ABC"/>
                 <field name="bank_name" placeholder="Vietcombank, Techcombank, BIDV, ..."/>
                 <field name="bank_account_number" placeholder="1234567890"/>
+                <field name="swift_code" placeholder="VCBVVNVX, TCBVVNVX, BIDVVNVX, ..."/>
             </xpath>
         </field>
     </record>

@@ -55,7 +55,72 @@ class SitePlan(models.Model):
         string='Đang hoạt động',
         default=True
     )
+    deposit_date = fields.Date(
+        string='Ngày đặt cọc',
+        help='Ngày thực hiện đặt cọc',
+        default=fields.Date.today
+    )
     
+    image_path = fields.Char(string='Đường dẫn ảnh local')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        for record in records:
+            if record.image:
+                record._save_image_to_disk()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'image' in vals:
+            for record in self:
+                if record.image:
+                    record._save_image_to_disk()
+        return res
+
+    def _save_image_to_disk(self):
+        """Save image from binary field to module static folder"""
+        import base64
+        import os
+        from odoo.modules.module import get_module_path
+
+        self.ensure_one()
+        if not self.image:
+            return
+
+        # Define path: static/site_maps/site_plan_<id>.png
+        filename = f"site_plan_{self.id}.png"
+        
+        # Get absolute path to module directory
+        module_path = get_module_path('real_estate_site_plan')
+        if not module_path:
+            return
+
+        # Ensure static/site_maps exists
+        site_maps_dir = os.path.join(module_path, 'static', 'site_maps')
+        if not os.path.exists(site_maps_dir):
+            try:
+                os.makedirs(site_maps_dir)
+            except OSError:
+                # If we cannot create directory (permission?), abort
+                return
+
+        file_path = os.path.join(site_maps_dir, filename)
+
+        try:
+            with open(file_path, 'wb') as f:
+                f.write(base64.b64decode(self.image))
+            
+            # Update path field relative to module
+            rel_path = f"/real_estate_site_plan/static/site_maps/{filename}"
+            # Avoid recursion loop in write
+            self.env.cr.execute("UPDATE site_plan SET image_path=%s WHERE id=%s", (rel_path, self.id))
+            self.invalidate_recordset(['image_path'])
+        except Exception as e:
+            # Log error but don't stop flow
+            print(f"Failed to save site plan image to disk: {e}")
+
     @api.depends('polygon_ids')
     def _compute_polygon_count(self):
         for record in self:

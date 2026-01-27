@@ -243,8 +243,64 @@
                 
                 .canvas-wrapper {
                     position: relative;
-                    min-height: 600px;
+                    min-height: 85vh;
                     background: #f8f9fa;
+                }
+                
+                
+                .site-map-container {
+                    width: 100%;
+                    padding-left: 0;
+                    padding-right: 0;
+                }
+                
+                /* Desktop / Landscape: 95% Viewport Width (Break out of parent container) */
+                @media (min-width: 992px) {
+                    .site-map-container {
+                        width: 95vw;
+                        position: relative;
+                        left: 50%;
+                        right: 50%;
+                        margin-left: -47.5vw;
+                        margin-right: -47.5vw;
+                        max-width: none !important;
+                    }
+                }
+                
+                /* Screenshot optimization */
+                .taking-screenshot .property-popup {
+                    box-shadow: none !important;
+                    border: 1px solid #ccc !important;
+                    animation: none !important;
+                    transform: none !important;
+                }
+                .taking-screenshot .property-popup .card-header,
+                .taking-screenshot .property-popup .card-body {
+                    -webkit-font-smoothing: antialiased;
+                }
+                /* Decoration images gallery */
+                .decoration-images::-webkit-scrollbar {
+                    height: 4px;
+                }
+                .decoration-images::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 4px;
+                }
+                .decoration-images::-webkit-scrollbar-thumb {
+                    background: #ccc;
+                    border-radius: 4px;
+                }
+                .decoration-images::-webkit-scrollbar-thumb:hover {
+                    background: #999;
+                }
+                .decoration-thumb {
+                    transition: all 0.2s ease;
+                    border: 1px solid #eee;
+                }
+                .decoration-thumb:hover {
+                    opacity: 0.9;
+                    transform: scale(1.02);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
                 }
             </style>
             
@@ -279,7 +335,7 @@
                 </div>
             </div>
 
-            <div class="container">
+            <div class="site-map-container">
                 <!-- Map Section -->
                 <div class="row">
                     <div class="col-12">
@@ -296,6 +352,9 @@
                                         </button>
                                         <button type="button" class="toolbar-btn" id="resetZoom">
                                             <i class="fa fa-expand"/> Đặt lại
+                                        </button>
+                                        <button type="button" class="toolbar-btn" id="downloadScreenshot" style="background: #28a745; color: white; border-color: #28a745;">
+                                            <i class="fa fa-camera"/> Chụp màn hình
                                         </button>
                                     </div>
                                     
@@ -337,7 +396,7 @@
                             </h5>
                             <div class="legend-items">
                                 <div class="legend-item">
-                                    <div class="legend-color" style="border: 2px solid #3498db; background: transparent;"></div>
+                                    <div class="legend-color" style="border: 1px solid #3498db; background: transparent;"></div>
                                     <div>
                                         <span class="legend-label">Còn trống</span>
                                         <span class="legend-desc">- Trong suốt (Sẵn sàng)</span>
@@ -351,7 +410,7 @@
                                     </div>
                                 </div>
                                 <div class="legend-item">
-                                    <div class="legend-color" style="background: rgba(231, 76, 60, 0.4); border: 2px solid #e74c3c;"></div>
+                                    <div class="legend-color" style="background: rgba(231, 76, 60, 0.4); border: 1px solid #e74c3c;"></div>
                                     <div>
                                         <span class="legend-label">Đang chọn</span>
                                         <span class="legend-desc">- Nhấp để xem</span>
@@ -366,10 +425,13 @@
             <!-- Pass data to JavaScript -->
             <script type="text/javascript">
                 var siteMapData = {
-                    imageUrl: '/web/content/site.plan/<t t-esc="site_plan.id"/>/image',
+                    imageUrl: '<t t-if="site_plan.image_path" t-esc="site_plan.image_path"/><t t-else="">/web/content/site.plan/<t t-esc="site_plan.id"/>/image</t>',
                     polygons: <t t-raw="polygon_data_json"/>
                 };
             </script>
+            
+            <!-- Load html2canvas library for screenshot -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
             
             <!-- Load custom JS -->
             <script type="text/javascript" src="/real_estate_site_plan/static/src/js/portal_site_map.js"></script>

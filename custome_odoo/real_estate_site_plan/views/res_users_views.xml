@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Inherit res.users form view to show Real Estate groups -->
+    <record id="view_users_form_real_estate" model="ir.ui.view">
+        <field name="name">res.users.form.real_estate</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <!-- Add Real Estate groups in access_rights page -->
+            <xpath expr="//page[@name='access_rights']" position="inside">
+                <group string="Real Estate" name="real_estate_groups">
+                    <field name="groups_id" widget="many2many_checkboxes" 
+                           domain="[('id', 'in', [ref('real_estate_site_plan.group_real_estate_user'), ref('real_estate_site_plan.group_real_estate_manager')])]"
+                           options="{'no_create': True}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

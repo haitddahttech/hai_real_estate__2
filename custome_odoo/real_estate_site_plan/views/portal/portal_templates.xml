@@ -7,6 +7,71 @@
         <!-- Menus will be created programmatically in the controller -->
     </template>
 
+    <!-- Change Logo Link to Landing Page (Robust JS version for Odoo 19) -->
+    <template id="site_plan_logo_link" inherit_id="website.layout" priority="50">
+        <xpath expr="//div[@id='wrapwrap']" position="after">
+            <script type="text/javascript">
+                (function() {
+                    const updateLogo = () => {
+                        const brands = document.querySelectorAll('.navbar-brand');
+                        brands.forEach(b => b.setAttribute('href', '/real-estate'));
+                    };
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', updateLogo);
+                    } else {
+                        updateLogo();
+                    }
+                })();
+            </script>
+        </xpath>
+    </template>
+
+    <!-- Portal Home: Individual Site Plan Menus -->
+    <template id="portal_my_home_site_plans" name="Portal My Home : Site Plan Entries" inherit_id="portal.portal_my_home" priority="20">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-if="site_plans_list">
+                <t t-foreach="site_plans_list" t-as="plan">
+                    <t t-call="portal.portal_docs_entry">
+                        <t t-set="title" t-value="plan.name"/>
+                        <t t-set="url" t-attf-value="'/my/site-plan/%s' % plan.id"/>
+                        <t t-set="placeholder">Bản đồ mặt bằng dự án</t>
+                        <t t-set="icon" t-value="'/real_estate_site_plan/static/description/icon_map.svg'"/>
+                        <t t-set="count" t-value="plan.polygon_count"/>
+                    </t>
+                </t>
+            </t>
+        </xpath>
+    </template>
+    
+    <!-- Website Navbar: ONLY link individual site plans in header, remove other menus -->
+    <template id="site_plan_navbar_menus" inherit_id="website.template_header_default" priority="50">
+        <!-- 1. Replace default menu loop with our site plans -->
+        <xpath expr="//t[@t-foreach='website.menu_id.child_id']" position="replace">
+            <t t-set="active_site_plans" t-value="request.env['site.plan'].sudo().search([('active', '=', True)])"/>
+            <t t-foreach="active_site_plans" t-as="plan">
+                <li class="nav-item">
+                    <a class="nav-link" t-attf-href="/my/site-plan/#{plan.id}">
+                        <t t-esc="plan.name"/>
+                    </a>
+                </li>
+            </t>
+        </xpath>
+        
+        <!-- 2. Keep only Sign In and User Dropdown, remove Search, Social, etc. -->
+        <xpath expr="//ul[hasclass('navbar-nav')][hasclass('justify-content-end')]" position="replace">
+            <ul class="navbar-nav align-items-center gap-2 flex-shrink-0 justify-content-end ps-3">
+                <!-- Sign In -->
+                <t t-call="portal.placeholder_user_sign_in"
+                    _link_class="'o_nav_link_btn nav-link border px-3'"/>
+                <!-- User Dropdown -->
+                <t t-call="portal.user_dropdown"
+                    _user_name="True"
+                    _item_class="'dropdown'"
+                    _link_class="'nav-link border-0'"
+                    _dropdown_menu_class="'dropdown-menu-end'"/>
+            </ul>
+        </xpath>
+    </template>
 
 
     <!-- Site Plans List Page -->

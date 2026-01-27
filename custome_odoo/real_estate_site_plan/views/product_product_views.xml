@@ -7,16 +7,41 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
         <field name="arch" type="xml">
+            <xpath expr="//div[@name='options']" position="inside">
+                <div name="is_decoration_options">
+                    <span name="is_decoration_option" class="d-inline-flex">
+                        <span class="d-inline-block">
+                            <label for="is_decoration">Là vật trang trí</label>
+                            <field name="is_decoration" widget="boolean_toggle"/>
+                        </span>
+                    </span>
+                </div>
+            </xpath>
+            <xpath expr="//group[@name='group_general']" position="inside">
+                <field name="decoration_note" invisible="not is_decoration" placeholder="Ví dụ: Giới thiệu về loài cây hoặc tiện ích này..."/>
+                <field name="buyer_id" string="Người mua" invisible="not is_decoration"/>
+                <field name="customer_follower_ids" string="Người theo dõi" invisible="not is_decoration" readonly="1" force_save="1" options="{'no_open': True, 'no_create': True}" on_change="1" can_create="True" can_write="True">
+                    <list string="Followers">
+                        <control>
+                            <create name="add_new" invisible="1"/>
+                        </control>
+                        <field name="name"/>
+                        <field name="email"/>
+                        <field name="phone"/>
+                        <field name="customer_sale_state" widget="badge"/>
+                    </list>
+                </field>
+            </xpath>
             <xpath expr="//form//sheet//notebook" position="inside">
-                <page string="Thông tin Bất động sản" name="real_estate_info">
+                <page string="Thông tin Bất động sản" name="real_estate_info" invisible="is_decoration">
                     <group>
                         <group string="Thông tin chung">
-                            <field name="site_plan_polygon_id" readonly="1" string="Lô đất"/>
+                            <field name="site_plan_polygon_ids" widget="many2many_tags" readonly="1" string="Lô đất"/>
                             <field name="is_real_estate" invisible="1"/>
+<!--                            <field name="is_decoration" widget="boolean_toggle"/>-->
                             <field name="property_type" string="Loại hình"/>
                             <field name="direction" string="Hướng"/>
-                            <field name="is_sold" readonly="0" widget="boolean_toggle" string="Đã bán"/>
-                            <field name="color" widget="color" string="Màu sắc"/>
+                            <field name="real_estate_color" widget="color" string="Màu sắc"/>
                         </group>
                         <group string="Diện tích và Giá">
                             <field name="area" force_save="1" on_change="1"/>
@@ -57,6 +82,28 @@
                         </field>
                     </group>
                 </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_product_template_search_inherit" model="ir.ui.view">
+        <field name="name">product.template.search.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='services']" position="after">
+                <filter string="Sản phẩm BĐS" name="is_real_estate" domain="[('is_real_estate', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+    <!-- Product Category Form View - Add Real Estate Color -->
+    <record id="product_category_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.category.form.inherit</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="real_estate_color" widget="color"/>
             </xpath>
         </field>
     </record>

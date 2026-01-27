@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- ========================================== -->
+    <!-- BACKEND MENU - REAL ESTATE                -->
+    <!-- ========================================== -->
+    
+    <!-- Root Menu -->
+    <menuitem id="menu_real_estate_root"
+              name="Bất động sản"
+              sequence="10"
+              web_icon="real_estate_site_plan,static/description/logo_portal_menu.png"/>
+    
+    <!-- Shortcut for non-admin users to open Portal View -->
+    <menuitem id="menu_portal_site_plan_shortcut"
+              name="Bản đồ Dự án"
+              action="action_portal_maps_current"
+              web_icon="website,static/description/icon.png"
+              sequence="5"
+              groups="base.group_user"/>
+
+    <!-- Site Plans Menu -->
+    <menuitem id="menu_site_plans"
+              name="Sơ đồ phân lô"
+              parent="menu_real_estate_root"
+              action="action_site_plan"
+              sequence="10"/>
+    
+    <!-- Polygons Menu -->
+    <menuitem id="menu_polygons"
+              name="Vùng bản đồ"
+              parent="menu_real_estate_root"
+              action="action_site_plan_polygons"
+              sequence="20"/>
+
+    <!-- Real Estate Products Menu -->
+    <menuitem id="menu_real_estate_products"
+              name="Sản Phẩm BĐS"
+              parent="menu_real_estate_root"
+              action="action_real_estate_products"
+              sequence="30"/>
+    
+    <!-- Configuration Menu -->
+    <menuitem id="menu_configuration"
+              name="Cấu hình"
+              parent="menu_real_estate_root"
+              sequence="100"/>
+    
+    <!-- Discount Config Menu -->
+    <menuitem id="menu_discount_config"
+              name="Chương trình chiết khấu"
+              parent="menu_configuration"
+              action="action_product_discount_config"
+              sequence="10"/>
+
+    <!-- Portal Maps Menu -->
+    <menuitem id="menu_portal_maps"
+              name="Xem Portal"
+              parent="menu_configuration"
+              action="action_portal_maps"
+              sequence="20"/>
+
+    <!-- Landing Page Menu -->
+    <menuitem id="menu_landing_page"
+              name="Landing Page"
+              parent="menu_configuration"
+              action="action_landing_page"
+              sequence="30"/>
+
+</odoo>

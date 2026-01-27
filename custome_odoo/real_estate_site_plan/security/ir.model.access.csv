@@ -1,5 +1,13 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_site_plan_user,access.site.plan.user,model_site_plan,base.group_user,1,1,1,1
-access_site_plan_polygon_user,access.site.plan.polygon.user,model_site_plan_polygon,base.group_user,1,1,1,1
-access_payment_timeline,access.payment.timeline,model_payment_timeline,,1,1,1,1
-access_product_discount_config,access.product.discount.config,model_product_discount_config,base.group_user,1,1,1,1
+access_site_plan_portal,access.site.plan.portal,model_site_plan,base.group_portal,1,0,0,0
+access_site_plan_user,access.site.plan.user,model_site_plan,base.group_user,1,1,1,0
+access_site_plan_system,access.site.plan.system,model_site_plan,base.group_system,1,1,1,1
+access_site_plan_polygon_portal,access.site.plan.polygon.portal,model_site_plan_polygon,base.group_portal,1,0,0,0
+access_site_plan_polygon_user,access.site.plan.polygon.user,model_site_plan_polygon,base.group_user,1,1,1,0
+access_site_plan_polygon_system,access.site.plan.polygon.system,model_site_plan_polygon,base.group_system,1,1,1,1
+access_payment_timeline_portal,access.payment.timeline.portal,model_payment_timeline,base.group_portal,1,0,0,0
+access_payment_timeline_user,access.payment.timeline.user,model_payment_timeline,base.group_user,1,1,1,0
+access_payment_timeline_system,access.payment.timeline.system,model_payment_timeline,base.group_system,1,1,1,1
+access_product_discount_config_portal,access.product.discount.config.portal,model_product_discount_config,base.group_portal,1,0,0,0
+access_product_discount_config_user,access.product.discount.config.user,model_product_discount_config,base.group_user,1,0,0,0
+access_product_discount_config_system,access.product.discount.config.system,model_product_discount_config,base.group_system,1,1,1,1

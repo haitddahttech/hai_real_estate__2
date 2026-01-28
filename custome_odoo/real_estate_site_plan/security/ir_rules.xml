@@ -161,4 +161,26 @@
         <field name="perm_unlink" eval="True"/>
     </record>
 
+    <!-- ========================================== -->
+    <!-- RECORD RULES - COMPANY BANK ACCOUNT        -->
+    <!-- ========================================== -->
+
+    <!-- Multi-company rule -->
+    <record id="res_company_bank_comp_rule" model="ir.rule">
+        <field name="name">Company Bank: Multi-company</field>
+        <field name="model_id" ref="model_res_company_bank"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- Portal users: Read only active -->
+    <record id="res_company_bank_portal_rule" model="ir.rule">
+        <field name="name">Company Bank: Portal users read only</field>
+        <field name="model_id" ref="model_res_company_bank"/>
+        <field name="domain_force">[('active', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
 </odoo>

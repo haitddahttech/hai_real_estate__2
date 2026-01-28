@@ -6,534 +6,427 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="product">
                 <div class="article o_report_layout_standard">
-                    <div class="page">
+                    <div class="page" style="page-break-after: always;">
                         <style>
-                            /* Continuous PDF without page breaks */
                             @page {
-                                size: auto;
-                                margin: 8mm;
+                                size: A4;
+                                margin: 8mm 12mm 8mm 12mm;
                             }
                             body {
                                 margin: 0;
-                                padding: 0;
-                                font-family: 'DejaVu Sans', 'Noto Sans', Arial, sans-serif;
-                                font-size: 0.65em;
-                            }
-                            * {
-                                font-family: 'DejaVu Sans', 'Noto Sans', Arial, sans-serif;
-                            }
-                            .page {
-                                page-break-after: auto !important;
-                                page-break-inside: auto !important;
-                                page-break-before: auto !important;
-                            }
-                            * {
-                                page-break-inside: auto !important;
+                                padding: 5px;
+                                font-family: 'DejaVu Sans', sans-serif;
+                                color: #444;
+                                background-color: #fff;
+                                line-height: 1.3;
+                                font-size: 9.5px;
                             }
                             
-                            .company-info-header {
-                                display: table-cell;
-                                text-align: left;
-                                vertical-align: top;
-                                width: 40%;
-                            }
-                            .company-logo {
-                                max-width: 120px;
-                                max-height: 60px;
-                                margin-bottom: 3px;
-                            }
-                            .company-name {
-                                font-size: 0.85em;
+                            /* Typography */
+                            .serif-title {
+                                font-family: 'DejaVu Serif', serif;
+                                color: #856404; /* Darker gold for better readability */
+                                font-size: 22px;
                                 font-weight: bold;
-                                color: #333;
-                                line-height: 1.3;
+                                margin: 0;
+                                line-height: 1;
                             }
-                            .user-info-wrapper {
-                                display: table;
+                            .sub-title {
+                                color: #9CA3AF;
+                                font-size: 8px;
+                                margin-top: 3px;
+                                text-transform: uppercase;
+                                letter-spacing: 1.2px;
+                            }
+                            
+                            /* Common Header styles */
+                            .section-header {
+                                margin-bottom: 12px;
+                                padding-bottom: 8px;
+                                border-bottom: 1px solid #F3F4F6;
+                            }
+                            
+                            /* Card Layout */
+                            .layout-table {
                                 width: 100%;
-                                margin-bottom: 6px;
+                                border-collapse: separate;
+                                border-spacing: 12px 0;
+                                margin: 0 -12px 15px -12px;
+                            }
+                            .card {
+                                background: #F9FAFB;
+                                border-radius: 6px;
+                                padding: 10px;
+                                vertical-align: top;
+                                border: 1px solid #E5E7EB;
+                            }
+                            .full-card {
+                                width: 100%;
+                                background: #F9FAFB;
+                                border-radius: 6px;
+                                padding: 10px;
+                                margin-bottom: 10px;
+                                border: 1px solid #E5E7EB;
+                                box-sizing: border-box;
+                            }
+                            
+                            /* Info Components */
+                            .info-label { color: #888; font-size: 9px; }
+                            .info-value { color: #222; font-weight: 600; text-align: right; }
+                            .card-title {
+                                color: #856404;
+                                font-size: 10px;
+                                font-weight: bold;
+                                text-transform: uppercase;
+                                margin-bottom: 10px;
+                                letter-spacing: 0.5px;
+                            }
+                            
+                            /* Financial Bar */
+                            .price-highlight-bar {
+                                background: #FFFBEB;
+                                border: 1px solid #FFE082;
+                                border-radius: 6px;
+                                padding: 8px 15px;
                                 margin-top: 8px;
                             }
-                            .user-info-header {
-                                display: table-cell;
-                                text-align: right;
-                                vertical-align: top;
-                                font-size: 0.85em;
-                                line-height: 1.4;
-                                padding: 3px 0;
-                                width: 40%;
+                            .price-label { color: #856404; font-weight: bold; font-size: 8.5px; text-transform: uppercase; }
+                            .price-value { color: #856404; font-size: 18px; font-weight: 800; float: right; margin-top: -3px; }
+
+                            /* PREMIUM TIMELINE TABLE STYLE */
+                            .timeline-section {
+                                background: #FFFFFF;
+                                border: 1px solid #FFE082;
+                                border-radius: 12px;
+                                padding: 15px;
+                                margin-top: 15px;
+                                position: relative;
                             }
-                            .user-info-header strong {
+                            .timeline-title-area {
+                                margin-bottom: 15px;
+                            }
+                            .timeline-title {
                                 color: #333;
-                                font-size: 1.05em;
-                            }
-                            .user-info-header div {
-                                margin-bottom: 1px;
-                            }
-                            .property-header {
-                                background-color: #ffc107;
-                                padding: 5px;
-                                margin-top: 2px;
-                                margin-bottom: 5px;
-                                border-radius: 2px;
-                                display: flex;
-                                justify-content: space-between;
-                                align-items: center;
-                                flex-wrap: nowrap;
-                            }
-                            .property-section {
-                                margin-bottom: 5px;
-                            }
-                            .property-table {
-                                width: 100%;
-                                border-collapse: collapse;
-                                margin-bottom: 4px;
-                            }
-                            .property-table th {
-                                background-color: #f8f9fa;
-                                padding: 2px 4px;
-                                text-align: left;
-                                border: 1px solid #dee2e6;
+                                font-size: 13px;
                                 font-weight: bold;
-                                font-size: 0.9em;
+                                display: block;
                             }
-                            .property-table td {
-                                padding: 2px 4px;
-                                border: 1px solid #dee2e6;
-                                font-size: 0.9em;
+                            .timeline-subtitle {
+                                color: #999;
+                                font-size: 8.5px;
+                                display: block;
+                                margin-top: 2px;
                             }
                             
-                            /* Payment Timeline Specific Styles */
-                            .payment-timeline-table {
+                            .timeline-table {
                                 width: 100%;
                                 border-collapse: collapse;
-                                margin-bottom: 3px;
                             }
-                            .payment-timeline-table th {
-                                background-color: #ffc107;
-                                padding: 2px 3px;
-                                text-align: center;
-                                border: 1px solid #dee2e6;
-                                font-weight: bold;
-                                font-size: 0.75em;
+                            .timeline-table th {
+                                padding: 5px 8px;
+                                text-align: left;
+                                color: #888;
+                                font-size: 8px;
+                                font-weight: 600;
+                                text-transform: uppercase;
+                                border-bottom: 1px solid #F3F4F6;
+                                background: transparent;
                             }
-                            .payment-timeline-table td {
-                                padding: 4px 3px;
-                                border: 1px solid #dee2e6;
-                                font-size: 0.75em;
+                            .timeline-table td {
+                                padding: 5px 8px;
+                                font-size: 9px;
+                                vertical-align: middle;
+                                border-bottom: 1px solid #F9FAFB;
+                            }
+                            
+                            /* Dot indicators */
+                            .dot {
+                                height: 6px;
+                                width: 6px;
+                                border-radius: 50%;
+                                display: inline-block;
+                                margin-right: 8px;
                                 vertical-align: middle;
                             }
-                            .payment-timeline-table .section-title {
-                                padding: 3px 4px;
-                                font-size: 0.85em;
-                            }
-                            .section-title {
-                                background-color: #ffc107;
-                                padding: 6px 8px;
-                                margin-bottom: 5px;
+                            .dot-green { background-color: #4ADE80; }
+                            .dot-grey { background-color: #D1D5DB; }
+                            .dot-gold { background-color: #FFE082; }
+                            
+                            /* Bank column styling */
+                            .bank-amount {
+                                color: #856404;
                                 font-weight: bold;
-                                border-radius: 2px;
+                                font-size: 10px;
+                                display: block;
+                                text-align: right;
                             }
-                            .badge {
-                                display: inline-block;
-                                padding: 3px 8px;
-                                border-radius: 2px;
+                            .bank-note {
+                                color: #999;
+                                font-size: 8px;
+                                display: block;
+                                text-align: right;
+                                margin-top: 2px;
+                            }
+                            
+                            /* Total Bar */
+                            .total-footer {
+                                background: #FFE082;
+                                border-radius: 8px;
+                                padding: 10px 15px;
+                                margin-top: 8px;
+                                display: table;
+                                width: 100%;
+                                box-sizing: border-box;
+                            }
+                            .total-label { color: #856404; font-weight: bold; font-size: 11px; text-transform: uppercase; display: table-cell; vertical-align: middle; }
+                            .total-values { text-align: right; display: table-cell; vertical-align: middle; }
+                            .total-val-item { display: inline-block; margin-left: 25px; }
+                            .gold-text { color: #000; font-weight: 800; }
+                            .percentage-badge {
+                                background: #000;
+                                color: #FFE082;
+                                padding: 3px 10px;
+                                border-radius: 12px;
+                                font-size: 8px;
                                 font-weight: bold;
-                                color: white;
+                                margin-left: 15px;
                             }
-                            .badge-success { background-color: #28a745; }
-                            .badge-danger { background-color: #dc3545; }
+                            
+                            .clearfix:after { content: ""; display: table; clear: both; }
                             .text-right { text-align: right; }
-                            .text-center { text-align: center; }
-                            .fw-bold { font-weight: bold; }
                         </style>
                         
-                        
-                        <!-- Main Container with Padding -->
-                        <div style="padding: 12px;">
-                        
-                        <!-- Header with Company Logo and User Info -->
-                        <t t-set="current_user" t-value="env.user"/>
-                        <t t-set="company" t-value="env.company"/>
-                        <div class="user-info-wrapper" style="padding-top:10px; padding-y:20px">
-                            <!-- Company Logo and Name (Left) -->
-                            <div class="company-info-header">
-                                <div t-if="company.logo">
-                                    <img t-att-src="image_data_uri(company.logo)" 
-                                         class="company-logo" 
-                                         t-att-alt="company.name"/>
-                                </div>
-                                <div class="company-name">
-<!--                                    <t t-esc="company.name"/>-->
-                                </div>
-                            </div>
-                            
-                            <!-- User Info (Right) -->
-                            <div class="user-info-header">
-                                <div><strong><t t-esc="current_user.name or 'N/A'"/></strong></div>
-                                <div t-if="current_user.phone">
-                                    <i class="fa fa-phone"></i> 
-                                    <t t-esc="current_user.phone"/>
-                                </div>
-                                <div t-if="current_user.email">
-                                    <i class="fa fa-envelope"></i> 
-                                    <t t-esc="current_user.email"/>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Header -->
-                        <div class="property-header">
-                            <span style="font-size: 1.5em; font-weight: bold; display: inline-block;">
-                                Mã căn: <t t-esc="product.name"/>
-                            </span>
-                            <span style="display: inline-block;">
-                                <t t-if="product.is_sold">
-                                    <span class="badge badge-danger">ĐÃ BÁN</span>
-                                </t>
-                                <t t-else="">
-                                    <span class="badge badge-success">CÒN TRỐNG</span>
-                                </t>
-                            </span>
-                        </div>
-                        
-                        <!-- Basic Information and Payment Information (2 columns) -->
-                        <div style="display: table; width: 100%; margin-bottom: 20px;">
-                            <!-- Left Column: Basic Information -->
-                            <div style="display: table-cell; width: 48%; vertical-align: top; padding-right: 2%;">
-                                <table class="property-table">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="2" class="section-title" style="text-align: center;">THÔNG TIN CƠ BẢN</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td style="width: 40%;"><strong>Mã căn</strong></td>
-                                            <td><t t-esc="product.name"/></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Loại Hình</strong></td>
-                                            <td>
-                                                <t t-if="product.property_type == 'townhouse_garden'">Liền kề vườn</t>
-                                                <t t-elif="product.property_type == 'detached_villa'">Biệt thự đơn lập</t>
-                                                <t t-elif="product.property_type == 'semi_detached_villa'">Biệt thự song lập</t>
-                                                <t t-elif="product.property_type == 'shophouse'">Shophouse</t>
-                                                <t t-else="">---</t>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Hướng</strong></td>
-                                            <td>
-                                                <t t-if="product.direction == 'north'">Bắc</t>
-                                                <t t-elif="product.direction == 'northeast'">Đông Bắc</t>
-                                                <t t-elif="product.direction == 'east'">Đông</t>
-                                                <t t-elif="product.direction == 'southeast'">Đông Nam</t>
-                                                <t t-elif="product.direction == 'south'">Nam</t>
-                                                <t t-elif="product.direction == 'southwest'">Tây Nam</t>
-                                                <t t-elif="product.direction == 'west'">Tây</t>
-                                                <t t-elif="product.direction == 'northwest'">Tây Bắc</t>
-                                                <t t-elif="product.direction == 'north_east'">Bắc - Đông</t>
-                                                <t t-elif="product.direction == 'east_west'">Đông - Tây</t>
-                                                <t t-elif="product.direction == 'south_north'">Nam - Bắc</t>
-                                                <t t-elif="product.direction == 'south_east'">Nam - Đông</t>
-                                                <t t-elif="product.direction == 'west_east'">Tây - Đông</t>
-                                                <t t-elif="product.direction == 'southwest_northeast'">Tây Nam - Đông Bắc</t>
-                                                <t t-else="">---</t>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>DT đất</strong></td>
-                                            <td><t t-esc="product.area"/> m²</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>DT xây dựng</strong></td>
-                                            <td><t t-esc="product.construction_area or 0"/> m²</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <!-- Right Column: Payment Information -->
-                            <div style="display: table-cell; width: 48%; vertical-align: top; padding-left: 2%;">
-                                <table class="property-table">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="2" class="section-title" style="text-align: center;">THÔNG TIN THANH TOÁN</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td style="width: 40%;"><strong>Tên TK</strong></td>
-                                            <td><t t-esc="product.env.company.bank_account_holder_name or '---'"/></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Ngân hàng</strong></td>
-                                            <td><t t-esc="product.env.company.bank_name or '---'"/></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Số TK</strong></td>
-                                            <td class="fw-bold"><t t-esc="product.env.company.bank_account_number or '---'"/></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Swift Code</strong></td>
-                                            <td class="fw-bold"><t t-esc="product.env.company.swift_code or '---'"/></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Nội dung thanh toán</strong></td>
-                                            <td>
-                                                <t t-set="site_plan_name" t-value="product.site_plan_polygon_ids[0].site_plan_id.name if product.site_plan_polygon_ids and product.site_plan_polygon_ids[0].site_plan_id else 'N/A'"/>
-                                                Thanh toán căn <t t-esc="product.name"/> <t t-esc="site_plan_name"/>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        
-                        <!-- Financial Information (Full Width) -->
-                        <div class="property-section">
-                            <table class="property-table">
-                                <thead>
-                                    <tr>
-                                        <th colspan="2" class="section-title" style="text-align: center;">THÔNG TIN TÀI CHÍNH</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td style="width: 40%;"><strong>Giá chưa thuế SDĐ</strong></td>
-                                        <td class="text-right"><t t-esc="'{:,.0f}'.format(product.price_exclude_land_tax or 0)"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Thuế SDĐ</strong></td>
-                                        <td class="text-right"><t t-esc="'{:,.0f}'.format(product.land_tax or 0)"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Giá gồm SDĐ</strong></td>
-                                        <td class="text-right"><t t-esc="'{:,.0f}'.format(product.price_include_land_tax or 0)"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>VAT</strong></td>
-                                        <td class="text-right"><t t-esc="'{:,.0f}'.format(product.vat_tax or 0)"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Quỹ bảo trì</strong></td>
-                                        <td class="text-right"><t t-esc="'{:,.0f}'.format(product.maintenance_fee or 0)"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Đặt Cọc</strong></td>
-                                        <td class="text-right fw-bold"><t t-esc="'{:,.0f}'.format(product.deposit)"/></td>
-                                    </tr>
-                                    <tr style="background-color: #fff3cd;">
-                                        <td><strong>Giá niêm yết</strong></td>
-                                        <td class="text-right fw-bold" style="font-size: 1.2em; color: #dc3545;">
-                                            <t t-esc="'{:,.0f}'.format(product.list_price)"/>
-                                        </td>
-                                    </tr>
-                                </tbody>
+                        <!-- Header Logos & User -->
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+                            <tr>
+                                <td style="width: 50%; vertical-align: top; padding-left: 25px;">
+                                    <t t-set="company" t-value="env.company"/>
+                                    <t t-if="company.logo">
+                                        <img t-att-src="image_data_uri(company.logo)" style="max-height: 40px; max-width: 140px;"/>
+                                    </t>
+                                </td>
+                                <td style="width: 50%; text-align: right; vertical-align: top;">
+                                    <t t-set="user" t-value="env.user"/>
+                                    <div style="font-size: 8px; color: #666; line-height: 1.3;">
+                                        <strong style="color: #333; font-size: 10px; display: block; margin-bottom: 1px;"><t t-esc="user.name"/></strong>
+                                        <t t-set="phone" t-value="user.phone or user.mobile or user.partner_id.phone or user.partner_id.mobile"/>
+                                        <t t-if="phone">SĐT: <t t-esc="phone"/> | </t>
+                                        <t t-if="user.email"><t t-esc="user.email"/></t>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="section-header" style="margin-bottom: 10px;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="vertical-align: bottom;">
+                                        <h1 class="serif-title" style="margin-bottom: 0; padding-left:30px;"><t t-esc="product.name"/></h1>
+                                        <div class="sub-title" style="margin-top: 1px; padding-left:30px;">Hồng Hạc City • Khu đô thị cao cấp</div>
+                                    </td>
+                                    <td style="text-align: right; vertical-align: bottom;">
+                                        <div t-attf-style="display: inline-block; padding: 4px 12px; border-radius: 5px; font-weight: bold; font-size: 10px; border: 1px solid #{'#DAFBE1' if not product.is_sold else '#FEE2E2'}; background-color: #{'#F0FDF4' if not product.is_sold else '#FEF2F2'}; color: #{'#166534' if not product.is_sold else '#DC2626'}; text-transform: uppercase;">
+                                            <t t-if="product.is_sold">Đã bán</t>
+                                            <t t-else="">Còn trống</t>
+                                        </div>
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                         
-                        <!-- Payment Timeline -->
-                        <t t-if="product.payment_timeline_ids">
-                            <div class="property-section" style="margin-top: 8px;">
-                                <table class="payment-timeline-table">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="8" class="section-title" style="text-align: center;">LỊCH TRÌNH THANH TOÁN</th>
-                                        </tr>
-                                        <tr style="background-color: #ffc107;">
-                                            <th class="text-center" rowspan="2">Kỳ thanh toán</th>
-                                            <th class="text-center" rowspan="2">Ngày thanh toán</th>
-                                            <th class="text-center" rowspan="2">Số tiền thanh toán</th>
-                                            <th class="text-center" rowspan="2">Tiền nhà</th>
-                                            <th class="text-center" rowspan="2">VAT</th>
-                                            <th class="text-center" rowspan="2">TỔNG TIỀN</th>
-                                            <th class="text-center" colspan="2">HỖ TRỢ NGÂN HÀNG</th>
-                                        </tr>
-                                        <tr style="background-color: #ffc107;">
-                                            <th class="text-center">Số tiền</th>
-                                            <th class="text-center">Ghi chú</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <t t-set="processed_notes" t-value="[]"/>
-                                        <t t-foreach="product.payment_timeline_ids" t-as="timeline">
-                                            <tr>
-                                                <td>
-                                                    <t t-if="timeline.type == 'dat_coc'">Đặt cọc</t>
-                                                    <t t-elif="timeline.type == 'trong_3_ngay'">Trong 3 ngày</t>
-                                                    <t t-elif="timeline.type == 'ky_hop_dong'">Ký Hợp Đồng</t>
-                                                    <t t-elif="timeline.type == 'dot_4'">Đợt 4</t>
-                                                    <t t-elif="timeline.type == 'dot_5'">Đợt 5</t>
-                                                    <t t-elif="timeline.type == 'dot_6'">Đợt 6</t>
-                                                    <t t-elif="timeline.type == 'dot_7'">Đợt 7</t>
-                                                    <t t-elif="timeline.type == 'dot_8'">Đợt 8</t>
-                                                    <t t-elif="timeline.type == 'dot_9'">Đợt 9</t>
-                                                    <t t-elif="timeline.type == 'giao_nha'">Giao nhà</t>
-                                                    <t t-elif="timeline.type == 'quy_bao_tri'">Quỹ bảo trì</t>
-                                                    <t t-elif="timeline.type == 'thong_bao_so_hong'">Thông báo sổ hồng</t>
-                                                    <t t-else=""><t t-esc="timeline.type"/></t>
-                                                </td>
-                                                <td class="text-center">
-                                                    <t t-if="timeline.date">
-                                                        <t t-esc="timeline.date.strftime('%d/%m/%Y')"/>
-                                                    </t>
-                                                </td>
-                                                <td><t t-esc="timeline.name"/></td>
-                                                <td class="text-right" style="font-size: 1.0em;">
-                                                    <t t-if="timeline.amount and timeline.amount > 0">
-                                                        <t t-esc="'{:,.0f}'.format(timeline.amount)"/>
-                                                    </t>
-                                                </td>
-                                                <td class="text-right">
-                                                    <t t-if="timeline.vat_amount and timeline.vat_amount > 0">
-                                                        <t t-esc="'{:,.0f}'.format(timeline.vat_amount)"/>
-                                                    </t>
-                                                </td>
-                                                <td class="text-right fw-bold" style="font-size: 1.0em;">
-                                                    <t t-if="timeline.total_amount and timeline.total_amount > 0">
-                                                        <t t-esc="'{:,.0f}'.format(timeline.total_amount)"/>
-                                                    </t>
-                                                </td>
-                                                
-                                                <!-- Bank Support Columns with Rowspan -->
-                                                <t t-if="timeline.bank_note not in processed_notes">
-                                                    <t t-set="group_lines" t-value="product.payment_timeline_ids.filtered(lambda l: l.bank_note == timeline.bank_note)"/>
-                                                    <t t-set="dummy" t-value="processed_notes.append(timeline.bank_note)"/>
-                                                    
-                                                    <td t-att-rowspan="len(group_lines)" 
-                                                        t-att-style="'background-color: #4dd0e1;' if timeline.type in ['dat_coc', 'quy_bao_tri'] else ''"
-                                                        class="text-right fw-bold"
-                                                        style="font-size: 1.0em;">
-                                                        <t t-set="note_total" t-value="sum(group_lines.mapped('bank_amount'))"/>
-                                                        <t t-if="note_total > 0">
-                                                            <t t-esc="'{:,.0f}'.format(note_total)"/>
-                                                        </t>
-                                                    </td>
-                                                    <td t-att-rowspan="len(group_lines)" class="fw-bold" style="color: #dc3545; font-size: 0.6em; line-height: 1.1;">
-                                                        <t t-esc="timeline.bank_note"/>
-                                                    </td>
-                                                </t>
-                                            </tr>
-                                        </t>
-                                    </tbody>
-                                    <tfoot style="background-color: #fff3cd; font-weight: bold;">
-                                        <tr>
-                                            <td colspan="3" class="text-center" style="color: #dc3545;">TỔNG GIÁ</td>
-                                            <td class="text-right"><t t-esc="'{:,.0f}'.format(sum(product.payment_timeline_ids.mapped('amount')))"/></td>
-                                            <td class="text-right"><t t-esc="'{:,.0f}'.format(sum(product.payment_timeline_ids.mapped('vat_amount')))"/></td>
-                                            <td class="text-right" style="color: #dc3545;"><t t-esc="'{:,.0f}'.format(sum(product.payment_timeline_ids.mapped('total_amount')))"/></td>
-                                            <td class="text-right"><t t-esc="'{:,.0f}'.format(sum(product.payment_timeline_ids.mapped('bank_amount')))"/></td>
-                                            <td class="text-center">100%</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                        </t>
+                        <table class="layout-table" style="margin-bottom: 10px;">
+                            <tr>
+                                <td class="card">
+                                    <div class="card-title" style="margin-bottom: 6px;">Thông Tin Cơ Bản</div>
+                                    <table style="width: 100%;">
+                                        <tr><td class="info-label">Loại hình</td><td class="info-value">
+                                            <t t-if="product.property_type == 'townhouse_garden'">Liền kề vườn</t>
+                                            <t t-elif="product.property_type == 'detached_villa'">Biệt thự đơn lập</t>
+                                            <t t-elif="product.property_type == 'semi_detached_villa'">Biệt thự song lập</t>
+                                            <t t-elif="product.property_type == 'shophouse'">Shophouse</t>
+                                            <t t-else="">---</t>
+                                        </td></tr>
+                                        <tr><td class="info-label">Hướng nhà</td><td class="info-value">
+                                            <t t-set="direction_map" t-value="{'north': 'Bắc', 'northeast': 'Đông Bắc', 'east': 'Đông', 'southeast': 'Đông Nam', 'south': 'Nam', 'southwest': 'Tây Nam', 'west': 'Tây', 'northwest': 'Tây Bắc'}"/>
+                                            <t t-esc="direction_map.get(product.direction, '---')"/>
+                                        </td></tr>
+                                        <tr><td class="info-label">Diện tích đất</td><td class="info-value"><t t-esc="product.area"/> m²</td></tr>
+                                        <tr><td class="info-label">D.Tích xây dựng</td><td class="info-value"><t t-esc="product.construction_area or 0"/> m²</td></tr>
+                                    </table>
+                                </td>
+                                <td class="card">
+                                    <div class="card-title" style="margin-bottom: 6px;">Thông Tin Thanh Toán</div>
+                                    <t t-set="bank_accounts" t-value="product.env.company.bank_account_ids.filtered(lambda a: a.active)"/>
+                                    <t t-set="bank" t-value="bank_accounts.filtered(lambda a: a.id == env.context.get('selected_bank_id'))[:1] or bank_accounts[:1]"/>
+                                    <div t-if="bank" class="clearfix">
+                                        <div t-attf-style="float: left; width: #{'72%' if bank.payment_qr_code else '100%'};">
+                                            <table style="width: 100%; border-collapse: collapse;">
+                                                <tr style="border-bottom: 1px solid #F9F9F9;"><td class="info-label" style="padding: 2px 0;">CHỦ TÀI KHOẢN</td><td class="info-value" style="font-size: 8px;"><t t-esc="bank.bank_account_holder_name"/></td></tr>
+                                                <tr style="border-bottom: 1px solid #F9F9F9;"><td class="info-label" style="padding: 2px 0;">SỐ TÀI KHOẢN</td><td class="info-value" style="font-size: 10px; color: #000;"><t t-esc="bank.bank_account_number"/></td></tr>
+                                                <tr style="border-bottom: 1px solid #F9F9F9;"><td class="info-label" style="padding: 2px 0;">NGÂN HÀNG</td><td class="info-value"><t t-esc="bank.bank_name"/></td></tr>
+                                                <tr><td class="info-label" style="padding: 2px 0;">SWIFT CODE</td><td class="info-value"><t t-esc="bank.swift_code or '---'"/></td></tr>
+                                            </table>
+                                        </div>
+                                        <div t-if="bank.payment_qr_code" style="float: right; width: 25%; text-align: right;">
+                                            <img t-att-src="image_data_uri(bank.payment_qr_code)" style="max-height: 100px; max-width: 100px; border: 1px solid #EEE; padding: 2px; background: white;"/>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
                         
-                        <!-- Discount Programs and Final Price (2 columns) -->
-                        <div style="display: table; width: 100%; margin-top: 8px;">
-                            <!-- Left Column: Discount Programs -->
-                            <div style="display: table-cell; width: 58%; vertical-align: top; padding-right: 2%;">
-                                <t t-if="product.selected_discount_ids">
-                                    <table class="property-table">
-                                        <thead>
-                                            <tr>
-                                                <th colspan="3" class="section-title" style="text-align: center; padding: 6px;">CHƯƠNG TRÌNH GIẢM GIÁ CÓ THỂ ÁP DỤNG</th>
-                                            </tr>
-                                            <tr style="background-color: #f8f9fa;">
-                                                <th class="text-center" style="width: 50%; padding: 3px 4px;">Tên chương trình</th>
-                                                <th class="text-center" style="width: 25%; padding: 3px 4px;">Loại</th>
-                                                <th class="text-center" style="width: 25%; padding: 3px 4px;">Giá trị</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <t t-foreach="product.selected_discount_ids" t-as="discount">
-                                                <tr>
-                                                    <td style="padding: 2px 4px;"><t t-esc="discount.name"/></td>
-                                                    <td class="text-center" style="padding: 2px 4px;">
-                                                        <t t-if="discount.discount_type == 'percent'">Phần trăm</t>
-                                                        <t t-else="">Số tiền</t>
-                                                    </td>
-                                                    <td class="text-right fw-bold" style="padding: 2px 4px; color: #28a745;">
-                                                        <t t-if="discount.discount_type == 'percent'">
-                                                            <t t-esc="discount.discount_value"/>%
-                                                        </t>
-                                                        <t t-else="">
-                                                            <t t-esc="'{:,.0f}'.format(discount.discount_value)"/>
-                                                        </t>
-                                                    </td>
-                                                </tr>
-                                            </t>
-                                        </tbody>
-                                    </table>
-                                </t>
-                                <t t-else="">
-                                    <table class="property-table">
-                                        <thead>
-                                            <tr>
-                                                <th class="section-title" style="text-align: center; padding: 6px;">CHƯƠNG TRÌNH GIẢM GIÁ CÓ THỂ ÁP DỤNG</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td class="text-center" style="padding: 8px; color: #6c757d; font-style: italic;">
-                                                    Chưa chọn chương trình giảm giá nào
-                                                    <br/>
-                                                    <small>(Vào form sản phẩm → Tab "Cấu hình Giảm Giá" → Chọn "Giảm giá đã chọn")</small>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </t>
-                            </div>
-                            
-                            <!-- Right Column: Final Price -->
-                            <div style="display: table-cell; width: 38%; vertical-align: top; padding-left: 2%;">
-                                <table class="property-table">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="2" class="section-title" style="text-align: center; padding: 6px;">GIÁ CUỐI CÙNG</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td style="width: 50%; padding: 3px 6px;"><strong>Giá niêm yết</strong></td>
-                                            <td class="text-right" style="padding: 3px 6px;">
-                                                <t t-esc="'{:,.0f}'.format(product.list_price)"/>
-                                            </td>
-                                        </tr>
-                                        <t t-set="total_discount" t-value="0"/>
-                                        <t t-foreach="product.selected_discount_ids" t-as="discount">
-                                            <t t-if="discount.discount_type == 'percent'">
-                                                <t t-set="total_discount" t-value="total_discount + (product.list_price * discount.discount_value / 100)"/>
-                                            </t>
-                                            <t t-else="">
-                                                <t t-set="total_discount" t-value="total_discount + discount.discount_value"/>
-                                            </t>
-                                        </t>
-                                        <tr t-if="total_discount > 0">
-                                            <td style="padding: 3px 6px;"><strong>Tổng giảm giá</strong></td>
-                                            <td class="text-right" style="padding: 3px 6px; color: #dc3545; font-weight: bold;">
-                                                - <t t-esc="'{:,.0f}'.format(total_discount)"/>
-                                            </td>
-                                        </tr>
-                                        <tr style="background-color: #28a745; color: white;">
-                                            <td style="padding: 6px; font-weight: bold; font-size: 1.1em;">SAU GIẢM GIÁ</td>
-                                            <td class="text-right" style="padding: 6px; font-weight: bold; font-size: 1.2em;">
-                                                <t t-esc="'{:,.0f}'.format(product.list_price - total_discount)"/>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <!-- Financial Box -->
+                        <div class="full-card">
+                            <div class="card-title">Thông Tin Tài Chính (Dự kiến)</div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="width: 25%;" class="info-label">Giá (Chưa thuế SDĐ)</td>
+                                    <td style="width: 25%;" class="info-value text-right"><t t-esc="'{:,.0f}'.format(product.price_exclude_land_tax or 0)"/> VNĐ</td>
+                                    <td style="width: 10%;"></td>
+                                    <td style="width: 20%;" class="info-label">Quỹ bảo trì</td>
+                                    <td style="width: 20%;" class="info-value text-right"><t t-esc="'{:,.0f}'.format(product.maintenance_fee or 0)"/> VNĐ</td>
+                                </tr>
+                                <tr>
+                                    <td class="info-label">Thuế sử dụng đất</td>
+                                    <td class="info-value text-right"><t t-esc="'{:,.0f}'.format(product.land_tax or 0)"/> VNĐ</td>
+                                    <td></td>
+                                    <td class="info-label">Phí quản lý</td>
+                                    <td class="info-value text-right"><t t-esc="'{:,.0f}'.format(product.management_fee or 0)"/> VNĐ</td>
+                                </tr>
+                                <tr>
+                                    <td class="info-label">Số tiền đặt cọc</td>
+                                    <td class="info-value text-right"><t t-esc="'{:,.0f}'.format(product.deposit or 0)"/> VNĐ</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                            <div class="price-highlight-bar clearfix">
+                                <span class="price-label">GIÁ NIÊM YẾT CÔNG BỐ</span>
+                                <span class="price-value">
+                                    <t t-esc="'{:,.0f}'.format(product.list_price)"/> <small style="font-size: 10px; vertical-align: baseline;">VNĐ</small>
+                                </span>
                             </div>
                         </div>
-                        </div> <!-- End Main Container with Padding -->
+                        
+                        <!-- Discounts Section (Only if selected) -->
+                        <div class="full-card" t-if="product.selected_discount_ids" style="margin-top: -5px; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0; background: #FFFDF9;">
+                            <div class="card-title" style="color: #856404; font-size: 9px;">Ưu đãi &amp; Chiết khấu áp dụng</div>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <t t-foreach="product.selected_discount_ids" t-as="discount">
+                                    <tr>
+                                        <td class="info-label" style="padding: 3px 0;"><t t-esc="discount.name"/></td>
+                                        <td class="info-value text-right" style="color: #DC2626; padding: 3px 0;">
+                                            <t t-if="discount.discount_type == 'percent'">
+                                                - <t t-esc="'{:,.0f}'.format(product.list_price * discount.discount_value / 100.0)"/> VNĐ (<t t-esc="discount.discount_value"/>%)
+                                            </t>
+                                            <t t-else="">
+                                                - <t t-esc="'{:,.0f}'.format(discount.discount_value)"/> VNĐ
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </table>
+                            <div class="price-highlight-bar clearfix" style="margin-top: 8px; background: #FEF3C7; border-color: #FCD34D;">
+                                <span class="price-label" style="color: #92400E;">GIÁ SAU CHIẾT KHẤU</span>
+                                <span class="price-value" style="color: #92400E; font-size: 20px;">
+                                    <t t-esc="'{:,.0f}'.format(product.final_price)"/> <small style="font-size: 9px; vertical-align: baseline;">VNĐ</small>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Timeline Section (Web Style) -->
+                        <div class="timeline-section">
+                            <div class="timeline-title-area">
+                                <span class="timeline-title">Lịch Trình Thanh Toán</span>
+                                <span class="timeline-subtitle">Chi tiết từng đợt thanh toán cho sản phẩm <t t-esc="product.name"/></span>
+                            </div>
+                            
+                            <table class="timeline-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 20%;">KỲ THANH TOÁN</th>
+                                        <th style="width: 12%;">NGÀY</th>
+                                        <th style="width: 20%;">MÔ TẢ</th>
+                                        <th style="width: 12%; text-align: right;">TIỀN NHÀ</th>
+                                        <th style="width: 10%; text-align: right;">VAT</th>
+                                        <th style="width: 12%; text-align: right;">TỔNG TIỀN</th>
+                                        <th style="width: 14%; text-align: right;">HỖ TRỢ NH</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="rows" t-value="product.payment_timeline_ids"/>
+                                    <t t-foreach="rows" t-as="timeline">
+                                        <t t-set="current_idx" t-value="rows.ids.index(timeline.id)"/>
+                                        <t t-set="is_first_in_group" t-value="False"/>
+                                        <t t-set="group_size" t-value="0"/>
+                                        
+                                        <t t-if="current_idx == 0 or rows[current_idx-1].bank_note != timeline.bank_note">
+                                            <t t-set="is_first_in_group" t-value="True"/>
+                                            <!-- Group size calculation -->
+                                            <t t-set="temp_rows" t-value="rows[current_idx:]"/>
+                                            <t t-foreach="temp_rows" t-as="next_row">
+                                                <t t-if="next_row.bank_note == timeline.bank_note">
+                                                    <t t-set="group_size" t-value="group_size + 1"/>
+                                                </t>
+                                                <t t-else=""><t t-break="1"/></t>
+                                            </t>
+                                        </t>
+
+                                        <tr>
+                                            <td>
+                                                <span t-attf-class="dot #{'dot-green' if timeline.type == 'dat_coc' else 'dot-gold' if timeline.type == 'giao_nha' else 'dot-grey'}"></span>
+                                                <span style="font-weight: 600;">
+                                                    <t t-set="type_labels" t-value="{'dat_coc': 'Đặt cọc', 'trong_3_ngay': 'Trong 3 ngày', 'ky_hop_dong': 'Ký Hợp Đồng', 'giao_nha': 'Giao nhà', 'quy_bao_tri': 'Quỹ bảo trì', 'thong_bao_so_hong': 'Thông báo sổ'}"/>
+                                                    <t t-esc="type_labels.get(timeline.type, timeline.type)"/>
+                                                </span>
+                                            </td>
+                                            <td style="color: #666;"><t t-if="timeline.date" t-esc="timeline.date.strftime('%d/%m/%Y')"/><t t-else="">---</t></td>
+                                            <td style="color: #888;"><t t-esc="timeline.name"/></td>
+                                            <td class="text-right" style="color: #555;"><t t-esc="'{:,.0f}'.format(timeline.amount)"/></td>
+                                            <td class="text-right" style="color: #999;"><t t-if="timeline.vat_amount > 0" t-esc="'{:,.0f}'.format(timeline.vat_amount)"/><t t-else="">-</t></td>
+                                            <td class="text-right" style="font-weight: 600;"><t t-esc="'{:,.0f}'.format(timeline.total_amount)"/></td>
+                                            
+                                            <!-- Grouped Bank Data -->
+                                            <t t-if="is_first_in_group">
+                                                <td t-att-rowspan="group_size" style="vertical-align: middle;">
+                                                    <t t-set="sum_bank" t-value="sum(rows[current_idx:current_idx+group_size].mapped('bank_amount'))"/>
+                                                    <t t-if="sum_bank > 0">
+                                                        <span class="bank-amount"><t t-esc="'{:,.0f}'.format(sum_bank)"/></span>
+                                                        <span class="bank-note"><t t-esc="timeline.bank_note"/></span>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                            
+                            <!-- Total Footer Bar -->
+                            <div class="total-footer">
+                                <div class="total-label">TỔNG CỘNG</div>
+                                <div class="total-values">
+                                    <div class="total-val-item">
+                                        <span class="info-label" style="display: block; text-align: left;">TIỀN NHÀ</span>
+                                        <span class="gold-text"><t t-esc="'{:,.0f}'.format(sum(rows.mapped('amount')))"/></span>
+                                    </div>
+                                    <div class="total-val-item">
+                                        <span class="info-label" style="display: block; text-align: left;">THUẾ VAT</span>
+                                        <span class="gold-text"><t t-esc="'{:,.0f}'.format(sum(rows.mapped('vat_amount')))"/></span>
+                                    </div>
+                                    <div class="total-val-item">
+                                        <span class="info-label" style="display: block; text-align: left;">TỔNG THANH TOÁN</span>
+                                        <span class="gold-text" style="font-size: 14px;"><t t-esc="'{:,.0f}'.format(sum(rows.mapped('total_amount')))"/></span>
+                                    </div>
+                                    <span class="percentage-badge">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
             </t>
         </t>
     </template>
-
 </odoo>

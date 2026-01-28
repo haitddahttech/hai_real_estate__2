@@ -11,3 +11,5 @@ access_payment_timeline_system,access.payment.timeline.system,model_payment_time
 access_product_discount_config_portal,access.product.discount.config.portal,model_product_discount_config,base.group_portal,1,0,0,0
 access_product_discount_config_user,access.product.discount.config.user,model_product_discount_config,base.group_user,1,0,0,0
 access_product_discount_config_system,access.product.discount.config.system,model_product_discount_config,base.group_system,1,1,1,1
+access_res_company_bank_user,res.company.bank.user,model_res_company_bank,base.group_user,1,1,1,1
+access_res_company_bank_portal,res.company.bank.portal,model_res_company_bank,base.group_portal,1,0,0,0

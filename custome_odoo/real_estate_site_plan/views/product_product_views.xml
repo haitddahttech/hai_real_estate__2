@@ -60,6 +60,7 @@
                         <group>
                             <field name="vat_tax" readonly="0" force_save="1" on_change="1"/>
                             <field name="maintenance_fee" force_save="1" on_change="1"/>
+                            <field name="management_fee" force_save="1"/>
                         </group>
                     </group>
                     <group string="Lịch trình thanh toán">

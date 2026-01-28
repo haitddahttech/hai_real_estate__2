@@ -344,8 +344,20 @@
 
             // Stroke
             ctx.strokeStyle = isSelected ? '#e74c3c' : strokeColor;
-            ctx.lineWidth = (isSelected ? 1 : 0.5) / state.scale;
+            const baseStrokeWidth = polygon.product && polygon.product.is_decoration ? 0.6 : 2.0;
+
+            if (isSelected) {
+                // Dashed line effect for selection
+                ctx.setLineDash([8 / state.scale, 4 / state.scale]);
+            } else {
+                ctx.setLineDash([]);
+            }
+
+            ctx.lineWidth = (isSelected ? baseStrokeWidth * 1.5 : baseStrokeWidth) / state.scale;
             ctx.stroke();
+
+            // Always reset line dash after stroke
+            ctx.setLineDash([]);
 
             // Draw label - DISABLED: No longer showing polygon names on portal view
             // const centerX = points.reduce((sum, p) => sum + p.x * scaleX, 0) / points.length;
@@ -436,7 +448,7 @@
                     arrow.style.left = (extendedStartX - wrapperRect.left) + 'px';
                     arrow.style.top = (extendedStartY - wrapperRect.top) + 'px';
                     arrow.style.width = length + 'px';
-                    arrow.style.height = '1.5px';
+                    arrow.style.height = '4px';
                     arrow.style.transform = `rotate(${arrowAngle}rad)`;
                     arrow.style.transformOrigin = '0 50%';
                     arrow.style.background = '#e74c3c';
@@ -592,8 +604,8 @@
             popup.className = 'card shadow-lg property-popup';
             popup.style.position = 'absolute';
             popup.style.zIndex = '1000';
-            popup.style.maxWidth = product.is_decoration ? '600px' : '300px';
-            popup.style.minWidth = product.is_decoration ? '520px' : '260px';
+            popup.style.maxWidth = product.is_decoration ? '450px' : '300px';
+            popup.style.minWidth = product.is_decoration ? '350px' : '260px';
             popup.style.cursor = 'move';
             popup.style.overflow = 'visible';
             popup.style.setProperty('border', `1.5px solid ${polygon.color || '#3498db'}`, 'important');
@@ -715,7 +727,7 @@
                         </div>
                     </div>
                     <div class="card-body pt-2 pb-3">
-                        ${product.decoration_note ? `<div class="decoration-note mb-3 p-2 bg-light border-start border-4 border-info text-dark" style="font-size: 0.9rem; line-height: 1.4; border-radius: 4px;">${product.decoration_note}</div>` : ''}
+                        ${product.decoration_note ? `<div class="decoration-note mb-3 p-2 bg-light border-start border-4 border-info text-dark" style="font-size: 0.725rem; line-height: 1.4; border-radius: 4px;">${product.decoration_note}</div>` : ''}
                         ${imageHtml || '<p class="text-muted small mb-0">Không có ảnh minh họa</p>'}
                     </div>
                 `;

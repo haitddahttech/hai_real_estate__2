@@ -8,5 +8,6 @@ from . import product_category
 from . import payment_timeline
 from . import res_users
 from . import res_company
+from . import res_company_bank
 from . import site_plan_menu
 from . import discount_config

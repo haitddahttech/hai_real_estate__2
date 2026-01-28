@@ -188,7 +188,7 @@ class SitePlanPortal(CustomerPortal):
             return request.redirect('/my')
 
     @http.route(['/my/property/<int:product_id>/download-pdf'], type='http', auth='user', website=True)
-    def portal_property_detail_pdf(self, product_id, **kw):
+    def portal_property_detail_pdf(self, product_id, bank_id=None, **kw):
         """Download property detail as PDF"""
         try:
             product = request.env['product.template'].browse(product_id)
@@ -215,8 +215,16 @@ class SitePlanPortal(CustomerPortal):
                 _logger.error("Property detail report not found")
                 return request.redirect('/my')
             
+            # Prepare context for rendering
+            context = dict(request.env.context)
+            if bank_id:
+                context['selected_bank_id'] = int(bank_id)
+            
             # Render the PDF
-            pdf_content, _ = report._render_qweb_pdf(report_ref='real_estate_site_plan.report_property_detail_document', res_ids=product_id)
+            pdf_content, _ = report.with_context(context)._render_qweb_pdf(
+                report_ref='real_estate_site_plan.report_property_detail_document', 
+                res_ids=product_id
+            )
             
             pdfhttpheaders = [
                 ('Content-Type', 'application/pdf'),

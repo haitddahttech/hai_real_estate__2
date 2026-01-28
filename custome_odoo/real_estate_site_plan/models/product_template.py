@@ -112,6 +112,11 @@ class ProductTemplate(models.Model):
         currency_field='currency_id',
     )
 
+    management_fee = fields.Monetary(
+        string='Phí quản lý',
+        currency_field='currency_id',
+    )
+
     price_include_land_tax = fields.Monetary(
         string='Giá nhà bao gồm thuế SDĐ',
         currency_field='currency_id',
@@ -361,10 +366,16 @@ class ProductTemplate(models.Model):
         for product in self:
             product.is_real_estate = bool(product.site_plan_polygon_ids)
     
-    @api.depends('list_price')
+    @api.depends('list_price', 'selected_discount_ids', 'selected_discount_ids.discount_type', 'selected_discount_ids.discount_value')
     def _compute_final_price(self):
         for product in self:
-            product.final_price = product.list_price
+            total_discount = 0.0
+            for discount in product.selected_discount_ids:
+                if discount.discount_type == 'percent':
+                    total_discount += (product.list_price * (discount.discount_value / 100.0))
+                else:
+                    total_discount += discount.discount_value
+            product.final_price = product.list_price - total_discount
 
     @api.depends('categ_id', 'categ_id.real_estate_color')
     def _compute_real_estate_color(self):

@@ -258,6 +258,20 @@
                         background: rgba(0, 0, 0, 0.5);
                     }
                 }
+                
+                /* Bank Tabs Custom Active Color */
+                #bankTabs .nav-link.active {
+                    background-color: #ffe082 !important;
+                    color: #212529 !important;
+                    font-weight: bold;
+                }
+                #bankTabs .nav-link {
+                    color: #6c757d;
+                    border-radius: 0;
+                }
+                #bankTabs .nav-link:hover:not(.active) {
+                    background-color: #f8f9fa;
+                }
             </style>
             
             <div class="container mt-4">
@@ -308,9 +322,9 @@
                             <div class="card-body">
 
                                 <!-- Modern Property Details - Three Columns -->
-                                <div class="row g-4 mt-2">
+                                <div class="row g-2 mt-2">
                                     <!-- Column 1: Basic Info (Smaller) -->
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="card border-0 shadow-sm rounded-3 overflow-hidden h-100">
                                             <div class="card-header bg-light border-bottom py-2">
                                                 <h6 class="mb-0 text-uppercase fw-bold text-dark ps-2" style="font-size: 0.85rem;">Thông Tin Cơ Bản</h6>
@@ -365,7 +379,7 @@
                                     </div>
 
                                     <!-- Column 2: Financial Info (MOVED UP) -->
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="card border-0 shadow-sm rounded-3 overflow-hidden h-100">
                                             <div class="card-header bg-light border-bottom py-2">
                                                 <h6 class="mb-0 text-uppercase fw-bold text-dark ps-2" style="font-size: 0.85rem;">Thông Tin Tài Chính</h6>
@@ -396,12 +410,18 @@
                                                             <t t-esc="'{:,.0f}'.format(product.vat_tax or 0)"/>
                                                         </td>
                                                     </tr>
-                                                    <tr>
-                                                        <td class="ps-3 py-2 text-muted">Quỹ bảo trì</td>
-                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark">
-                                                            <t t-esc="'{:,.0f}'.format(product.maintenance_fee or 0)"/>
-                                                        </td>
-                                                    </tr>
+                                                     <tr>
+                                                         <td class="ps-3 py-2 text-muted">Quỹ bảo trì</td>
+                                                         <td class="pe-3 py-2 text-end fw-semibold text-dark">
+                                                             <t t-esc="'{:,.0f}'.format(product.maintenance_fee or 0)"/>
+                                                         </td>
+                                                     </tr>
+                                                     <tr>
+                                                         <td class="ps-3 py-2 text-muted">Phí quản lý</td>
+                                                         <td class="pe-3 py-2 text-end fw-semibold text-dark">
+                                                             <t t-esc="'{:,.0f}'.format(product.management_fee or 0)"/>
+                                                         </td>
+                                                     </tr>
                                                     <tr>
                                                         <td class="ps-3 py-2 text-muted">Đặt Cọc</td>
                                                         <td class="pe-3 py-2 text-end fw-bold text-dark">
@@ -421,52 +441,87 @@
                                         </div>
                                     </div>
 
-                                    <!-- Column 3: Payment Info (MOVED DOWN) -->
-                                    <div class="col-md-4">
+                                    <!-- Column 3: Payment Info (Notebook layout for multiple bank accounts) -->
+                                    <div class="col-md-6">
                                         <div class="card border-0 shadow-sm rounded-3 overflow-hidden h-100">
                                             <div class="card-header bg-warning bg-opacity-50 border-bottom py-2">
                                                 <h6 class="mb-0 text-uppercase fw-bold text-dark ps-2" style="font-size: 0.85rem;">
                                                     <i class="fa fa-bank me-1"></i>Thông Tin Thanh Toán
                                                 </h6>
                                             </div>
-                                            <table class="table table-hover mb-0 align-middle" style="font-size: 0.85rem;">
-                                                <tbody>
-                                                    <tr>
-                                                        <td class="ps-3 py-2 text-muted">Tên TK</td>
-                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark">
-                                                            <t t-esc="request.env.company.bank_account_holder_name or '---'"/>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="ps-3 py-2 text-muted">Ngân hàng</td>
-                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark">
-                                                            <t t-esc="request.env.company.bank_name or '---'"/>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="ps-3 py-2 text-muted">Số TK</td>
-                                                        <td class="pe-3 py-2 text-end fw-bold text-primary">
-                                                            <t t-esc="request.env.company.bank_account_number or '---'"/>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="ps-3 py-2 text-muted">Swift Code</td>
-                                                        <td class="pe-3 py-2 text-end fw-bold text-primary">
-                                                            <t t-esc="request.env.company.swift_code or '---'"/>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td colspan="2" class="ps-3 pe-3 py-2">
-                                                            <div class="text-muted small mb-1">Nội dung thanh toán:</div>
-                                                            <div class="fw-semibold text-dark bg-light p-2 rounded border" style="font-size: 0.8rem; word-break: break-word;">
-                                                                <t t-set="site_plan_name" t-value="product.site_plan_polygon_ids[0].site_plan_id.name if product.site_plan_polygon_ids and product.site_plan_polygon_ids[0].site_plan_id else 'N/A'"/>
-                                                                Thanh toán căn <t t-esc="product.name"/> <t t-esc="site_plan_name"/>
+                                            <div class="card-body p-0">
+                                                <t t-set="bank_accounts" t-value="request.env.company.bank_account_ids.filtered(lambda a: a.active)"/>
+                                                <t t-if="bank_accounts">
+                                                    <!-- Tabs Nav -->
+                                                    <ul class="nav nav-pills nav-justified border-bottom mb-0" id="bankTabs" role="tablist" style="font-size: 0.75rem;">
+                                                        <t t-foreach="bank_accounts" t-as="bank">
+                                                            <li class="nav-item" role="presentation">
+                                                                <button t-att-class="'nav-link rounded-0 ' + ('active' if bank_index == 0 else '')" 
+                                                                        t-att-id="'bank-tab-' + str(bank.id)" 
+                                                                        t-att-data-bank-id="bank.id"
+                                                                        data-bs-toggle="pill" 
+                                                                        t-att-data-bs-target="'#bank-content-' + str(bank.id)" 
+                                                                        type="button" role="tab">
+                                                                    <t t-esc="bank.bank_name"/>
+                                                                </button>
+                                                            </li>
+                                                        </t>
+                                                    </ul>
+                                                    <!-- Tabs Content -->
+                                                    <div class="tab-content" id="bankTabsContent">
+                                                        <t t-foreach="bank_accounts" t-as="bank">
+                                                            <div t-att-class="'tab-pane fade ' + ('show active' if bank_index == 0 else '')" 
+                                                                 t-att-id="'bank-content-' + str(bank.id)" 
+                                                                 role="tabpanel">
+                                                                <div class="d-flex">
+                                                                    <div class="flex-grow-1 border-end">
+                                                                        <table class="table table-hover mb-0 align-middle" style="font-size: 0.85rem;">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td class="ps-3 py-2 text-muted">Tên TK</td>
+                                                                                    <td class="pe-3 py-2 text-start fw-semibold text-dark" style="font-size: 0.75rem;">
+                                                                                        <t t-esc="bank.bank_account_holder_name or '---'"/>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td class="ps-3 py-2 text-muted">Số TK</td>
+                                                                                    <td class="pe-3 py-2 text-start fw-bold text-dark">
+                                                                                        <t t-esc="bank.bank_account_number or '---'"/>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr t-if="bank.swift_code">
+                                                                                    <td class="ps-3 py-2 text-muted">Swift Code</td>
+                                                                                    <td class="pe-3 py-2 text-start fw-bold text-dark">
+                                                                                        <t t-esc="bank.swift_code"/>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td class="ps-3 py-2 text-muted">Nội dung</td>
+                                                                                    <td class="pe-3 py-2 text-start fw-semibold text-dark" style="font-size: 0.75rem;">
+                                                                                        <t t-set="site_plan_name" t-value="product.site_plan_polygon_ids[0].site_plan_id.name if product.site_plan_polygon_ids and product.site_plan_polygon_ids[0].site_plan_id else 'N/A'"/>
+                                                                                        Thanh toán căn <t t-esc="product.name"/> <t t-esc="site_plan_name"/>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                    <div t-if="bank.payment_qr_code" class="d-flex flex-column align-items-center justify-content-center p-2" style="width: 160px; min-width: 160px;">
+                                                                        <img t-attf-src="data:image/png;base64,#{bank.payment_qr_code.decode('utf-8')}" 
+                                                                             style="width: 130px; height: 130px; object-fit: contain;" 
+                                                                             class="img-fluid rounded border shadow-sm p-1 bg-white"/>
+                                                                        <div class="mt-2 text-center text-muted" style="font-size: 0.65rem; line-height: 1.2;">Quét mã QR<br/>để chuyển khoản</div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                                        </t>
+                                                    </div>
+                                                </t>
+                                                <t t-else="">
+                                                    <div class="text-center py-4 text-muted small">
+                                                        <i class="fa fa-info-circle me-1"></i> Chưa có thông tin tài khoản ngân hàng.
+                                                    </div>
+                                                </t>
+                                            </div>
                                         </div>
                                     </div>
                                     
@@ -911,6 +966,29 @@
                                     document.getElementById('modalPreviewContent').innerHTML = '';
                                 });
                             }
+
+                            // Bank Tab PDF Update Logic
+                            const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+                            const bankTabs = document.querySelectorAll('#bankTabs button[data-bs-toggle="pill"]');
+                            
+                            if (downloadPdfBtn &amp;&amp; bankTabs.length > 0) {
+                                const basePdfUrl = downloadPdfBtn.getAttribute('href').split('?')[0];
+                                
+                                // Set initial selected bank
+                                const activeTab = document.querySelector('#bankTabs button.active');
+                                if (activeTab) {
+                                    const bankId = activeTab.getAttribute('data-bank-id');
+                                    downloadPdfBtn.setAttribute('href', basePdfUrl + '?bank_id=' + bankId);
+                                }
+
+                                // Update on tab change
+                                bankTabs.forEach(tab => {
+                                    tab.addEventListener('shown.bs.tab', function (event) {
+                                        const bankId = event.target.getAttribute('data-bank-id');
+                                        downloadPdfBtn.setAttribute('href', basePdfUrl + '?bank_id=' + bankId);
+                                    });
+                                });
+                            }
                         });
                     </script>
 
@@ -927,6 +1005,7 @@
                                         Tải về tất cả thông tin của căn hộ dưới dạng file PDF để lưu trữ hoặc in ấn
                                     </p>
                                     <a t-attf-href="/my/property/#{product.id}/download-pdf" 
+                                       id="downloadPdfBtn"
                                        class="btn btn-danger btn-lg px-5 py-3 shadow-sm"
                                        style="font-weight: 600; border-radius: 8px;">
                                         <i class="fa fa-download me-2"></i>

@@ -118,9 +118,10 @@
                                 font-size: 0.75em;
                             }
                             .payment-timeline-table td {
-                                padding: 1px 3px;
+                                padding: 4px 3px;
                                 border: 1px solid #dee2e6;
                                 font-size: 0.75em;
+                                vertical-align: middle;
                             }
                             .payment-timeline-table .section-title {
                                 padding: 3px 4px;
@@ -380,7 +381,7 @@
                                                     </t>
                                                 </td>
                                                 <td><t t-esc="timeline.name"/></td>
-                                                <td class="text-right">
+                                                <td class="text-right" style="font-size: 1.0em;">
                                                     <t t-if="timeline.amount and timeline.amount > 0">
                                                         <t t-esc="'{:,.0f}'.format(timeline.amount)"/>
                                                     </t>
@@ -390,7 +391,7 @@
                                                         <t t-esc="'{:,.0f}'.format(timeline.vat_amount)"/>
                                                     </t>
                                                 </td>
-                                                <td class="text-right fw-bold">
+                                                <td class="text-right fw-bold" style="font-size: 1.0em;">
                                                     <t t-if="timeline.total_amount and timeline.total_amount > 0">
                                                         <t t-esc="'{:,.0f}'.format(timeline.total_amount)"/>
                                                     </t>
@@ -403,13 +404,14 @@
                                                     
                                                     <td t-att-rowspan="len(group_lines)" 
                                                         t-att-style="'background-color: #4dd0e1;' if timeline.type in ['dat_coc', 'quy_bao_tri'] else ''"
-                                                        class="text-right fw-bold">
+                                                        class="text-right fw-bold"
+                                                        style="font-size: 1.0em;">
                                                         <t t-set="note_total" t-value="sum(group_lines.mapped('bank_amount'))"/>
                                                         <t t-if="note_total > 0">
                                                             <t t-esc="'{:,.0f}'.format(note_total)"/>
                                                         </t>
                                                     </td>
-                                                    <td t-att-rowspan="len(group_lines)" class="fw-bold" style="color: #dc3545;">
+                                                    <td t-att-rowspan="len(group_lines)" class="fw-bold" style="color: #dc3545; font-size: 0.6em; line-height: 1.1;">
                                                         <t t-esc="timeline.bank_note"/>
                                                     </td>
                                                 </t>

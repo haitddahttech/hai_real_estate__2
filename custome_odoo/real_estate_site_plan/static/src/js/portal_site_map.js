@@ -41,6 +41,9 @@
             pinchStartScale: 1,
             isPinching: false,
             isZoomLocked: true, // Default to locked
+            touchStartPos: null,
+            touchMoved: false,
+            touchStartedOnPolygonIndex: -1,
         };
 
         const MAX_POPUPS = 5;
@@ -705,8 +708,8 @@
                                 <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">${product.name}</h6>
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                <button type="button" class="close-popup-btn" style="cursor: pointer; background: #e9ecef; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s; color: #333;">
-                                    <i class="fa fa-times" style="font-size: 0.85rem;"></i>
+                                <button type="button" class="close-popup-btn" style="cursor: pointer; background: #e9ecef; border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s; color: #333;">
+                                    <i class="fa fa-times" style="font-size: 1rem;"></i>
                                 </button>
                             </div>
                         </div>
@@ -731,8 +734,8 @@
                             ${buyerInfo}
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            <button type="button" class="close-popup-btn" style="cursor: pointer; background: #e9ecef; border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s; color: #333;">
-                                <i class="fa fa-times" style="font-size: 0.85rem;"></i>
+                            <button type="button" class="close-popup-btn" style="cursor: pointer; background: #e9ecef; border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s; color: #333;">
+                                <i class="fa fa-times" style="font-size: 1rem;"></i>
                             </button>
                         </div>
                     </div>
@@ -1067,15 +1070,14 @@
             const rect = canvas.getBoundingClientRect();
 
             let clientX, clientY;
-            if (e.touches && e.touches.length > 0) {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else if (e.changedTouches && e.changedTouches.length > 0) {
-                clientX = e.changedTouches[0].clientX;
-                clientY = e.changedTouches[0].clientY;
+            const touch = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]);
+
+            if (touch) {
+                clientX = touch.clientX !== undefined ? touch.clientX : touch.x;
+                clientY = touch.clientY !== undefined ? touch.clientY : touch.y;
             } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
+                clientX = e.clientX !== undefined ? e.clientX : e.x;
+                clientY = e.clientY !== undefined ? e.clientY : e.y;
             }
 
             // Get mouse position in canvas pixels
@@ -1135,12 +1137,26 @@
 
         // Touch handlers
         function onTouchStart(e) {
-            e.preventDefault();
             if (e.touches.length === 1) {
+                const pos = getMousePos(e);
+                state.touchStartedOnPolygonIndex = findPolygonAt(pos);
+
                 state.isPanning = true;
+                state.touchStartPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
                 state.lastTouchPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
                 state.isPinching = false;
+                state.touchMoved = false;
+
+                // If we started on a polygon, we might want to prevent default 
+                // but we wait for move to decide between tap and pan
+                // Unless it's a very clear "interactive" zone
+                if (state.touchStartedOnPolygonIndex !== -1) {
+                    // We can optionally prevent default here to be more "aggressive" 
+                    // in capturing the touch for the map
+                    // e.preventDefault(); 
+                }
             } else if (e.touches.length === 2) {
+                e.preventDefault(); // Prevent scroll/zoom when pinching
                 state.isPanning = false;
                 state.isPinching = true;
                 state.pinchStartDist = getPinchDist(e);
@@ -1156,16 +1172,34 @@
         }
 
         function onTouchMove(e) {
-            e.preventDefault();
             if (state.isPanning && e.touches.length === 1) {
                 const dx = (e.touches[0].clientX - state.lastTouchPos.x) / state.scale;
                 const dy = (e.touches[0].clientY - state.lastTouchPos.y) / state.scale;
 
-                state.offset.x += dx;
-                state.offset.y += dy;
-                state.lastTouchPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-                draw();
+                // If moved significantly, it's definitely a pan, not a tap
+                const totalDist = Math.sqrt(
+                    Math.pow(e.touches[0].clientX - state.touchStartPos.x, 2) +
+                    Math.pow(e.touches[0].clientY - state.touchStartPos.y, 2)
+                );
+
+                // Movement threshold:
+                // If started on a polygon, increase threshold to 15px to prioritize TAP
+                // If started on empty space, keep it at 5px for responsive PAN
+                const threshold = state.touchStartedOnPolygonIndex !== -1 ? 15 : 5;
+
+                if (totalDist > threshold) {
+                    state.touchMoved = true;
+                    e.preventDefault(); // Start preventing document scroll
+                }
+
+                if (state.touchMoved) {
+                    state.offset.x += dx;
+                    state.offset.y += dy;
+                    state.lastTouchPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                    draw();
+                }
             } else if (state.isPinching && e.touches.length === 2) {
+                e.preventDefault();
                 const newDist = getPinchDist(e);
                 const zoomFactor = newDist / state.pinchStartDist;
 
@@ -1192,14 +1226,25 @@
         function onTouchEnd(e) {
             if (e.touches.length === 0) {
                 // If it was a quick tap (not panning or pinching long)
-                if (!state.isPinching && state.isPanning) {
-                    // Check if it's a tap by distance or time if needed,
-                    // but usually mobile browsers handle click events too.
-                    // To be safe, trigger click logic if move dist was small
+                if (!state.isPinching && state.isPanning && !state.touchMoved) {
+                    // Prevent the native 'click' event from being dispatched by the browser
+                    // This prevents double-triggering (toggle effect) on iPad/iOS
+                    if (e.cancelable) e.preventDefault();
+
+                    // Trigger click logic manually for immediate response
+                    const syntheticEvent = {
+                        touches: [{
+                            clientX: state.lastTouchPos.x,
+                            clientY: state.lastTouchPos.y
+                        }]
+                    };
+                    onCanvasClick(syntheticEvent);
                 }
                 state.isPanning = false;
                 state.isPinching = false;
                 state.lastTouchPos = null;
+                state.touchStartPos = null;
+                state.touchStartedOnPolygonIndex = -1;
             } else if (e.touches.length === 1) {
                 // Switched from pinch to pan
                 state.isPanning = true;

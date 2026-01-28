@@ -40,6 +40,7 @@
             pinchStartDist: 0,
             pinchStartScale: 1,
             isPinching: false,
+            isZoomLocked: true, // Default to locked
         };
 
         const MAX_POPUPS = 5;
@@ -91,6 +92,13 @@
             if (zoomOutBtn) zoomOutBtn.addEventListener('click', zoomOut);
             if (resetZoomBtn) resetZoomBtn.addEventListener('click', resetZoom);
 
+            // Zoom Lock button
+            const toggleZoomLockBtn = document.getElementById('toggleZoomLock');
+            if (toggleZoomLockBtn) {
+                toggleZoomLockBtn.addEventListener('click', toggleZoomLock);
+                updateZoomLockButtonUI();
+            }
+
             // Download screenshot button
             const downloadBtn = document.getElementById('downloadScreenshot');
             if (downloadBtn) downloadBtn.addEventListener('click', downloadScreenshot);
@@ -98,6 +106,10 @@
             // Zoom slider
             if (zoomSlider) {
                 zoomSlider.addEventListener('input', (e) => {
+                    if (state.isZoomLocked) {
+                        e.target.value = state.scale;
+                        return;
+                    }
                     const newScale = parseFloat(e.target.value);
 
                     // Get display dimensions
@@ -1164,6 +1176,8 @@
                 const worldPosX = midX / state.scale - state.offset.x;
                 const worldPosY = midY / state.scale - state.offset.y;
 
+                if (state.isZoomLocked) return;
+
                 const newScale = Math.max(1.0, Math.min(10, state.pinchStartScale * zoomFactor));
 
                 state.scale = newScale;
@@ -1211,6 +1225,8 @@
             const worldPosX = mouseX / state.scale - state.offset.x;
             const worldPosY = mouseY / state.scale - state.offset.y;
 
+            if (state.isZoomLocked) return;
+
             const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
             const oldScale = state.scale;
             const newScale = Math.max(1.0, Math.min(10, oldScale * zoomFactor));
@@ -1249,6 +1265,7 @@
             const displayCenterY = imageCenterY * scaleY;
 
             const oldScale = state.scale;
+            if (state.isZoomLocked) return;
             const newScale = Math.max(1.0, Math.min(10, oldScale * factor));
 
             if (oldScale === newScale) return;
@@ -1268,10 +1285,47 @@
         }
 
         function resetZoom() {
+            if (state.isZoomLocked) return;
             state.scale = 1;
             state.offset = { x: 0, y: 0 };
             updateZoomDisplay();
             draw();
+        }
+
+        function toggleZoomLock() {
+            state.isZoomLocked = !state.isZoomLocked;
+            updateZoomLockButtonUI();
+        }
+
+        function updateZoomLockButtonUI() {
+            const btn = document.getElementById('toggleZoomLock');
+            const zoomInBtn = document.getElementById('zoomIn');
+            const zoomOutBtn = document.getElementById('zoomOut');
+            const resetZoomBtn = document.getElementById('resetZoom');
+            const zoomSlider = document.getElementById('zoomSlider');
+
+            if (!btn) return;
+
+            if (state.isZoomLocked) {
+                btn.innerHTML = '<i class="fa fa-lock"></i> Mở Zoom';
+                btn.style.background = '#2d3748';
+                btn.style.color = 'white';
+                btn.style.borderColor = '#2d3748';
+            } else {
+                btn.innerHTML = '<i class="fa fa-unlock"></i> Khóa Zoom';
+                btn.style.background = 'white';
+                btn.style.color = '#495057';
+                btn.style.borderColor = '#dee2e6';
+            }
+
+            // Visually disable zoom controls when locked
+            const controls = [zoomInBtn, zoomOutBtn, resetZoomBtn, zoomSlider];
+            controls.forEach(ctrl => {
+                if (ctrl) {
+                    ctrl.style.opacity = state.isZoomLocked ? '0.5' : '1';
+                    ctrl.style.pointerEvents = state.isZoomLocked ? 'none' : 'auto';
+                }
+            });
         }
 
         async function downloadScreenshot() {

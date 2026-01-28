@@ -253,7 +253,7 @@ class ProductTemplate(models.Model):
             vals_1['bank_amount'] = vals_1_2_3_total
 
             # Logic gộp tiền cho các đợt từ 4 đến 9
-            today = fields.Date.today()
+            today = deposit_date + relativedelta(months=1)
             accumulated_amount = 0.0
             accumulated_share = 0.0
             accumulated_vat = 0.0
@@ -290,12 +290,11 @@ class ProductTemplate(models.Model):
                     accumulated_bank += m_bank
                 else:
                     # Nếu đợt này ở tương lai, cộng dồn tiền tích lũy vào đây
-                    accumulated_share += m_share
                     vals_m = {
                         'product_tmpl_id': product.id,
                         'type': config['type'],
                         'date': m_date,
-                        'name': str(accumulated_share * 100) + '% +VAT tương ứng',
+                        'name': f"{((accumulated_share + m_share) * 100):.2f}" + '% +VAT tương ứng',
                         'amount': m_amount + accumulated_amount,
                         'vat_amount': m_vat + accumulated_vat,
                         'bank_amount': m_bank + accumulated_bank,
@@ -304,6 +303,7 @@ class ProductTemplate(models.Model):
                     timeline_vals_list.append((0, 0, vals_m))
                     # Reset biến tích lũy sau khi đã gộp
                     accumulated_amount = 0.0
+                    accumulated_share = 0.0
                     accumulated_vat = 0.0
                     accumulated_bank = 0.0
 

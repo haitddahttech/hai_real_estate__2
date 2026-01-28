@@ -161,6 +161,14 @@
                     box-shadow: 0 12px 32px rgba(0,0,0,0.1) !important;
                     overflow: hidden;
                     background: white !important;
+                    transition: transform 0.15s ease, box-shadow 0.15s ease;
+                }
+                
+                .property-popup.dragging-popup {
+                    transform: scale(1.02) !important;
+                    box-shadow: 0 20px 48px rgba(0,0,0,0.2) !important;
+                    z-index: 1100 !important;
+                    opacity: 0.95;
                 }
                 
                 @keyframes popupSlideIn {

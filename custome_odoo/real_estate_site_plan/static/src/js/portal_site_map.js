@@ -821,133 +821,101 @@
 
         function makeDraggable(popup) {
             let isDragging = false;
-            let currentX;
-            let currentY;
             let initialX;
             let initialY;
 
             const header = popup.querySelector('.card-header');
+            const wrapper = document.querySelector('.canvas-wrapper') || document.body;
 
-            header.addEventListener('mousedown', dragStart);
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('mouseup', dragEnd);
+            // Start dragging
+            const dragStart = (e) => {
+                if (e.target.closest('.close-popup-btn')) return;
 
-            // Add touch support for dragging
-            header.addEventListener('touchstart', (e) => {
-                if (e.target.classList.contains('btn-close')) return;
-                const touch = e.touches[0];
-                initialX = touch.clientX - popup.offsetLeft;
-                initialY = touch.clientY - popup.offsetTop;
                 isDragging = true;
-                popup.style.zIndex = '1001';
-                e.preventDefault();
-            }, { passive: false });
+                popup.classList.add('dragging-popup');
 
-            document.addEventListener('touchmove', (e) => {
-                if (isDragging) {
-                    const touch = e.touches[0];
-                    currentX = touch.clientX - initialX;
-                    currentY = touch.clientY - initialY;
+                const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
 
-                    // *** Giới hạn popup TRONG CANVAS khi kéo trên mobile ***
-                    const canvasRect = canvas.getBoundingClientRect();
-                    const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
-                    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-
-                    // Canvas bounds trong document coordinates
-                    const canvasLeft = canvasRect.left + scrollX;
-                    const canvasRight = canvasRect.right + scrollX;
-                    const canvasTop = canvasRect.top + scrollY;
-                    const canvasBottom = canvasRect.bottom + scrollY;
-
-                    // Popup dimensions
-                    const popupWidth = popup.offsetWidth;
-                    const popupHeight = popup.offsetHeight;
-                    const edgeMargin = 20;
-
-                    // Bounds trong canvas
-                    const minX = canvasLeft + edgeMargin;
-                    const maxX = canvasRight - popupWidth - edgeMargin;
-                    const minY = canvasTop + edgeMargin;
-                    const maxY = canvasBottom - popupHeight - edgeMargin;
-
-                    // Clamp position
-                    currentX = Math.max(minX, Math.min(currentX, maxX));
-                    currentY = Math.max(minY, Math.min(currentY, maxY));
-
-                    popup.style.left = currentX + 'px';
-                    popup.style.top = currentY + 'px';
-                    draw();
-                    e.preventDefault();
-                }
-            }, { passive: false });
-
-            document.addEventListener('touchend', () => {
-                if (isDragging) {
-                    isDragging = false;
-                    popup.style.zIndex = '1000';
-                }
-            });
-
-            function dragStart(e) {
-                if (e.target.classList.contains('btn-close')) {
-                    return; // Don't drag when clicking close button
-                }
-
-                // Get offset inside popup (mouse pos - popup pos)
                 const rect = popup.getBoundingClientRect();
-                initialX = e.clientX - rect.left;
-                initialY = e.clientY - rect.top;
+                initialX = clientX - rect.left;
+                initialY = clientY - rect.top;
 
-                isDragging = true;
-                popup.style.zIndex = '1001'; // Bring to front
-            }
-
-            function drag(e) {
-                if (isDragging) {
-                    e.preventDefault();
-
-                    const wrapper = document.querySelector('.canvas-wrapper') || document.body;
-                    const wrapperRect = wrapper.getBoundingClientRect();
-                    const canvasRect = canvas.getBoundingClientRect();
-
-                    // Calculate new position relative to wrapper
-                    currentX = (e.clientX - initialX) - wrapperRect.left;
-                    currentY = (e.clientY - initialY) - wrapperRect.top;
-
-                    // Canvas bounds relative to wrapper
-                    const canvasRelX = canvasRect.left - wrapperRect.left;
-                    const canvasRelY = canvasRect.top - wrapperRect.top;
-
-                    // Popup dimensions
-                    const popupWidth = popup.offsetWidth;
-                    const popupHeight = popup.offsetHeight;
-                    const edgeMargin = 20;
-
-                    // Bounds within canvas
-                    const minX = canvasRelX + edgeMargin;
-                    const maxX = canvasRelX + canvasRect.width - popupWidth - edgeMargin;
-                    const minY = canvasRelY + edgeMargin;
-                    const maxY = canvasRelY + canvasRect.height - popupHeight - edgeMargin;
-
-                    // Clamp position
-                    currentX = Math.max(minX, Math.min(currentX, maxX));
-                    currentY = Math.max(minY, Math.min(currentY, maxY));
-
-                    popup.style.left = currentX + 'px';
-                    popup.style.top = currentY + 'px';
-
-                    // Update arrow
-                    draw();
+                if (e.type === 'touchstart') {
+                    // Prevent page scroll when dragging on touch devices
+                    // but allows tapping buttons if we didn't drag
                 }
-            }
+            };
 
-            function dragEnd(e) {
+            // While dragging
+            const drag = (e) => {
+                if (!isDragging) return;
+
+                // Prevent scroll/pan while dragging popup
+                e.preventDefault();
+
+                const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+                const wrapperRect = wrapper.getBoundingClientRect();
+                const canvasRect = canvas.getBoundingClientRect();
+
+                // Calculate current position relative to wrapper
+                let currentX = (clientX - initialX) - wrapperRect.left;
+                let currentY = (clientY - initialY) - wrapperRect.top;
+
+                // Canvas bounds relative to wrapper
+                const canvasRelX = canvasRect.left - wrapperRect.left;
+                const canvasRelY = canvasRect.top - wrapperRect.top;
+
+                // Popup dimensions
+                const popupWidth = popup.offsetWidth;
+                const popupHeight = popup.offsetHeight;
+                const edgeMargin = 10;
+
+                // Bounds within canvas
+                const minX = canvasRelX + edgeMargin;
+                const maxX = canvasRelX + canvasRect.width - popupWidth - edgeMargin;
+                const minY = canvasRelY + edgeMargin;
+                const maxY = canvasRelY + canvasRect.height - popupHeight - edgeMargin;
+
+                // Clamp position
+                currentX = Math.max(minX, Math.min(currentX, maxX));
+                currentY = Math.max(minY, Math.min(currentY, maxY));
+
+                popup.style.left = currentX + 'px';
+                popup.style.top = currentY + 'px';
+
+                // Update arrows
+                draw();
+            };
+
+            // End dragging
+            const dragEnd = () => {
                 if (isDragging) {
                     isDragging = false;
-                    popup.style.zIndex = '1000';
+                    popup.classList.remove('dragging-popup');
                 }
-            }
+            };
+
+            // Mouse Events
+            header.addEventListener('mousedown', dragStart);
+            window.addEventListener('mousemove', drag);
+            window.addEventListener('mouseup', dragEnd);
+
+            // Touch Events
+            header.addEventListener('touchstart', (e) => {
+                dragStart(e);
+                // On touch, we need to decide if this is a drag or a tap
+                // but since we drag via header, we usually want to start dragging immediately
+                if (isDragging) e.preventDefault();
+            }, { passive: false });
+
+            window.addEventListener('touchmove', (e) => {
+                if (isDragging) drag(e);
+            }, { passive: false });
+
+            window.addEventListener('touchend', dragEnd);
         }
 
         function positionPopup(popup, polygon, stackIndex) {

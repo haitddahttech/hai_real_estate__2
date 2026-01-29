@@ -309,32 +309,7 @@
                             </div>
                         </div>
                         
-                        <!-- Discounts Section (Only if selected) -->
-                        <div class="full-card" t-if="product.selected_discount_ids" style="margin-top: -5px; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0; background: #FFFDF9;">
-                            <div class="card-title" style="color: #856404; font-size: 9px;">Ưu đãi &amp; Chiết khấu áp dụng</div>
-                            <table style="width: 100%; border-collapse: collapse;">
-                                <t t-foreach="product.selected_discount_ids" t-as="discount">
-                                    <tr>
-                                        <td class="info-label" style="padding: 3px 0;"><t t-esc="discount.name"/></td>
-                                        <td class="info-value text-right" style="color: #DC2626; padding: 3px 0;">
-                                            <t t-if="discount.discount_type == 'percent'">
-                                                - <t t-esc="'{:,.0f}'.format(product.list_price * discount.discount_value / 100.0)"/> VNĐ (<t t-esc="discount.discount_value"/>%)
-                                            </t>
-                                            <t t-else="">
-                                                - <t t-esc="'{:,.0f}'.format(discount.discount_value)"/> VNĐ
-                                            </t>
-                                        </td>
-                                    </tr>
-                                </t>
-                            </table>
-                            <div class="price-highlight-bar clearfix" style="margin-top: 8px; background: #FEF3C7; border-color: #FCD34D;">
-                                <span class="price-label" style="color: #92400E;">GIÁ SAU CHIẾT KHẤU</span>
-                                <span class="price-value" style="color: #92400E; font-size: 20px;">
-                                    <t t-esc="'{:,.0f}'.format(product.final_price)"/> <small style="font-size: 9px; vertical-align: baseline;">VNĐ</small>
-                                </span>
-                            </div>
-                        </div>
-                        
+ 
                         <!-- Timeline Section (Web Style) -->
                         <div class="timeline-section">
                             <div class="timeline-title-area">
@@ -422,6 +397,33 @@
                                     <span class="percentage-badge">100%</span>
                                 </div>
                             </div>
+                       <!-- Discounts Section (Only if selected) -->
+                        <div class="full-card" t-if="product.selected_discount_ids" style="margin-top: -5px; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0; background: #FFFDF9;">
+                            <div class="card-title" style="color: #856404; font-size: 9px;">Ưu đãi &amp; Chiết khấu áp dụng</div>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <t t-foreach="product.selected_discount_ids" t-as="discount">
+                                    <tr>
+                                        <td class="info-label" style="padding: 3px 0;"><t t-esc="discount.name"/></td>
+                                        <td class="info-value text-right" style="color: #DC2626; padding: 3px 0;">
+                                            <t t-if="discount.discount_type == 'percent'">
+                                                - <t t-esc="'{:,.0f}'.format(product.list_price * discount.discount_value / 100.0)"/> VNĐ (<t t-esc="discount.discount_value"/>%)
+                                            </t>
+                                            <t t-else="">
+                                                - <t t-esc="'{:,.0f}'.format(discount.discount_value)"/> VNĐ
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </table>
+                            <div class="price-highlight-bar clearfix" style="margin-top: 8px; background: #FEF3C7; border-color: #FCD34D;">
+                                <span class="price-label" style="color: #92400E;">GIÁ SAU CHIẾT KHẤU</span>
+                                <span class="price-value" style="color: #92400E; font-size: 20px;">
+                                    <t t-esc="'{:,.0f}'.format(product.final_price)"/> <small style="font-size: 9px; vertical-align: baseline;">VNĐ</small>
+                                </span>
+                            </div>
+                        </div>
+                        
+
                         </div>
                         
                             </div>

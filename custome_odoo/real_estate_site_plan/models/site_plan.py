@@ -62,6 +62,17 @@ class SitePlan(models.Model):
     )
     
     image_path = fields.Char(string='Đường dẫn ảnh local')
+    
+    catalog = fields.Binary(
+        string='Catalogue dự án',
+        attachment=True,
+        help='Tải lên file Catalogue của dự án (PDF hoặc hình ảnh)'
+    )
+    
+    catalog_filename = fields.Char(
+        string='Tên file Catalogue',
+        help='Tên gốc của file Catalogue đã tải lên'
+    )
 
     @api.model_create_multi
     def create(self, vals_list):

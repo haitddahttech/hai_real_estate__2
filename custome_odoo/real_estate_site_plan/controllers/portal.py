@@ -2,6 +2,9 @@
 
 import json
 import logging
+import subprocess
+import tempfile
+import os
 from odoo import http
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
@@ -172,8 +175,7 @@ class SitePlanPortal(CustomerPortal):
             
             # Check access rights
             try:
-                product.check_access_rights('read')
-                product.check_access_rule('read')
+                product.check_access('read')
             except Exception as access_error:
                 _logger.warning(f"Access denied for product {product_id}: {access_error}")
                 return request.redirect('/my')
@@ -235,6 +237,80 @@ class SitePlanPortal(CustomerPortal):
             return request.make_response(pdf_content, headers=pdfhttpheaders)
         except Exception as e:
             _logger.error(f"Error generating PDF for product {product_id}: {e}")
+            return request.redirect('/my')
+
+    @http.route(['/my/property/<int:product_id>/download-image'], type='http', auth='user', website=True)
+    def portal_property_detail_image(self, product_id, bank_id=None, **kw):
+        """Download property detail as Image (PNG)"""
+        try:
+            product = request.env['product.template'].browse(product_id)
+            
+            if not product.exists():
+                return request.redirect('/my')
+            
+            # Check access rights
+            product.check_access('read')
+            
+            # Get the report record
+            report = request.env['ir.actions.report'].sudo().search([
+                ('report_name', '=', 'real_estate_site_plan.report_property_detail_document')
+            ], limit=1)
+            
+            if not report:
+                return request.redirect('/my')
+            
+            # Prepare context for rendering
+            context = dict(request.env.context)
+            if bank_id:
+                context['selected_bank_id'] = int(bank_id)
+            
+            # Render HTML content first
+            html_content = report.with_context(context)._render_qweb_html(
+                report_ref='real_estate_site_plan.report_property_detail_document', 
+                docids=[product_id]
+            )[0]
+            
+            # Convert HTML to Image using wkhtmltoimage
+            try:
+                # We add --load-error-handling ignore to prevent ContentNotFoundError from aborting the process
+                # This is common when some assets (like small icons or non-critical images) fail to load
+                cmd = [
+                    'wkhtmltoimage',
+                    '--format', 'png',
+                    '--quality', '100',
+                    '--load-error-handling', 'ignore',
+                    '--quiet',
+                    '-', # read from stdin
+                    '-'  # write to stdout
+                ]
+                
+                process = subprocess.Popen(
+                    cmd,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
+                
+                image_content, stderr = process.communicate(input=html_content)
+                
+                if process.returncode != 0 and not image_content:
+                    _logger.error(f"wkhtmltoimage error: {stderr.decode('utf-8')}")
+                    return request.redirect('/my')
+                    
+                imagehttpheaders = [
+                    ('Content-Type', 'image/png'),
+                    ('Content-Length', len(image_content)),
+                    ('Content-Disposition', f'attachment; filename="Property_{product.name}.png"')
+                ]
+                
+                return request.make_response(image_content, headers=imagehttpheaders)
+                
+            except Exception as e:
+                _logger.error(f"Failed to call wkhtmltoimage: {e}")
+                return request.redirect('/my')
+                
+        except Exception as e:
+            _logger.error(f"Error generating Image for product {product_id}: {e}")
             return request.redirect('/my')
 
     @http.route(['/my/property/<int:product_id>/save_discounts'], type='jsonrpc', auth='user', methods=['POST'])

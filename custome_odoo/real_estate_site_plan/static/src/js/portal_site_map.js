@@ -334,7 +334,7 @@
 
             // Fill logic: Gray if sold, Transparent otherwise
             if (polygon.product.is_sold) {
-                ctx.fillStyle = '#ccccccCC'; // Gray with some transparency (80%)
+                ctx.fillStyle = '#dddddd'; // Solid light gray
                 ctx.fill();
             } else if (isSelected) {
                 // Optional: slight highlight for selection if transparent
@@ -343,7 +343,7 @@
             }
 
             // Stroke
-            ctx.strokeStyle = isSelected ? '#e74c3c' : strokeColor;
+            ctx.strokeStyle = polygon.product.is_sold ? '#bbbbbb' : (isSelected ? '#e74c3c' : strokeColor);
             const baseStrokeWidth = polygon.product && polygon.product.is_decoration ? 0.6 : 2.0;
 
             if (isSelected) {
@@ -604,8 +604,8 @@
             popup.className = 'card shadow-lg property-popup';
             popup.style.position = 'absolute';
             popup.style.zIndex = '1000';
-            popup.style.maxWidth = product.is_decoration ? '450px' : '300px';
-            popup.style.minWidth = product.is_decoration ? '350px' : '260px';
+            popup.style.maxWidth = product.is_decoration ? '320px' : '300px';
+            popup.style.minWidth = product.is_decoration ? '250px' : '260px';
             popup.style.cursor = 'move';
             popup.style.overflow = 'visible';
             popup.style.setProperty('border', `1.5px solid ${polygon.color || '#3498db'}`, 'important');
@@ -696,39 +696,83 @@
             let popupContent = '';
 
             if (product.is_decoration) {
-                // Simplified popup for decoration (name and images)
+                // REDESIGNED popup for decoration (Utility/Amenity)
                 let imageHtml = '';
                 if (product.attachments && product.attachments.length > 0) {
-                    imageHtml = `
-                        <div class="decoration-images mt-2 d-flex overflow-auto gap-3 pb-2" style="scrollbar-width: thin;">
-                            ${product.attachments.map(att => `
-                                <img src="${att.url}" 
-                                     alt="${att.name}" 
-                                     style="width: 200px; height: 200px; object-fit: cover; border-radius: 8px; cursor: pointer;"
-                                     class="decoration-thumb"
-                                     onclick="window.open('${att.url}', '_blank')"
+                    if (product.attachments.length === 1) {
+                        imageHtml = `
+                            <div class="decoration-main-image mb-1 overflow-hidden shadow-sm" style="border-radius: 8px; border: 1px solid #eee;">
+                                <img src="${product.attachments[0].url}" 
+                                     alt="${product.attachments[0].name}" 
+                                     style="width: 100%; height: auto; max-height: 200px; object-fit: cover; cursor: zoom-in;"
+                                     class="decoration-img-large"
+                                     onclick="window.open('${product.attachments[0].url}', '_blank')"
                                 />
-                            `).join('')}
-                        </div>
-                    `;
+                            </div>
+                        `;
+                    } else {
+                        imageHtml = `
+                            <div class="decoration-gallery-label mb-1 text-muted" style="font-size: 0.6rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">
+                                <i class="fa fa-picture-o me-1"></i> Hình ảnh (${product.attachments.length})
+                            </div>
+                            <div class="decoration-images d-flex overflow-auto gap-2 pb-1" style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">
+                                ${product.attachments.map(att => `
+                                    <div style="flex: 0 0 auto; width: 120px; height: 120px; border-radius: 6px; overflow: hidden; border: 1px solid #eee;">
+                                        <img src="${att.url}" 
+                                             alt="${att.name}" 
+                                             style="width: 100%; height: 100%; object-fit: cover; cursor: zoom-in;"
+                                             class="decoration-thumb"
+                                             onclick="window.open('${att.url}', '_blank')"
+                                        />
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <style>
+                                .decoration-images::-webkit-scrollbar { display: none; }
+                            </style>
+                        `;
+                    }
                 }
 
                 popupContent = `
-                    <div class="card-header border-0 pb-2" style="cursor: move; background: ${bgColor}; color: ${textColor};">
+                    <div class="card-header border-0 pb-2" style="cursor: move; background: ${bgColor}; color: ${textColor}; padding: 0.85rem 1rem;">
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="flex-grow-1">
+                                <span class="badge mb-1 d-inline-block" style="background: rgba(255,255,255,0.25); backdrop-filter: blur(4px); color: ${textColor}; border: 1px solid rgba(255,255,255,0.3); font-size: 0.55rem; padding: 0.15rem 0.4rem; letter-spacing: 0.5px; font-weight: 700;">TIỆN ÍCH DỰ ÁN</span>
                                 <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">${product.name}</h6>
                             </div>
-                            <div class="d-flex align-items-center gap-2">
-                                <button type="button" class="close-popup-btn" style="cursor: pointer; background: #e9ecef; border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s; color: #333;">
-                                    <i class="fa fa-times" style="font-size: 1rem;"></i>
-                                </button>
-                            </div>
+                            <button type="button" class="close-popup-btn" style="cursor: pointer; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); transition: all 0.2s; color: ${textColor};">
+                                <i class="fa fa-times" style="font-size: 0.8rem;"></i>
+                            </button>
                         </div>
                     </div>
-                    <div class="card-body pt-2 pb-3">
-                        ${product.decoration_note ? `<div class="decoration-note mb-3 p-2 bg-light border-start border-4 border-info text-dark" style="font-size: 0.725rem; line-height: 1.4; border-radius: 4px;">${product.decoration_note}</div>` : ''}
-                        ${imageHtml || '<p class="text-muted small mb-0">Không có ảnh minh họa</p>'}
+                    <div class="card-body pt-2 pb-2" style="padding: 0.85rem 1rem;">
+                        ${product.decoration_note ? `
+                            <div class="decoration-note-container mb-2">
+                                <div class="decoration-note-text text-dark" style="
+                                    font-size: 0.725rem; 
+                                    line-height: 1.4; 
+                                    border-radius: 6px; 
+                                    background-color: #f8f9fa; 
+                                    border-left: 3px solid #0dcaf0;
+                                    padding: 0.5rem;
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 2;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                ">
+                                    ${product.decoration_note}
+                                </div>
+                                <div class="text-end mt-1">
+                                    <button type="button" class="btn btn-link p-0 text-info text-decoration-none fw-bold" 
+                                            style="font-size: 0.65rem;"
+                                            onclick="toggleDecorationNote(this)">
+                                        Xem thêm <i class="fa fa-chevron-down ms-1"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        ` : ''}
+                        ${imageHtml || '<div class="text-center py-3 bg-light rounded-3 text-muted" style="font-size: 0.65rem;"><i class="fa fa-image d-block fs-4 mb-1 opacity-25"></i>Chưa có ảnh</div>'}
                     </div>
                 `;
             } else {
@@ -1411,5 +1455,23 @@
         function formatNumber(num) {
             return Math.round(num).toLocaleString();
         }
+        // Helper to toggle description expansion
+        window.toggleDecorationNote = function (btn) {
+            const container = btn.closest('.decoration-note-container');
+            const note = container.querySelector('.decoration-note-text');
+            const isExpanded = note.style.webkitLineClamp === 'unset';
+
+            if (isExpanded) {
+                note.style.webkitLineClamp = '2';
+                btn.innerHTML = 'Xem thêm <i class="fa fa-chevron-down ms-1"></i>';
+            } else {
+                note.style.webkitLineClamp = 'unset';
+                btn.innerHTML = 'Thu gọn <i class="fa fa-chevron-up ms-1"></i>';
+            }
+
+            // Redraw arrows because popup height changed
+            drawArrows();
+        };
+
     });
 })();

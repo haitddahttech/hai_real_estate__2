@@ -272,9 +272,71 @@
                 #bankTabs .nav-link:hover:not(.active) {
                     background-color: #f8f9fa;
                 }
+
+                /* SUPER FORCE HIDE ALL BORDERS IN INFO CARDS */
+                .property-details-section,
+                .property-details-section .card,
+                .property-details-section .card-body,
+                .property-details-section .card-header,
+                .property-details-section table,
+                .property-details-section thead,
+                .property-details-section tbody,
+                .property-details-section tfoot,
+                .property-details-section tr,
+                .property-details-section td,
+                .property-details-section th {
+                    border: 0 none transparent !important;
+                    border-width: 0 !important;
+                    border-top: 0 !important;
+                    border-bottom: 0 !important;
+                    border-left: 0 !important;
+                    border-right: 0 !important;
+                    box-shadow: none !important;
+                    --bs-table-accent-bg: transparent !important;
+                    --bs-table-striped-bg: transparent !important;
+                    --bs-table-active-bg: transparent !important;
+                    --bs-table-hover-bg: rgba(0, 0, 0, 0.02) !important;
+                    --bs-table-border-color: transparent !important;
+                }
+
+                /* FORCE HIDE FOR TAB NAVIGATION IN PAYMENT INFO */
+                .property-details-section .nav-pills,
+                .property-details-section .nav-item,
+                .property-details-section .nav-link {
+                    border: none !important;
+                    border-bottom: 0 !important;
+                }
+
+                /* FORCE HIDE FOR TIMELINE TABLE */
+                .timeline-table,
+                .timeline-table * {
+                    border: 0 none transparent !important;
+                    border-width: 0 !important;
+                    box-shadow: none !important;
+                    --bs-table-border-color: transparent !important;
+                }
+                
+                /* GLOBAL TABLE BORDER RESET FOR PROPERTY DETAIL */
+                .table > :not(caption) > * > *,
+                .table td, 
+                .table th,
+                .table tr {
+                    border-width: 0 !important;
+                    border-style: none !important;
+                    border-color: transparent !important;
+                    border-top: 0 !important;
+                    border-bottom: 0 !important;
+                    box-shadow: none !important;
+                    outline: none !important;
+                }
+
+                /* Increase padding top of body area */
+                #wrap {
+                    padding-top: 30px !important;
+                }
             </style>
             
-            <div class="container mt-4">
+            <div class="container mt-5">
                 <div class="row">
                     <div class="col-12">
                         <a t-if="product.site_plan_polygon_id" 
@@ -322,22 +384,22 @@
                             <div class="card-body">
 
                                 <!-- Modern Property Details - Three Columns -->
-                                <div class="row g-2 mt-2">
+                                <div class="row g-2 mt-2 property-details-section">
                                     <!-- Column 1: Basic Info (Smaller) -->
                                     <div class="col-md-3">
                                         <div class="card border-0 shadow-sm rounded-3 overflow-hidden h-100">
-                                            <div class="card-header bg-light border-bottom py-2">
+                                            <div class="card-header bg-light border-0 py-2">
                                                 <h6 class="mb-0 text-uppercase fw-bold text-dark ps-2" style="font-size: 0.85rem;">Thông Tin Cơ Bản</h6>
                                             </div>
-                                            <table class="table table-hover mb-0 align-middle" style="font-size: 0.85rem;">
+                                            <table class="table table-borderless table-hover mb-0 align-middle" style="font-size: 0.85rem;">
                                                 <tbody>
                                                     <tr>
-                                                        <td class="ps-3 py-2 text-muted">Mã căn</td>
-                                                        <td class="pe-3 py-2 text-end fw-bold text-danger"><t t-esc="product.name"/></td>
+                                                        <td class="ps-3 py-2 text-muted border-top-0">Mã căn</td>
+                                                        <td class="pe-3 py-2 text-end fw-bold text-danger border-top-0"><t t-esc="product.name"/></td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="ps-3 py-2 text-muted">Loại Hình</td>
-                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark">
+                                                        <td class="ps-3 py-2 text-muted border-top-0">Loại Hình</td>
+                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0">
                                                             <t t-if="product.property_type == 'townhouse_garden'">Liền kề vườn</t>
                                                             <t t-elif="product.property_type == 'detached_villa'">Biệt thự đơn lập</t>
                                                             <t t-elif="product.property_type == 'semi_detached_villa'">Biệt thự song lập</t>
@@ -346,8 +408,8 @@
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="ps-3 py-2 text-muted">Hướng</td>
-                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark">
+                                                        <td class="ps-3 py-2 text-muted border-top-0">Hướng</td>
+                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0">
                                                             <t t-if="product.direction == 'north'">Bắc</t>
                                                             <t t-elif="product.direction == 'northeast'">Đông Bắc</t>
                                                             <t t-elif="product.direction == 'east'">Đông</t>
@@ -366,12 +428,12 @@
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="ps-3 py-2 text-muted">DT đất</td>
-                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark"><t t-esc="product.area"/> m²</td>
+                                                        <td class="ps-3 py-2 text-muted border-top-0">DT đất</td>
+                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0"><t t-esc="product.area"/> m²</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="ps-3 py-2 text-muted">DT xây dựng</td>
-                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark"><t t-esc="product.construction_area or 0"/> m²</td>
+                                                        <td class="ps-3 py-2 text-muted border-top-0">DT xây dựng</td>
+                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0"><t t-esc="product.construction_area or 0"/> m²</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -381,70 +443,70 @@
                                     <!-- Column 2: Financial Info (MOVED UP) -->
                                     <div class="col-md-3">
                                         <div class="card border-0 shadow-sm rounded-3 overflow-hidden h-100">
-                                            <div class="card-header bg-light border-bottom py-2">
+                                            <div class="card-header bg-light border-0 py-2">
                                                 <h6 class="mb-0 text-uppercase fw-bold text-dark ps-2" style="font-size: 0.85rem;">Thông Tin Tài Chính</h6>
                                             </div>
-                                            <table class="table table-hover mb-0 align-middle" style="font-size: 0.85rem;">
-                                                <tbody>
-                                                    <tr>
-                                                        <td class="ps-3 py-2 text-muted">Giá chưa thuế SDĐ</td>
-                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark">
-                                                            <t t-esc="'{:,.0f}'.format(product.price_exclude_land_tax or 0)"/>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="ps-3 py-2 text-muted">Thuế SDĐ</td>
-                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark">
-                                                            <t t-esc="'{:,.0f}'.format(product.land_tax or 0)"/>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="ps-3 py-2 text-muted">Giá gồm SDĐ</td>
-                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark">
-                                                            <t t-esc="'{:,.0f}'.format(product.price_include_land_tax or 0)"/>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="ps-3 py-2 text-muted">VAT</td>
-                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark">
-                                                            <t t-esc="'{:,.0f}'.format(product.vat_tax or 0)"/>
-                                                        </td>
-                                                    </tr>
+                                            <table class="table table-borderless table-hover mb-0 align-middle" style="font-size: 0.85rem;">
+                                                 <tbody>
                                                      <tr>
-                                                         <td class="ps-3 py-2 text-muted">Quỹ bảo trì</td>
-                                                         <td class="pe-3 py-2 text-end fw-semibold text-dark">
-                                                             <t t-esc="'{:,.0f}'.format(product.maintenance_fee or 0)"/>
+                                                         <td class="ps-3 py-2 text-muted border-top-0">Giá chưa thuế SDĐ</td>
+                                                         <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0">
+                                                             <t t-esc="'{:,.0f}'.format(product.price_exclude_land_tax or 0)"/>
                                                          </td>
                                                      </tr>
                                                      <tr>
-                                                         <td class="ps-3 py-2 text-muted">Phí quản lý</td>
-                                                         <td class="pe-3 py-2 text-end fw-semibold text-dark">
-                                                             <t t-esc="'{:,.0f}'.format(product.management_fee or 0)"/>
+                                                         <td class="ps-3 py-2 text-muted border-top-0">Thuế SDĐ</td>
+                                                         <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0">
+                                                             <t t-esc="'{:,.0f}'.format(product.land_tax or 0)"/>
                                                          </td>
                                                      </tr>
-                                                    <tr>
-                                                        <td class="ps-3 py-2 text-muted">Đặt Cọc</td>
-                                                        <td class="pe-3 py-2 text-end fw-bold text-dark">
-                                                            <t t-esc="'{:,.0f}'.format(product.deposit)"/>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="ps-3 py-2 text-muted">Giá niêm yết</td>
-                                                        <td class="pe-3 py-2 text-end fw-bold text-dark">
-                                                            <span id="listPriceValue" t-att-data-price="product.list_price">
-                                                                <t t-esc="'{:,.0f}'.format(product.list_price)"/>
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                                     <tr>
+                                                         <td class="ps-3 py-2 text-muted border-top-0">Giá gồm SDĐ</td>
+                                                         <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0">
+                                                             <t t-esc="'{:,.0f}'.format(product.price_include_land_tax or 0)"/>
+                                                         </td>
+                                                     </tr>
+                                                     <tr>
+                                                         <td class="ps-3 py-2 text-muted border-top-0">VAT</td>
+                                                         <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0">
+                                                             <t t-esc="'{:,.0f}'.format(product.vat_tax or 0)"/>
+                                                         </td>
+                                                     </tr>
+                                                      <tr>
+                                                          <td class="ps-3 py-2 text-muted border-top-0">Quỹ bảo trì</td>
+                                                          <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0">
+                                                              <t t-esc="'{:,.0f}'.format(product.maintenance_fee or 0)"/>
+                                                          </td>
+                                                      </tr>
+                                                      <tr>
+                                                          <td class="ps-3 py-2 text-muted border-top-0">Phí quản lý</td>
+                                                          <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0">
+                                                              <t t-esc="'{:,.0f}'.format(product.management_fee or 0)"/>
+                                                          </td>
+                                                      </tr>
+                                                     <tr>
+                                                         <td class="ps-3 py-2 text-muted border-top-0">Đặt Cọc</td>
+                                                         <td class="pe-3 py-2 text-end fw-bold text-dark border-top-0">
+                                                             <t t-esc="'{:,.0f}'.format(product.deposit)"/>
+                                                         </td>
+                                                     </tr>
+                                                     <tr>
+                                                         <td class="ps-3 py-2 text-muted border-top-0">Giá niêm yết</td>
+                                                         <td class="pe-3 py-2 text-end fw-bold text-dark border-top-0">
+                                                             <span id="listPriceValue" t-att-data-price="product.list_price">
+                                                                 <t t-esc="'{:,.0f}'.format(product.list_price)"/>
+                                                             </span>
+                                                         </td>
+                                                     </tr>
+                                                 </tbody>
+                                             </table>
                                         </div>
                                     </div>
 
                                     <!-- Column 3: Payment Info (Notebook layout for multiple bank accounts) -->
                                     <div class="col-md-6">
                                         <div class="card border-0 shadow-sm rounded-3 overflow-hidden h-100">
-                                            <div class="card-header bg-warning bg-opacity-50 border-bottom py-2">
+                                            <div class="card-header bg-warning bg-opacity-50 border-0 py-2">
                                                 <h6 class="mb-0 text-uppercase fw-bold text-dark ps-2" style="font-size: 0.85rem;">
                                                     <i class="fa fa-bank me-1"></i>Thông Tin Thanh Toán
                                                 </h6>
@@ -453,7 +515,7 @@
                                                 <t t-set="bank_accounts" t-value="request.env.company.bank_account_ids.filtered(lambda a: a.active)"/>
                                                 <t t-if="bank_accounts">
                                                     <!-- Tabs Nav -->
-                                                    <ul class="nav nav-pills nav-justified border-bottom mb-0" id="bankTabs" role="tablist" style="font-size: 0.75rem;">
+                                                    <ul class="nav nav-pills nav-justified border-0 mb-0" id="bankTabs" role="tablist" style="font-size: 0.75rem;">
                                                         <t t-foreach="bank_accounts" t-as="bank">
                                                             <li class="nav-item" role="presentation">
                                                                 <button t-att-class="'nav-link rounded-0 ' + ('active' if bank_index == 0 else '')" 
@@ -474,30 +536,30 @@
                                                                  t-att-id="'bank-content-' + str(bank.id)" 
                                                                  role="tabpanel">
                                                                 <div class="d-flex">
-                                                                    <div class="flex-grow-1 border-end">
-                                                                        <table class="table table-hover mb-0 align-middle" style="font-size: 0.85rem;">
+                                                                    <div class="flex-grow-1">
+                                                                        <table class="table table-borderless table-hover mb-0 align-middle" style="font-size: 0.85rem;">
                                                                             <tbody>
                                                                                 <tr>
-                                                                                    <td class="ps-3 py-2 text-muted">Tên TK</td>
-                                                                                    <td class="pe-3 py-2 text-start fw-semibold text-dark" style="font-size: 0.75rem;">
+                                                                                    <td class="ps-3 py-2 text-muted border-top-0">Tên TK</td>
+                                                                                    <td class="pe-3 py-2 text-start fw-semibold text-dark border-top-0" style="font-size: 0.75rem;">
                                                                                         <t t-esc="bank.bank_account_holder_name or '---'"/>
                                                                                     </td>
                                                                                 </tr>
                                                                                 <tr>
-                                                                                    <td class="ps-3 py-2 text-muted">Số TK</td>
-                                                                                    <td class="pe-3 py-2 text-start fw-bold text-dark">
+                                                                                    <td class="ps-3 py-2 text-muted border-top-0">Số TK</td>
+                                                                                    <td class="pe-3 py-2 text-start fw-bold text-dark border-top-0">
                                                                                         <t t-esc="bank.bank_account_number or '---'"/>
                                                                                     </td>
                                                                                 </tr>
                                                                                 <tr t-if="bank.swift_code">
-                                                                                    <td class="ps-3 py-2 text-muted">Swift Code</td>
-                                                                                    <td class="pe-3 py-2 text-start fw-bold text-dark">
+                                                                                    <td class="ps-3 py-2 text-muted border-top-0">Swift Code</td>
+                                                                                    <td class="pe-3 py-2 text-start fw-bold text-dark border-top-0">
                                                                                         <t t-esc="bank.swift_code"/>
                                                                                     </td>
                                                                                 </tr>
                                                                                 <tr>
-                                                                                    <td class="ps-3 py-2 text-muted">Nội dung</td>
-                                                                                    <td class="pe-3 py-2 text-start fw-semibold text-dark" style="font-size: 0.75rem;">
+                                                                                    <td class="ps-3 py-2 text-muted border-top-0">Nội dung</td>
+                                                                                    <td class="pe-3 py-2 text-start fw-semibold text-dark border-top-0" style="font-size: 0.75rem;">
                                                                                         <t t-set="site_plan_name" t-value="product.site_plan_polygon_ids[0].site_plan_id.name if product.site_plan_polygon_ids and product.site_plan_polygon_ids[0].site_plan_id else 'N/A'"/>
                                                                                         Thanh toán căn <t t-esc="product.name"/> <t t-esc="site_plan_name"/>
                                                                                     </td>
@@ -508,7 +570,7 @@
                                                                     <div t-if="bank.payment_qr_code" class="d-flex flex-column align-items-center justify-content-center p-2" style="width: 160px; min-width: 160px;">
                                                                         <img t-attf-src="data:image/png;base64,#{bank.payment_qr_code.decode('utf-8')}" 
                                                                              style="width: 130px; height: 130px; object-fit: contain;" 
-                                                                             class="img-fluid rounded border shadow-sm p-1 bg-white"/>
+                                                                             class="img-fluid rounded border-0 shadow-sm p-1 bg-white"/>
                                                                         <div class="mt-2 text-center text-muted" style="font-size: 0.65rem; line-height: 1.2;">Quét mã QR<br/>để chuyển khoản</div>
                                                                     </div>
                                                                 </div>
@@ -541,6 +603,14 @@
                                                     <i class="fa fa-file-text-o me-1"></i> Tài Liệu Dự Án
                                                 </button>
                                             </li>
+                                            <t t-set="site_plan" t-value="product.site_plan_polygon_ids[0].site_plan_id if product.site_plan_polygon_ids and product.site_plan_polygon_ids[0].site_plan_id else False"/>
+                                            <t t-if="site_plan and site_plan.catalog">
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link fw-bold" id="catalog-tab" data-bs-toggle="tab" data-bs-target="#catalog" type="button" role="tab" aria-controls="catalog" aria-selected="false">
+                                                        <i class="fa fa-book me-1"></i> Catalogue
+                                                    </button>
+                                                </li>
+                                            </t>
                                             <t t-if="product.description_sale">
                                                 <li class="nav-item" role="presentation">
                                                     <button class="nav-link fw-bold" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="false">
@@ -576,7 +646,7 @@
                                                             }
                                                         </style>
                                                         <div class="table-responsive">
-                                                            <table class="table table-bordered timeline-table text-center mb-0" style="font-size: 0.85rem; border: 1px solid #333; min-width: 900px;">
+                                                            <table class="table table-borderless timeline-table text-center mb-0" style="font-size: 0.85rem; min-width: 900px;">
                                                                 <thead class="timeline-header">
                                                                     <tr>
                                                                         <th rowspan="2" class="align-middle">Kỳ thanh toán</th>
@@ -739,6 +809,91 @@
                                                     </div>
                                                 </t>
                                             </div>
+                                            
+                                            <!-- Tab 3: Catalogue -->
+                                            <t t-set="catalog_site_plan" t-value="product.site_plan_polygon_ids[0].site_plan_id if product.site_plan_polygon_ids and product.site_plan_polygon_ids[0].site_plan_id else False"/>
+                                            <t t-if="catalog_site_plan and catalog_site_plan.catalog">
+                                                <div class="tab-pane fade" id="catalog" role="tabpanel" aria-labelledby="catalog-tab">
+                                                    <div class="catalog-container">
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                                    <h5 class="mb-0 text-primary fw-bold">
+                                                                        <i class="fa fa-book me-2"></i>Catalogue Dự Án
+                                                                        <t t-if="catalog_site_plan.catalog_filename">
+                                                                            <span class="text-muted fw-normal" style="font-size: 0.8rem;"> - <t t-esc="catalog_site_plan.catalog_filename"/></span>
+                                                                        </t>
+                                                                    </h5>
+                                                                    <a t-attf-href="/web/content?model=site.plan&amp;id=#{catalog_site_plan.id}&amp;field=catalog&amp;filename_field=catalog_filename&amp;download=true" 
+                                                                       class="btn btn-primary btn-sm">
+                                                                        <i class="fa fa-download me-1"></i> Tải về Catalogue
+                                                                    </a>
+                                                                </div>
+                                                                
+                                                                <!-- Catalogue Preview -->
+                                                                <t t-set="catalog_filename" t-value="catalog_site_plan.catalog_filename or ''"/>
+                                                                <t t-set="is_pdf" t-value="catalog_filename.lower().endswith('.pdf')"/>
+                                                                <t t-set="is_image" t-value="catalog_filename.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp'))"/>
+                                                                
+                                                                <div class="catalog-preview border rounded shadow-sm overflow-hidden">
+                                                                    <t t-if="is_pdf">
+                                                                        <!-- PDF Viewer -->
+                                                                        <iframe t-attf-src="/web/content?model=site.plan&amp;id=#{catalog_site_plan.id}&amp;field=catalog#toolbar=1&amp;navpanes=0" 
+                                                                                style="width: 100%; height: 800px; border: none;"
+                                                                                allowfullscreen="true">
+                                                                        </iframe>
+                                                                    </t>
+                                                                    <t t-elif="is_image">
+                                                                        <!-- Image Viewer -->
+                                                                        <div class="text-center p-3 bg-light">
+                                                                            <img t-attf-src="/web/image?model=site.plan&amp;id=#{catalog_site_plan.id}&amp;field=catalog" 
+                                                                                 class="img-fluid rounded shadow" 
+                                                                                 style="max-height: 800px; cursor: zoom-in;"
+                                                                                 alt="Catalogue dự án"
+                                                                                 data-bs-toggle="modal" 
+                                                                                 data-bs-target="#catalogImageModal"/>
+                                                                            <p class="text-muted small mt-2 mb-0">
+                                                                                <i class="fa fa-info-circle me-1"></i>Click vào hình ảnh để phóng to
+                                                                            </p>
+                                                                        </div>
+                                                                    </t>
+                                                                    <t t-else="">
+                                                                        <!-- Unsupported format or unknown -->
+                                                                        <div class="text-center py-5 text-muted">
+                                                                            <i class="fa fa-file-o fs-1 mb-3 d-block opacity-50"></i>
+                                                                            <p class="mb-2">Định dạng file không hỗ trợ xem trực tiếp.</p>
+                                                                            <a t-attf-href="/web/content?model=site.plan&amp;id=#{catalog_site_plan.id}&amp;field=Catalogue&amp;filename_field=catalog_filename&amp;download=true"
+                                                                               class="btn btn-outline-primary">
+                                                                                <i class="fa fa-download me-1"></i> Tải về để xem
+                                                                            </a>
+                                                                        </div>
+                                                                    </t>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Catalogue Image Modal for Full Screen View -->
+                                                    <t t-if="is_image">
+                                                        <div class="modal fade" id="catalogImageModal" tabindex="-1" aria-hidden="true">
+                                                            <div class="modal-dialog modal-xl modal-dialog-centered">
+                                                                <div class="modal-content bg-dark">
+                                                                    <div class="modal-header border-0">
+                                                                        <h5 class="modal-title text-white">Catalogue Dự Án</h5>
+                                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body p-0 text-center">
+                                                                        <img t-attf-src="/web/image?model=site.plan&amp;id=#{catalog_site_plan.id}&amp;field=catalog" 
+                                                                             class="img-fluid" 
+                                                                             style="max-height: 85vh;"
+                                                                             alt="Catalogue dự án"/>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                            </t>
                                             
                                             <!-- Tab 3: Description -->
                                             <t t-if="product.description_sale">
@@ -967,25 +1122,37 @@
                                 });
                             }
 
-                            // Bank Tab PDF Update Logic
+                            // Bank Tab PDF/Image Update Logic
                             const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+                            const downloadImageBtn = document.getElementById('downloadImageBtn');
                             const bankTabs = document.querySelectorAll('#bankTabs button[data-bs-toggle="pill"]');
                             
-                            if (downloadPdfBtn &amp;&amp; bankTabs.length > 0) {
-                                const basePdfUrl = downloadPdfBtn.getAttribute('href').split('?')[0];
+                            if (bankTabs.length > 0) {
+                                const basePdfUrl = downloadPdfBtn ? downloadPdfBtn.getAttribute('href').split('?')[0] : null;
+                                const baseImageUrl = downloadImageBtn ? downloadImageBtn.getAttribute('href').split('?')[0] : null;
                                 
+                                // Function to update URLs
+                                const updateUrls = (bankId) => {
+                                    if (downloadPdfBtn &amp;&amp; basePdfUrl) {
+                                        downloadPdfBtn.setAttribute('href', basePdfUrl + '?bank_id=' + bankId);
+                                    }
+                                    if (downloadImageBtn &amp;&amp; baseImageUrl) {
+                                        downloadImageBtn.setAttribute('href', baseImageUrl + '?bank_id=' + bankId);
+                                    }
+                                };
+
                                 // Set initial selected bank
                                 const activeTab = document.querySelector('#bankTabs button.active');
                                 if (activeTab) {
                                     const bankId = activeTab.getAttribute('data-bank-id');
-                                    downloadPdfBtn.setAttribute('href', basePdfUrl + '?bank_id=' + bankId);
+                                    updateUrls(bankId);
                                 }
 
                                 // Update on tab change
                                 bankTabs.forEach(tab => {
                                     tab.addEventListener('shown.bs.tab', function (event) {
                                         const bankId = event.target.getAttribute('data-bank-id');
-                                        downloadPdfBtn.setAttribute('href', basePdfUrl + '?bank_id=' + bankId);
+                                        updateUrls(bankId);
                                     });
                                 });
                             }
@@ -1004,13 +1171,22 @@
                                     <p class="text-muted mb-3">
                                         Tải về tất cả thông tin của căn hộ dưới dạng file PDF để lưu trữ hoặc in ấn
                                     </p>
-                                    <a t-attf-href="/my/property/#{product.id}/download-pdf" 
-                                       id="downloadPdfBtn"
-                                       class="btn btn-danger btn-lg px-5 py-3 shadow-sm"
-                                       style="font-weight: 600; border-radius: 8px;">
-                                        <i class="fa fa-download me-2"></i>
-                                        Tải về PDF
-                                    </a>
+                                    <div class="d-flex justify-content-center gap-3">
+                                        <a t-attf-href="/my/property/#{product.id}/download-pdf" 
+                                           id="downloadPdfBtn"
+                                           class="btn btn-danger btn-lg px-4 py-3 shadow-sm"
+                                           style="font-weight: 600; border-radius: 8px;">
+                                            <i class="fa fa-file-pdf-o me-2"></i>
+                                            Tải về PDF
+                                        </a>
+                                        <a t-attf-href="/my/property/#{product.id}/download-image" 
+                                           id="downloadImageBtn"
+                                           class="btn btn-primary btn-lg px-4 py-3 shadow-sm"
+                                           style="font-weight: 600; border-radius: 8px; background-color: #0d6efd;">
+                                            <i class="fa fa-file-image-o me-2"></i>
+                                            Tải về Ảnh
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

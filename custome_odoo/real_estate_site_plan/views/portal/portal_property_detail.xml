@@ -806,11 +806,9 @@
                                                                     </div>
                                                                     
                                                                     <!-- Info Bar -->
-                                                                    <t t-if="not doc.mimetype.startswith('image/')">
-                                                                        <div class="doc-grid-info">
-                                                                            <span class="doc-name" t-att-title="doc.name"><t t-esc="doc.name"/></span>
-                                                                        </div>
-                                                                    </t>
+                                                                    <div class="doc-grid-info">
+                                                                        <span class="doc-name" t-att-title="doc.name"><t t-esc="doc.name"/></span>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </t>
@@ -860,6 +858,7 @@
                                                                     <t t-elif="is_image">
                                                                         <!-- Image Viewer -->
                                                                         <div class="text-center p-3 bg-light">
+                                                                            <h5 class="fw-bold text-dark mb-3"><i class="fa fa-picture-o me-2 text-warning"/> <t t-esc="catalog_filename"/></h5>
                                                                             <img t-attf-src="/web/image?model=site.plan&amp;id=#{catalog_site_plan.id}&amp;field=catalog" 
                                                                                  class="img-fluid rounded shadow" 
                                                                                  style="max-height: 800px; cursor: zoom-in;"

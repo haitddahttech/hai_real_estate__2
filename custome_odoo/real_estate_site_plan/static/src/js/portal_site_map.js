@@ -44,6 +44,12 @@
             touchStartPos: null,
             touchMoved: false,
             touchStartedOnPolygonIndex: -1,
+            touchStartedOnPolygonIndex: -1,
+            polygonsVisible: true,
+            forceAllGray: false,
+            interactiveGrayMode: false,
+            manuallyGrayIndices: [], // Array of indices set to gray manually (added to gray list)
+            manuallyUngrayIndices: [], // Array of indices set to NOT gray manually (removed from gray list)
         };
 
         const MAX_POPUPS = 5;
@@ -94,6 +100,18 @@
             if (zoomInBtn) zoomInBtn.addEventListener('click', zoomIn);
             if (zoomOutBtn) zoomOutBtn.addEventListener('click', zoomOut);
             if (resetZoomBtn) resetZoomBtn.addEventListener('click', resetZoom);
+
+            // Toggle Polygons button
+            const togglePolygonsBtn = document.getElementById('togglePolygons');
+            if (togglePolygonsBtn) togglePolygonsBtn.addEventListener('click', togglePolygons);
+
+            // Toggle All Gray button
+            const toggleAllGrayBtn = document.getElementById('toggleAllGray');
+            if (toggleAllGrayBtn) toggleAllGrayBtn.addEventListener('click', toggleAllGray);
+
+            // Toggle Interactive Gray Mode button
+            const toggleInteractiveGrayBtn = document.getElementById('toggleInteractiveGray');
+            if (toggleInteractiveGrayBtn) toggleInteractiveGrayBtn.addEventListener('click', toggleInteractiveGrayMode);
 
             // Zoom Lock button
             const toggleZoomLockBtn = document.getElementById('toggleZoomLock');
@@ -298,10 +316,21 @@
 
 
             // Draw polygons (need to scale coordinates from 1200x800 to canvas size)
-            state.polygons.forEach((polygon, index) => {
-                const isSelected = state.selectedPolygons.includes(index);
-                drawPolygonScaled(polygon, isSelected);
-            });
+            if (state.polygonsVisible) {
+                state.polygons.forEach((polygon, index) => {
+                    const isSelected = state.selectedPolygons.includes(index);
+                    let isEffectivelySold;
+
+                    if (state.forceAllGray) {
+                        // If All Gray is ON: It's sold UNLESS manually un-grayed
+                        isEffectivelySold = !state.manuallyUngrayIndices.includes(index);
+                    } else {
+                        // If All Gray is OFF: It's sold if manually grayed
+                        isEffectivelySold = state.manuallyGrayIndices.includes(index);
+                    }
+                    drawPolygonScaled(polygon, isSelected, isEffectivelySold);
+                });
+            }
 
             ctx.restore();
 
@@ -309,7 +338,7 @@
             drawArrows();
         }
 
-        function drawPolygonScaled(polygon, isSelected) {
+        function drawPolygonScaled(polygon, isSelected, isEffectivelySold = false) {
             const points = polygon.points;
             if (!points || points.length < 3) return;
 
@@ -333,7 +362,7 @@
 
 
             // Fill logic: Gray if sold, Transparent otherwise
-            if (polygon.product.is_sold) {
+            if (polygon.product.is_sold || isEffectivelySold) {
                 ctx.fillStyle = '#dddddd'; // Solid light gray
                 ctx.fill();
             } else if (isSelected) {
@@ -343,7 +372,7 @@
             }
 
             // Stroke
-            ctx.strokeStyle = polygon.product.is_sold ? '#bbbbbb' : (isSelected ? '#e74c3c' : strokeColor);
+            ctx.strokeStyle = (polygon.product.is_sold || isEffectivelySold) ? '#bbbbbb' : (isSelected ? '#e74c3c' : strokeColor);
             const baseStrokeWidth = polygon.product && polygon.product.is_decoration ? 0.6 : 2.0;
 
             if (isSelected) {
@@ -520,6 +549,33 @@
             const clickedIndex = findPolygonAt(pos);
 
             if (clickedIndex !== -1) {
+                // Interactive Gray Mode Logic
+                // Interactive Gray Mode Logic
+                if (state.interactiveGrayMode) {
+                    if (state.forceAllGray) {
+                        // When Force All Gray is ON: Clicking toggles "Not Gray" (Un-gray)
+                        const idxInUngray = state.manuallyUngrayIndices.indexOf(clickedIndex);
+                        if (idxInUngray !== -1) {
+                            // Already un-grayed -> remove from un-gray list (becomes gray again)
+                            state.manuallyUngrayIndices.splice(idxInUngray, 1);
+                        } else {
+                            // Currently gray -> add to un-gray list (becomes colored)
+                            state.manuallyUngrayIndices.push(clickedIndex);
+                        }
+                    } else {
+                        // When Force All Gray is OFF: Clicking toggles "Gray"
+                        const idxInManual = state.manuallyGrayIndices.indexOf(clickedIndex);
+                        if (idxInManual !== -1) {
+                            state.manuallyGrayIndices.splice(idxInManual, 1);
+                        } else {
+                            state.manuallyGrayIndices.push(clickedIndex);
+                        }
+                    }
+                    draw();
+                    return; // Stop normal popup logic
+                }
+
+
                 const polygon = state.polygons[clickedIndex];
                 const productId = polygon.product.id;
 
@@ -1359,6 +1415,69 @@
             state.offset = { x: 0, y: 0 };
             updateZoomDisplay();
             draw();
+        }
+
+        function togglePolygons() {
+            state.polygonsVisible = !state.polygonsVisible;
+            updateTogglePolygonsUI();
+            draw();
+        }
+
+        function updateTogglePolygonsUI() {
+            const btn = document.getElementById('togglePolygons');
+            if (!btn) return;
+
+            if (state.polygonsVisible) {
+                btn.innerHTML = '<i class="fa fa-eye-slash"></i> Ẩn lô đất';
+                btn.title = 'Ẩn các lô đất trên bản đồ';
+            } else {
+                btn.innerHTML = '<i class="fa fa-eye"></i> Hiện lô đất';
+                btn.title = 'Hiện các lô đất trên bản đồ';
+            }
+        }
+
+        function toggleAllGray() {
+            state.forceAllGray = !state.forceAllGray;
+
+            // If turning off (Undo), also clear manual selection
+            // When turning ON, we also clear ungray list
+            // Basically, reset manual lists on toggle
+            state.manuallyGrayIndices = [];
+            state.manuallyUngrayIndices = [];
+
+            // Update UI
+            const btn = document.getElementById('toggleAllGray');
+            if (btn) {
+                if (state.forceAllGray) {
+                    btn.innerHTML = '<i class="fa fa-undo"></i> Hoàn tác';
+                    btn.classList.add('active-tool-btn');
+                    btn.style.background = '#e2e8f0';
+                } else {
+                    btn.innerHTML = '<i class="fa fa-paint-brush"></i> Tô tất cả';
+                    btn.classList.remove('active-tool-btn');
+                    btn.style.background = 'white';
+                }
+            }
+            draw();
+        }
+
+        function toggleInteractiveGrayMode() {
+            state.interactiveGrayMode = !state.interactiveGrayMode;
+            // Update UI
+            const btn = document.getElementById('toggleInteractiveGray');
+            if (btn) {
+                if (state.interactiveGrayMode) {
+                    btn.innerHTML = '<i class="fa fa-times"></i> Tắt chọn xám';
+                    btn.style.background = '#e2e8f0';
+                    btn.style.borderColor = '#cbd5e0';
+                    canvas.style.cursor = 'cell';
+                } else {
+                    btn.innerHTML = '<i class="fa fa-magic"></i> Chọn tô xám';
+                    btn.style.background = 'white';
+                    btn.style.borderColor = '#dee2e6';
+                    canvas.style.cursor = 'pointer';
+                }
+            }
         }
 
         function toggleZoomLock() {

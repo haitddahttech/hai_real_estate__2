@@ -1,6 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
+    <!-- Batch Upload Wizard View -->
+    <record id="view_site_plan_image_upload_form" model="ir.ui.view">
+        <field name="name">site.plan.image.upload.form</field>
+        <field name="model">site.plan.image.upload</field>
+        <field name="arch" type="xml">
+            <form string="Tải lên nhiều ảnh">
+                <group>
+                    <field name="folder_id" invisible="1"/>
+                    <field name="attachment_ids" widget="many2many_binary" string="Chọn các file ảnh"/>
+                </group>
+                <footer>
+                    <button name="action_upload" string="Tải lên" type="object" class="btn-primary"/>
+                    <button string="Hủy" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_site_plan_image_upload" model="ir.actions.act_window">
+        <field name="name">Tải lên ảnh</field>
+        <field name="res_model">site.plan.image.upload</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
     <!-- Site Plan Form View -->
     <record id="view_site_plan_form" model="ir.ui.view">
         <field name="name">site.plan.form</field>
@@ -27,6 +52,12 @@
                             <field name="cover_image" widget="image" class="oe_avatar"/>
                             <field name="catalog" widget="binary" filename="catalog_filename"/>
                             <field name="catalog_filename" invisible="1"/>
+                            <field name="project_legal_1" widget="binary" filename="project_legal_1_filename"/>
+                            <field name="project_legal_1_filename" invisible="1"/>
+                            <field name="project_legal_2" widget="binary" filename="project_legal_2_filename"/>
+                            <field name="project_legal_2_filename" invisible="1"/>
+                            <field name="project_legal_3" widget="binary" filename="project_legal_3_filename"/>
+                            <field name="project_legal_3_filename" invisible="1"/>
                         </group>
                     </group>
                     
@@ -49,6 +80,52 @@
                             
                             <field name="id" invisible="1"/>
                             <widget name="site_plan_canvas_widget"/>
+                        </page>
+
+                        <page string="Thư viện ảnh" name="image_folders">
+                            <field name="folder_ids">
+                                <list string="Thư mục">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="image_count"/>
+                                </list>
+                                <form string="Thư mục">
+                                    <header>
+                                        <button name="%(real_estate_site_plan.action_site_plan_image_upload)d" 
+                                                string="Tải lên nhiều ảnh" 
+                                                type="action" 
+                                                class="btn-primary"
+                                                context="{'default_folder_id': id}"/>
+                                    </header>
+                                    <group>
+                                        <field name="name"/>
+                                        <field name="sequence"/>
+                                    </group>
+                                    <field name="image_ids" widget="one2many">
+                                        <list string="Ảnh" editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="name"/>
+                                            <field name="image" widget="image" options="{'size': [50, 50]}"/>
+                                            <field name="description"/>
+                                        </list>
+                                        <kanban>
+                                            <field name="id"/>
+                                            <field name="name"/>
+                                            <field name="image"/>
+                                            <templates>
+                                                <t t-name="card">
+                                                    <div class="o_kanban_image">
+                                                        <field name="image" widget="image" options="{'size': [100, 100]}"/>
+                                                    </div>
+                                                    <div class="oe_kanban_details">
+                                                        <field name="name"/>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                    </field>
+                                </form>
+                            </field>
                         </page>
                         
                         <page string="Danh sách Đa giác" name="polygons_list">
@@ -192,5 +269,7 @@
             </list>
         </field>
     </record>
+
+
 
 </odoo>

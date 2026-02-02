@@ -604,10 +604,24 @@
                                                 </button>
                                             </li>
                                             <t t-set="site_plan" t-value="product.site_plan_polygon_ids[0].site_plan_id if product.site_plan_polygon_ids and product.site_plan_polygon_ids[0].site_plan_id else False"/>
+                                            <t t-if="site_plan and site_plan.folder_ids">
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link fw-bold" id="perspective-tab" data-bs-toggle="tab" data-bs-target="#perspective" type="button" role="tab" aria-controls="perspective" aria-selected="false">
+                                                        <i class="fa fa-picture-o me-1"></i> Mặt bằng phối cảnh
+                                                    </button>
+                                                </li>
+                                            </t>
                                             <t t-if="site_plan and site_plan.catalog">
                                                 <li class="nav-item" role="presentation">
                                                     <button class="nav-link fw-bold" id="catalog-tab" data-bs-toggle="tab" data-bs-target="#catalog" type="button" role="tab" aria-controls="catalog" aria-selected="false">
                                                         <i class="fa fa-book me-1"></i> Catalogue
+                                                    </button>
+                                                </li>
+                                            </t>
+                                            <t t-if="site_plan and (site_plan.project_legal_1 or site_plan.project_legal_2 or site_plan.project_legal_3)">
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link fw-bold" id="legal-tab" data-bs-toggle="tab" data-bs-target="#legal" type="button" role="tab" aria-controls="legal" aria-selected="false">
+                                                        <i class="fa fa-gavel me-1"></i> Pháp lý dự án
                                                     </button>
                                                 </li>
                                             </t>
@@ -620,7 +634,7 @@
                                             </t>
                                         </ul>
                                         
-                                        <div class="tab-content border-start border-end border-bottom bg-white p-4 rounded-bottom shadow-sm" id="propertyTabsContent">
+                                        <div class="tab-content border-start border-end border-bottom bg-white p-4 rounded-bottom shadow-sm" id="propertyTabsContent" style="min-height: 500px">
                                             <!-- Tab 1: Payment Timeline -->
                                             <div class="tab-pane fade show active" id="timeline" role="tabpanel" aria-labelledby="timeline-tab">
                                                 <t t-if="product.payment_timeline_ids">
@@ -895,6 +909,187 @@
                                                 </div>
                                             </t>
                                             
+                                            <!-- Tab 4: Legal Documents -->
+                                            <t t-if="site_plan and (site_plan.project_legal_1 or site_plan.project_legal_2 or site_plan.project_legal_3)">
+                                                <div class="tab-pane fade" id="legal" role="tabpanel" aria-labelledby="legal-tab">
+                                                    <div class="row g-3">
+                                                        <t t-if="site_plan.project_legal_1">
+                                                            <div class="col-md-4">
+                                                                <div class="card h-100 border-0 shadow-sm">
+                                                                    <div class="card-body p-3 d-flex flex-column align-items-center text-center">
+                                                                         <i class="fa fa-file-pdf-o text-danger fs-1 mb-2"></i>
+                                                                         <h6 class="text-truncate w-100 mb-2" t-att-title="site_plan.project_legal_1_filename or 'Pháp lý 1'">
+                                                                             <t t-esc="site_plan.project_legal_1_filename or 'Pháp lý 1'"/>
+                                                                         </h6>
+                                                                         <div class="mt-auto">
+                                                                             <button type="button" 
+                                                                                     class="btn btn-sm btn-outline-primary me-1 doc-preview-btn"
+                                                                                     data-bs-toggle="modal" 
+                                                                                     data-bs-target="#docPreviewModal"
+                                                                                     t-att-data-url="'/web/content?model=site.plan&amp;id=' + str(site_plan.id) + '&amp;field=project_legal_1'"
+                                                                                     data-mimetype="application/pdf"
+                                                                                     t-att-data-title="site_plan.project_legal_1_filename or 'Pháp lý 1'">
+                                                                                 <i class="fa fa-eye"></i> Xem
+                                                                             </button>
+                                                                             <a t-attf-href="/web/content?model=site.plan&amp;id=#{site_plan.id}&amp;field=project_legal_1&amp;filename_field=project_legal_1_filename&amp;download=true" class="btn btn-sm btn-primary">
+                                                                                 <i class="fa fa-download"></i> Tải về
+                                                                             </a>
+                                                                         </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </t>
+                                                        <t t-if="site_plan.project_legal_2">
+                                                            <div class="col-md-4">
+                                                                <div class="card h-100 border-0 shadow-sm">
+                                                                    <div class="card-body p-3 d-flex flex-column align-items-center text-center">
+                                                                         <i class="fa fa-file-pdf-o text-danger fs-1 mb-2"></i>
+                                                                         <h6 class="text-truncate w-100 mb-2" t-att-title="site_plan.project_legal_2_filename or 'Pháp lý 2'">
+                                                                             <t t-esc="site_plan.project_legal_2_filename or 'Pháp lý 2'"/>
+                                                                         </h6>
+                                                                         <div class="mt-auto">
+                                                                             <button type="button" 
+                                                                                     class="btn btn-sm btn-outline-primary me-1 doc-preview-btn"
+                                                                                     data-bs-toggle="modal" 
+                                                                                     data-bs-target="#docPreviewModal"
+                                                                                     t-att-data-url="'/web/content?model=site.plan&amp;id=' + str(site_plan.id) + '&amp;field=project_legal_2'"
+                                                                                     data-mimetype="application/pdf"
+                                                                                     t-att-data-title="site_plan.project_legal_2_filename or 'Pháp lý 2'">
+                                                                                 <i class="fa fa-eye"></i> Xem
+                                                                             </button>
+                                                                             <a t-attf-href="/web/content?model=site.plan&amp;id=#{site_plan.id}&amp;field=project_legal_2&amp;filename_field=project_legal_2_filename&amp;download=true" class="btn btn-sm btn-primary">
+                                                                                 <i class="fa fa-download"></i> Tải về
+                                                                             </a>
+                                                                         </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </t>
+                                                        <t t-if="site_plan.project_legal_3">
+                                                            <div class="col-md-4">
+                                                                <div class="card h-100 border-0 shadow-sm">
+                                                                    <div class="card-body p-3 d-flex flex-column align-items-center text-center">
+                                                                         <i class="fa fa-file-pdf-o text-danger fs-1 mb-2"></i>
+                                                                         <h6 class="text-truncate w-100 mb-2" t-att-title="site_plan.project_legal_3_filename or 'Pháp lý 3'">
+                                                                             <t t-esc="site_plan.project_legal_3_filename or 'Pháp lý 3'"/>
+                                                                         </h6>
+                                                                         <div class="mt-auto">
+                                                                             <button type="button" 
+                                                                                     class="btn btn-sm btn-outline-primary me-1 doc-preview-btn"
+                                                                                     data-bs-toggle="modal" 
+                                                                                     data-bs-target="#docPreviewModal"
+                                                                                     t-att-data-url="'/web/content?model=site.plan&amp;id=' + str(site_plan.id) + '&amp;field=project_legal_3'"
+                                                                                     data-mimetype="application/pdf"
+                                                                                     t-att-data-title="site_plan.project_legal_3_filename or 'Pháp lý 3'">
+                                                                                 <i class="fa fa-eye"></i> Xem
+                                                                             </button>
+                                                                             <a t-attf-href="/web/content?model=site.plan&amp;id=#{site_plan.id}&amp;field=project_legal_3&amp;filename_field=project_legal_3_filename&amp;download=true" class="btn btn-sm btn-primary">
+                                                                                 <i class="fa fa-download"></i> Tải về
+                                                                             </a>
+                                                                         </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </t>
+                                                    </div>
+                                                </div>
+                                            </t>
+
+
+
+                                            <!-- Tab New: Perspective Images -->
+                                            <t t-if="site_plan and site_plan.folder_ids">
+                                                <div class="tab-pane fade" id="perspective" role="tabpanel" aria-labelledby="perspective-tab">
+                                                    <div class="row g-4">
+                                                        <t t-foreach="site_plan.folder_ids" t-as="folder">
+                                                            <div class="col-6 col-md-4 col-lg-3">
+                                                                <div class="folder-card card h-100 border-0 shadow-sm text-center cursor-pointer hover-shadow"
+                                                                     data-bs-toggle="modal"
+                                                                     t-att-data-bs-target="'#folderModal-' + str(folder.id)">
+                                                                     <div class="card-body p-4 d-flex flex-column align-items-center justify-content-center">
+                                                                         <i class="fa fa-folder text-warning display-1 mb-3" style="color: #FFC107 !important;"></i>
+                                                                         <h5 class="card-title fw-bold text-dark"><t t-esc="folder.name"/></h5>
+                                                                         <p class="text-muted small mb-0"><t t-esc="folder.image_count"/> ảnh</p>
+                                                                     </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Modal for this folder -->
+                                                            <div class="modal fade" t-att-id="'folderModal-' + str(folder.id)" tabindex="-1" aria-hidden="true">
+                                                                <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                                                                    <div class="modal-content text-white" style="background-color: #2c3e50;">
+                                                                        <div class="modal-header border-bottom border-secondary">
+                                                                            <h5 class="modal-title">
+                                                                                <i class="fa fa-folder-open-o me-2 text-warning"></i>
+                                                                                <t t-esc="folder.name"/>
+                                                                            </h5>
+                                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body p-4">
+                                                                            <t t-if="not folder.image_ids">
+                                                                                <div class="text-center py-5 text-white-50">
+                                                                                    <i class="fa fa-picture-o fs-1 mb-3 d-block opacity-50"></i>
+                                                                                    <p>Chưa có ảnh trong thư mục này.</p>
+                                                                                </div>
+                                                                            </t>
+                                                                            <t t-else="">
+                                                                                <!-- Carousel for images -->
+                                                                                <div t-att-id="'carouselFolder-' + str(folder.id)" class="carousel slide" data-bs-ride="false"> <!-- No auto ride -->
+                                                                                    <div class="carousel-inner">
+                                                                                        <t t-foreach="folder.image_ids" t-as="img">
+                                                                                            <div t-att-class="'carousel-item ' + ('active' if img_index == 0 else '')">
+                                                                                                <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 60vh; background-color: #1a252f;">
+                                                                                                    <img t-attf-src="/web/image/site.plan.image/#{img.id}/image" 
+                                                                                                         class="d-block img-fluid rounded shadow-lg" 
+                                                                                                         style="max-height: 75vh; width: auto; max-width: 100%; object-fit: contain;"
+                                                                                                         alt="Ảnh phối cảnh"/>
+                                                                                                    <div class="mt-3 text-center">
+                                                                                                         <h5 class="mb-1 text-white"><t t-esc="img.name or 'Ảnh ' + str(img_index + 1)"/></h5>
+                                                                                                         <p class="text-white-50 small" t-if="img.description"><t t-esc="img.description"/></p>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </t>
+                                                                                    </div>
+                                                                                    <t t-if="len(folder.image_ids) > 1">
+                                                                                        <button class="carousel-control-prev" type="button" t-att-data-bs-target="'#carouselFolder-' + str(folder.id)" data-bs-slide="prev">
+                                                                                            <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                                                                                            <span class="visually-hidden">Trước</span>
+                                                                                        </button>
+                                                                                        <button class="carousel-control-next" type="button" t-att-data-bs-target="'#carouselFolder-' + str(folder.id)" data-bs-slide="next">
+                                                                                            <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                                                                                            <span class="visually-hidden">Sau</span>
+                                                                                        </button>
+                                                                                    </t>
+                                                                                    
+                                                                                    <!-- Indicators/Thumbnails (Optional simple indicators) -->
+                                                                                    <div class="carousel-thumbnails position-static mt-3 overflow-auto" style="white-space: nowrap; justify-content: start;">
+                                                                                        <t t-foreach="folder.image_ids" t-as="img">
+                                                                                            <button type="button" 
+                                                                                                    t-att-data-bs-target="'#carouselFolder-' + str(folder.id)" 
+                                                                                                    t-att-data-bs-slide-to="img_index" 
+                                                                                                    t-att-class="'active' if img_index == 0 else ''"
+                                                                                                    t-att-aria-current="'true' if img_index == 0 else 'false'"
+                                                                                                    style="width: 60px; height: 40px; margin-right: 5px; text-indent: 0; opacity: 1; border: none; background: transparent;">
+                                                                                                <img t-attf-src="/web/image/site.plan.image/#{img.id}/image" 
+                                                                                                     class="img-fluid rounded border border-secondary"
+                                                                                                     style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;"
+                                                                                                     onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.6"
+                                                                                                     />
+                                                                                            </button>
+                                                                                        </t>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </t>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </t>
+                                                    </div>
+                                                </div>
+                                            </t>
+
                                             <!-- Tab 3: Description -->
                                             <t t-if="product.description_sale">
                                                 <div class="tab-pane fade" id="description" role="tabpanel" aria-labelledby="description-tab">
@@ -974,80 +1169,7 @@
                                     </div>
                                 </div>
                                 
-                                <script type="text/javascript">
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        const checkboxes = document.querySelectorAll('.discount-checkbox');
-                                        const listPriceElement = document.getElementById('listPriceValue');
-                                        const finalPriceElement = document.getElementById('finalPriceValue');
-                                        const savingsElement = document.getElementById('totalSavings');
-                                        const productId = <t t-esc="product.id"/>;
-                                        
-                                        if (!listPriceElement || !finalPriceElement) return;
-                                        
-                                        const listPrice = parseFloat(listPriceElement.getAttribute('data-price'));
-                                        
-                                        function formatNumber(num) {
-                                            return num.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
-                                        }
-                                        
-                                        function saveSelectedDiscounts() {
-                                            const selectedIds = [];
-                                            checkboxes.forEach(cb => {
-                                                if (cb.checked) {
-                                                    selectedIds.push(parseInt(cb.getAttribute('data-id')));
-                                                }
-                                            });
-                                            
-                                            // Save to backend via AJAX
-                                            fetch(`/my/property/${productId}/save_discounts`, {
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/json',
-                                                },
-                                                body: JSON.stringify({
-                                                    jsonrpc: '2.0',
-                                                    method: 'call',
-                                                    params: {
-                                                        discount_ids: selectedIds
-                                                    }
-                                                })
-                                            }).then(response => response.json())
-                                              .then(data => {
-                                                  if (data.result &amp;&amp; data.result.success) {
-                                                      console.log('Discounts saved:', data.result.selected_count);
-                                                  }
-                                              })
-                                              .catch(error => console.error('Error saving discounts:', error));
-                                        }
-                                        
-                                        function calculatePrice() {
-                                            let totalDiscount = 0;
-                                            checkboxes.forEach(cb => {
-                                                if (cb.checked) {
-                                                    const type = cb.getAttribute('data-type');
-                                                    const value = parseFloat(cb.getAttribute('data-value'));
-                                                    
-                                                    if (type === 'percent') {
-                                                        totalDiscount += (listPrice * value / 100);
-                                                    } else {
-                                                        totalDiscount += value;
-                                                    }
-                                                }
-                                            });
-                                            
-                                            const finalPrice = Math.max(0, listPrice - totalDiscount);
-                                            finalPriceElement.innerText = formatNumber(finalPrice);
-                                            savingsElement.innerText = formatNumber(totalDiscount);
-                                            
-                                            // Save selected discounts to backend
-                                            saveSelectedDiscounts();
-                                        }
-                                        
-                                        checkboxes.forEach(cb => {
-                                            cb.addEventListener('change', calculatePrice);
-                                        });
-                                    });
-                                </script>
+                                <!-- Script logic moved to bottom -->
                             </div>
                         </div>
                     </div>
@@ -1080,6 +1202,68 @@
 
                     <script type="text/javascript">
                         document.addEventListener('DOMContentLoaded', function() {
+                            // --- PART 1: Discounts &amp; Price Calculation ---
+                            const checkboxes = document.querySelectorAll('.discount-checkbox');
+                            const listPriceElement = document.getElementById('listPriceValue');
+                            const finalPriceElement = document.getElementById('finalPriceValue');
+                            const savingsElement = document.getElementById('totalSavings');
+                            const productId = <t t-esc="product.id"/>;
+                            
+                            // Initialize pricing logic
+                            if (listPriceElement &amp;&amp; finalPriceElement) {
+                                const listPrice = parseFloat(listPriceElement.getAttribute('data-price'));
+                                
+                                function formatNumber(num) {
+                                    return num.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                                }
+                                
+                                function saveSelectedDiscounts() {
+                                    const selectedIds = [];
+                                    checkboxes.forEach(cb => {
+                                        if (cb.checked) {
+                                            selectedIds.push(parseInt(cb.getAttribute('data-id')));
+                                        }
+                                    });
+                                    
+                                    fetch('/my/property/' + productId + '/save_discounts', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            jsonrpc: '2.0',
+                                            method: 'call',
+                                            params: { discount_ids: selectedIds }
+                                        })
+                                    }).catch(error => console.error('Error saving discounts:', error));
+                                }
+                                
+                                function calculatePrice() {
+                                    let totalDiscount = 0;
+                                    checkboxes.forEach(cb => {
+                                        if (cb.checked) {
+                                            const type = cb.getAttribute('data-type');
+                                            const value = parseFloat(cb.getAttribute('data-value'));
+                                            if (type === 'percent') {
+                                                totalDiscount += (listPrice * value / 100);
+                                            } else {
+                                                totalDiscount += value;
+                                            }
+                                        }
+                                    });
+                                    
+                                    const finalPrice = Math.max(0, listPrice - totalDiscount);
+                                    finalPriceElement.innerText = formatNumber(finalPrice);
+                                    savingsElement.innerText = formatNumber(totalDiscount);
+                                    
+                                    saveSelectedDiscounts();
+                                    updateAllDownloadLinks();
+                                }
+                                
+                                checkboxes.forEach(cb => {
+                                    cb.addEventListener('change', calculatePrice);
+                                });
+                            }
+
+                            // --- PART 2: Document Preview Modal ---
                             const previewModal = document.getElementById('docPreviewModal');
                             if (previewModal) {
                                 previewModal.addEventListener('show.bs.modal', function (event) {
@@ -1088,14 +1272,14 @@
                                     const mimetype = button.getAttribute('data-mimetype');
                                     const title = button.getAttribute('data-title');
                                     
-                                    // Update modal title and download link
                                     const modalTitle = previewModal.querySelector('.modal-title');
                                     const downloadBtn = document.getElementById('modalDownloadBtn');
                                     modalTitle.textContent = title;
-                                    downloadBtn.href = url + '?download=true';
+                                    const separator = url.includes('?') ? '&amp;' : '?';
+                                    downloadBtn.href = url + separator + 'download=true';
                                     
                                     const container = document.getElementById('modalPreviewContent');
-                                    container.innerHTML = ''; // Clear spinner
+                                    container.innerHTML = '';
                                     
                                     if (mimetype.startsWith('image/')) {
                                         const img = document.createElement('img');
@@ -1116,46 +1300,59 @@
                                     }
                                 });
                                 
-                                // Clear content when modal is hidden to stop audio/video or clear memory
                                 previewModal.addEventListener('hidden.bs.modal', function () {
                                     document.getElementById('modalPreviewContent').innerHTML = '';
                                 });
                             }
 
-                            // Bank Tab PDF/Image Update Logic
+                            // --- PART 3: Unified Download Link Logic ---
                             const downloadPdfBtn = document.getElementById('downloadPdfBtn');
                             const downloadImageBtn = document.getElementById('downloadImageBtn');
                             const bankTabs = document.querySelectorAll('#bankTabs button[data-bs-toggle="pill"]');
                             
-                            if (bankTabs.length > 0) {
-                                const basePdfUrl = downloadPdfBtn ? downloadPdfBtn.getAttribute('href').split('?')[0] : null;
-                                const baseImageUrl = downloadImageBtn ? downloadImageBtn.getAttribute('href').split('?')[0] : null;
-                                
-                                // Function to update URLs
-                                const updateUrls = (bankId) => {
-                                    if (downloadPdfBtn &amp;&amp; basePdfUrl) {
-                                        downloadPdfBtn.setAttribute('href', basePdfUrl + '?bank_id=' + bankId);
-                                    }
-                                    if (downloadImageBtn &amp;&amp; baseImageUrl) {
-                                        downloadImageBtn.setAttribute('href', baseImageUrl + '?bank_id=' + bankId);
-                                    }
-                                };
+                            const basePdfUrl = downloadPdfBtn ? downloadPdfBtn.getAttribute('href').split('?')[0] : null;
+                            const baseImageUrl = downloadImageBtn ? downloadImageBtn.getAttribute('href').split('?')[0] : null;
 
-                                // Set initial selected bank
+                            function updateAllDownloadLinks() {
+                                if (!downloadPdfBtn &amp;&amp; !downloadImageBtn) return;
+
+                                let bankId = null;
                                 const activeTab = document.querySelector('#bankTabs button.active');
                                 if (activeTab) {
-                                    const bankId = activeTab.getAttribute('data-bank-id');
-                                    updateUrls(bankId);
+                                    bankId = activeTab.getAttribute('data-bank-id');
                                 }
 
-                                // Update on tab change
+                                const selectedDiscountIds = [];
+                                const checkboxes = document.querySelectorAll('.discount-checkbox');
+                                checkboxes.forEach(cb => {
+                                    if (cb.checked) {
+                                        selectedDiscountIds.push(cb.getAttribute('data-id'));
+                                    }
+                                });
+                                const discountString = selectedDiscountIds.join(',');
+
+                                const params = new URLSearchParams();
+                                if (bankId) params.append('bank_id', bankId);
+                                if (discountString) params.append('discount_ids', discountString);
+                                
+                                const queryString = params.toString() ? '?' + params.toString() : '';
+
+                                if (downloadPdfBtn &amp;&amp; basePdfUrl) {
+                                    downloadPdfBtn.setAttribute('href', basePdfUrl + queryString);
+                                }
+                                if (downloadImageBtn &amp;&amp; baseImageUrl) {
+                                    downloadImageBtn.setAttribute('href', baseImageUrl + queryString);
+                                }
+                            }
+
+                            if (bankTabs.length > 0) {
                                 bankTabs.forEach(tab => {
-                                    tab.addEventListener('shown.bs.tab', function (event) {
-                                        const bankId = event.target.getAttribute('data-bank-id');
-                                        updateUrls(bankId);
-                                    });
+                                    tab.addEventListener('shown.bs.tab', updateAllDownloadLinks);
                                 });
                             }
+                            
+                            // Also update immediately in case checkboxes have default values
+                            updateAllDownloadLinks();
                         });
                     </script>
 

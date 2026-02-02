@@ -13,3 +13,8 @@ access_product_discount_config_user,access.product.discount.config.user,model_pr
 access_product_discount_config_system,access.product.discount.config.system,model_product_discount_config,base.group_system,1,1,1,1
 access_res_company_bank_user,res.company.bank.user,model_res_company_bank,base.group_user,1,1,1,1
 access_res_company_bank_portal,res.company.bank.portal,model_res_company_bank,base.group_portal,1,0,0,0
+access_site_plan_folder_user,site.plan.folder.user,model_site_plan_folder,base.group_user,1,1,1,1
+access_site_plan_folder_portal,site.plan.folder.portal,model_site_plan_folder,base.group_portal,1,0,0,0
+access_site_plan_image_user,site.plan.image.user,model_site_plan_image,base.group_user,1,1,1,1
+access_site_plan_image_portal,site.plan.image.portal,model_site_plan_image,base.group_portal,1,0,0,0
+access_site_plan_image_upload_user,site.plan.image.upload.user,model_site_plan_image_upload,base.group_user,1,1,1,1

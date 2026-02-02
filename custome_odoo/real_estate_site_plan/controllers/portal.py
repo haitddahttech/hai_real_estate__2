@@ -26,7 +26,7 @@ class SitePlanPortal(CustomerPortal):
         values['site_plans_list'] = site_plans
         return values
 
-    @http.route(['/real-estate', '/real-estate/'], type='http', auth='public', website=True)
+    @http.route(['/', '/real-estate', '/real-estate/'], type='http', auth='user', website=True)
     def portal_landing_page(self, **kw):
         """Landing page for real estate site plans"""
         return request.render('real_estate_site_plan.portal_landing_page')
@@ -200,6 +200,20 @@ class SitePlanPortal(CustomerPortal):
                 _logger.warning(f"Product {product_id} not found for PDF download")
                 return request.redirect('/my')
             
+            # Handle discount_ids param to sync state before printing
+            if 'discount_ids' in kw:
+                try:
+                    d_ids = []
+                    if kw['discount_ids']:
+                        d_ids = [int(x) for x in kw['discount_ids'].split(',')]
+                    
+                    # Update product discounts
+                    product.sudo().write({
+                        'selected_discount_ids': [(6, 0, d_ids)]
+                    })
+                except Exception as e:
+                    _logger.error(f"Error applying discounts for PDF: {e}")
+            
             # Check access rights
             try:
                 product.check_access_rights('read')
@@ -248,6 +262,20 @@ class SitePlanPortal(CustomerPortal):
             if not product.exists():
                 return request.redirect('/my')
             
+            # Handle discount_ids param to sync state before printing
+            if 'discount_ids' in kw:
+                try:
+                    d_ids = []
+                    if kw['discount_ids']:
+                        d_ids = [int(x) for x in kw['discount_ids'].split(',')]
+                    
+                    # Update product discounts
+                    product.sudo().write({
+                        'selected_discount_ids': [(6, 0, d_ids)]
+                    })
+                except Exception as e:
+                    _logger.error(f"Error applying discounts for Image: {e}")
+
             # Check access rights
             product.check_access('read')
             

@@ -5,6 +5,7 @@ from odoo import models, fields, api
 
 class SitePlan(models.Model):
     _name = 'site.plan'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Site Plan / Master Plan'
     _order = 'name'
 
@@ -72,6 +73,33 @@ class SitePlan(models.Model):
     catalog_filename = fields.Char(
         string='Tên file Catalogue',
         help='Tên gốc của file Catalogue đã tải lên'
+    )
+
+    project_legal_1 = fields.Binary(
+        string='Pháp lý dự án 1',
+        attachment=True,
+        help='File pháp lý dự án 1 (PDF)'
+    )
+    project_legal_1_filename = fields.Char(string='Tên file Pháp lý 1')
+
+    project_legal_2 = fields.Binary(
+        string='Pháp lý dự án 2',
+        attachment=True,
+        help='File pháp lý dự án 2 (PDF)'
+    )
+    project_legal_2_filename = fields.Char(string='Tên file Pháp lý 2')
+
+    project_legal_3 = fields.Binary(
+        string='Pháp lý dự án 3',
+        attachment=True,
+        help='File pháp lý dự án 3 (PDF)'
+    )
+    project_legal_3_filename = fields.Char(string='Tên file Pháp lý 3')
+
+    folder_ids = fields.One2many(
+        comodel_name='site.plan.folder',
+        inverse_name='site_plan_id',
+        string='Thư mục ảnh'
     )
 
     @api.model_create_multi
@@ -160,3 +188,61 @@ class SitePlan(models.Model):
             'url': portal_url,
             'target': 'new',
         }
+
+
+class SitePlanFolder(models.Model):
+    _name = 'site.plan.folder'
+    _description = 'Thư mục ảnh phối cảnh'
+    _order = 'sequence, id'
+
+    name = fields.Char(string='Tên thư mục', required=True)
+    sequence = fields.Integer(string='Thứ tự', default=10)
+    site_plan_id = fields.Many2one('site.plan', string='Dự án', required=True, ondelete='cascade')
+    image_ids = fields.One2many('site.plan.image', 'folder_id', string='Danh sách ảnh')
+    
+    image_count = fields.Integer(string='Số lượng ảnh', compute='_compute_image_count')
+    
+    @api.depends('image_ids')
+    def _compute_image_count(self):
+        for folder in self:
+            folder.image_count = len(folder.image_ids)
+
+
+class SitePlanImage(models.Model):
+    _name = 'site.plan.image'
+    _description = 'Ảnh phối cảnh'
+    _order = 'sequence, id'
+
+    name = fields.Char(string='Tên ảnh')
+    sequence = fields.Integer(string='Thứ tự', default=10)
+    folder_id = fields.Many2one('site.plan.folder', string='Thư mục', required=True, ondelete='cascade')
+    image = fields.Image(string='Ảnh', required=True, max_width=1920, max_height=1080)
+    description = fields.Text(string='Mô tả')
+
+
+class SitePlanImageUpload(models.TransientModel):
+    _name = 'site.plan.image.upload'
+    _description = 'Wizard tải lên nhiều ảnh'
+
+    folder_id = fields.Many2one('site.plan.folder', string='Thư mục', required=True)
+    attachment_ids = fields.Many2many('ir.attachment', string='Chọn ảnh')
+
+    def action_upload(self):
+        self.ensure_one()
+        if not self.attachment_ids:
+            return
+        
+        # Create image records from attachments
+        values_list = []
+        for attachment in self.attachment_ids:
+            values_list.append({
+                'folder_id': self.folder_id.id,
+                'name': attachment.name,
+                'image': attachment.datas,
+                'sequence': 10
+            })
+            
+        if values_list:
+            self.env['site.plan.image'].create(values_list)
+            
+        return {'type': 'ir.actions.act_window_close'}

@@ -364,6 +364,15 @@
                                         <button type="button" class="toolbar-btn" id="resetZoom">
                                             <i class="fa fa-expand"/> Đặt lại
                                         </button>
+                                        <button type="button" class="toolbar-btn" id="togglePolygons" title="Ẩn/Hiện Lô đất">
+                                            <i class="fa fa-eye-slash"/> Ẩn lô đất
+                                        </button>
+                                        <button type="button" class="toolbar-btn" id="toggleAllGray" title="Tô xám tất cả">
+                                            <i class="fa fa-paint-brush"/> Tô tất cả
+                                        </button>
+                                        <button type="button" class="toolbar-btn" id="toggleInteractiveGray" title="Chế độ chọn tô xám">
+                                            <i class="fa fa-magic"/> Chọn tô xám
+                                        </button>
                                         <button type="button" class="toolbar-btn" id="downloadScreenshot" style="background: #28a745; color: white; border-color: #28a745;">
                                             <i class="fa fa-camera"/> Chụp màn hình
                                         </button>

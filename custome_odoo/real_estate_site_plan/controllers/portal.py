@@ -84,28 +84,49 @@ class SitePlanPortal(CustomerPortal):
             ])
             
             # Prepare polygon data for JS
+            # Prepare polygon data for JS
             polygon_data = []
+            
+            # --- OPTIMIZATION START ---
+            
+            # 1. Collect all product IDs to batch fetch attachments
+            product_ids = [p.product_template_id.id for p in polygons if p.product_template_id]
+            product_ids = list(set(product_ids)) # Remove duplicates
+            
+            # 2. Batch fetch attachments
+            attachments_by_product = {}
+            if product_ids:
+                all_attachments = request.env['ir.attachment'].sudo().search([
+                    ('res_model', '=', 'product.template'),
+                    ('res_id', 'in', product_ids),
+                    ('mimetype', 'ilike', 'image')
+                ])
+                for att in all_attachments:
+                    if att.res_id not in attachments_by_product:
+                        attachments_by_product[att.res_id] = []
+                    attachments_by_product[att.res_id].append({
+                        'id': att.id,
+                        'name': att.name,
+                        'url': f'/web/image/{att.id}'
+                    })
+            
+            # 3. Cache selection fields to avoid repeated introspection
+            # Create a dummy instance to access fields once
+            ProductTemplate = request.env['product.template']
+            property_type_selection = dict(ProductTemplate._fields['property_type'].selection) if hasattr(ProductTemplate, 'property_type') else {}
+            direction_selection = dict(ProductTemplate._fields['direction'].selection) if hasattr(ProductTemplate, 'direction') else {}
+            
+            # --- OPTIMIZATION END ---
+
             for polygon in polygons:
                 product = polygon.product_template_id
                 
                 if not product:
                     continue  # Skip polygons without products
                 
-                # Safely get selection field labels
-                property_type_label = ''
-                direction_label = ''
-                
-                try:
-                    if hasattr(product, 'property_type') and product.property_type:
-                        property_type_label = dict(product._fields['property_type'].selection).get(product.property_type, '')
-                except Exception as e:
-                    _logger.warning(f"Error getting property_type for product {product.id}: {e}")
-                
-                try:
-                    if hasattr(product, 'direction') and product.direction:
-                        direction_label = dict(product._fields['direction'].selection).get(product.direction, '')
-                except Exception as e:
-                    _logger.warning(f"Error getting direction for product {product.id}: {e}")
+                # Safely get selection field labels using cached dicts
+                property_type_label = property_type_selection.get(product.property_type, '')
+                direction_label = direction_selection.get(product.direction, '')
                 
                 try:
                     product_data = {
@@ -125,21 +146,8 @@ class SitePlanPortal(CustomerPortal):
                         'decoration_note': product.decoration_note or '',
                         'buyer_name': product.buyer_id.name if product.buyer_id else '',
                         'currency_symbol': product.currency_id.symbol if product.currency_id else '$',
-                        'attachments': []
+                        'attachments': attachments_by_product.get(product.id, []) # Use pre-fetched data
                     }
-
-                    # Add attachments for decoration or anyway
-                    attachments = request.env['ir.attachment'].sudo().search([
-                        ('res_model', '=', 'product.template'),
-                        ('res_id', '=', product.id),
-                        ('mimetype', 'ilike', 'image')
-                    ])
-                    for attach in attachments:
-                        product_data['attachments'].append({
-                            'id': attach.id,
-                            'name': attach.name,
-                            'url': f'/web/image/{attach.id}'
-                        })
 
                     polygon_data.append({
                         'id': polygon.id,

@@ -50,6 +50,7 @@
             interactiveGrayMode: false,
             manuallyGrayIndices: [], // Array of indices set to gray manually (added to gray list)
             manuallyUngrayIndices: [], // Array of indices set to NOT gray manually (removed from gray list)
+            isDrawing: false, // Flag for requestAnimationFrame
         };
 
         const MAX_POPUPS = 5;
@@ -178,7 +179,8 @@
             const rect = container.getBoundingClientRect();
 
             // High-resolution multiplier for crisp rendering
-            const RESOLUTION_SCALE = 3;
+            // Reduced to 2 for better performance while maintaining good quality
+            const RESOLUTION_SCALE = 2;
 
             let displayWidth, displayHeight;
 
@@ -275,6 +277,17 @@
         function draw() {
             if (!ctx) return;
 
+            if (state.isDrawing) return; // Prevent stacking
+
+            state.isDrawing = true;
+            requestAnimationFrame(() => {
+                actualDraw();
+                state.isDrawing = false;
+            });
+        }
+
+        function actualDraw() {
+
             // Clear
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -352,6 +365,48 @@
 
             // Determine border color
             let strokeColor = polygon.color || '#3498db';
+            let selectionColor = '#c0392b'; // Default red fallback
+
+            // DYNAMIC CONTRAST LOGIC
+            if (isSelected) {
+                try {
+                    // Calculate pixel coordinates of the first point
+                    const p0 = points[0];
+                    // Map Coord (1200x800) -> Display Coord (Canvas Viewport)
+                    const dx = p0.x * scaleX;
+                    const dy = p0.y * scaleY;
+
+                    // Display Coord -> Transformed Backing Store Pixel (apply Offset, Zoom, Resolution)
+                    // Matches actualDraw transforms: 
+                    // 1. scale(Resolution) 
+                    // 2. scale(Zoom)
+                    // 3. translate(Offset) -- wait, translate is applied AFTER scale(Zoom) in logic but context applies it IN ORDER.
+                    // Context: ctx.scale(Res); ctx.scale(Zoom); ctx.translate(OffX, OffY);
+                    // Point P: ctx.lineTo(dx, dy) -> Final = Res * Zoom * (dx + OffX)
+
+                    const res = state.resolutionScale || 1;
+                    const bX = (dx + state.offset.x) * state.scale * res;
+                    const bY = (dy + state.offset.y) * state.scale * res;
+
+                    // Bounds check before sampling
+                    if (bX >= 0 && bX < canvas.width && bY >= 0 && bY < canvas.height) {
+                        const pixel = ctx.getImageData(Math.floor(bX), Math.floor(bY), 1, 1).data;
+                        // pixel is [r, g, b, a]
+                        const r = pixel[0];
+                        const g = pixel[1];
+                        const b = pixel[2];
+                        // Invert
+                        const rInv = 255 - r;
+                        const gInv = 255 - g;
+                        const bInv = 255 - b;
+
+                        selectionColor = `rgb(${rInv}, ${gInv}, ${bInv})`;
+                    }
+                } catch (e) {
+                    // Ignore errors (e.g. cross-origin taint if images served incorrectly, though on portal usually fine)
+                    console.warn('Contrast calc error:', e);
+                }
+            }
 
             ctx.beginPath();
             ctx.moveTo(points[0].x * scaleX, points[0].y * scaleY);
@@ -366,40 +421,39 @@
                 ctx.fillStyle = '#dddddd'; // Solid light gray
                 ctx.fill();
             } else if (isSelected) {
-                // Optional: slight highlight for selection if transparent
-                ctx.fillStyle = 'rgba(231, 76, 60, 0.15)';
+                // HIGHLIGHT: Stronger fill but transparent
+                ctx.fillStyle = 'rgba(231, 76, 60, 0.4)';
                 ctx.fill();
             }
 
+            // ADDED: Glow effect for selected polygon
+            if (isSelected) {
+                ctx.save();
+                ctx.shadowColor = selectionColor; // Match contrast border
+                ctx.shadowBlur = 15;
+            }
+
             // Stroke
-            ctx.strokeStyle = (polygon.product.is_sold || isEffectivelySold) ? '#bbbbbb' : (isSelected ? '#e74c3c' : strokeColor);
+            // Use calculated selectionColor if selected
+            ctx.strokeStyle = (polygon.product.is_sold || isEffectivelySold) ? '#bbbbbb' : (isSelected ? selectionColor : strokeColor);
             const baseStrokeWidth = polygon.product && polygon.product.is_decoration ? 0.6 : 2.0;
 
             if (isSelected) {
-                // Dashed line effect for selection
-                ctx.setLineDash([8 / state.scale, 4 / state.scale]);
+                ctx.setLineDash([]);
             } else {
                 ctx.setLineDash([]);
             }
 
-            ctx.lineWidth = (isSelected ? baseStrokeWidth * 1.5 : baseStrokeWidth) / state.scale;
+            // Make line significantly thicker when selected
+            ctx.lineWidth = (isSelected ? baseStrokeWidth * 3.0 : baseStrokeWidth) / state.scale;
             ctx.stroke();
+
+            if (isSelected) {
+                ctx.restore(); // Remove glow
+            }
 
             // Always reset line dash after stroke
             ctx.setLineDash([]);
-
-            // Draw label - DISABLED: No longer showing polygon names on portal view
-            // const centerX = points.reduce((sum, p) => sum + p.x * scaleX, 0) / points.length;
-            // const centerY = points.reduce((sum, p) => sum + p.y * scaleY, 0) / points.length;
-
-            // ctx.fillStyle = '#000';
-            // // Font size: static value that scales with the map (zoom in = bigger text)
-            // // Base size set to small value so it looks neat at 1x zoom
-            // const fontSize = 5;
-            // ctx.font = `bold ${fontSize}px Arial`;
-            // ctx.textAlign = 'center';
-            // ctx.textBaseline = 'middle';
-            // ctx.fillText(polygon.name, centerX, centerY);
         }
 
         function drawArrows() {
@@ -933,94 +987,85 @@
 
         function makeDraggable(popup) {
             let isDragging = false;
-            let initialX;
-            let initialY;
+            let startX, startY; // Mouse start position
+            let initialPopupX, initialPopupY; // Popup start position relative to wrapper
 
             const header = popup.querySelector('.card-header');
             const wrapper = document.querySelector('.canvas-wrapper') || document.body;
 
-            // Start dragging
             const dragStart = (e) => {
                 if (e.target.closest('.close-popup-btn')) return;
 
                 isDragging = true;
                 popup.classList.add('dragging-popup');
 
-                const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-                const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+                // Get mouse/touch start position
+                startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+                startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
 
-                const rect = popup.getBoundingClientRect();
-                initialX = clientX - rect.left;
-                initialY = clientY - rect.top;
+                // Get current popup position relative to wrapper
+                // We assume popup.style.left/top are set in px. 
+                // If not (e.g. first render), we need computed style.
+                // But since we position it absolutely in JS, parsing style.left matching '123px' is usually safe.
+                // For safety, use offsetLeft/Top which are relative to offsetParent (wrapper).
+                initialPopupX = popup.offsetLeft;
+                initialPopupY = popup.offsetTop;
 
                 if (e.type === 'touchstart') {
-                    // Prevent page scroll when dragging on touch devices
-                    // but allows tapping buttons if we didn't drag
+                    // e.preventDefault(); 
                 }
             };
 
-            // While dragging
             const drag = (e) => {
                 if (!isDragging) return;
-
-                // Prevent scroll/pan while dragging popup
                 e.preventDefault();
 
                 const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
                 const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
 
+                const dx = clientX - startX;
+                const dy = clientY - startY;
+
+                // Calculate new position
+                let newX = initialPopupX + dx;
+                let newY = initialPopupY + dy;
+
+                // Optional: Clamp to constraints (wrapper or canvas)
+                // Let's keep it simple: Constrain to wrapper bounds (mostly)
                 const wrapperRect = wrapper.getBoundingClientRect();
-                const canvasRect = canvas.getBoundingClientRect();
-
-                // Calculate current position relative to wrapper
-                let currentX = (clientX - initialX) - wrapperRect.left;
-                let currentY = (clientY - initialY) - wrapperRect.top;
-
-                // Canvas bounds relative to wrapper
-                const canvasRelX = canvasRect.left - wrapperRect.left;
-                const canvasRelY = canvasRect.top - wrapperRect.top;
-
-                // Popup dimensions
                 const popupWidth = popup.offsetWidth;
                 const popupHeight = popup.offsetHeight;
-                const edgeMargin = 10;
 
-                // Bounds within canvas
-                const minX = canvasRelX + edgeMargin;
-                const maxX = canvasRelX + canvasRect.width - popupWidth - edgeMargin;
-                const minY = canvasRelY + edgeMargin;
-                const maxY = canvasRelY + canvasRect.height - popupHeight - edgeMargin;
+                // Max allowed position (width - popup width)
+                const maxX = wrapperRect.width - popupWidth;
+                const maxY = wrapperRect.height - popupHeight;
 
-                // Clamp position
-                currentX = Math.max(minX, Math.min(currentX, maxX));
-                currentY = Math.max(minY, Math.min(currentY, maxY));
+                // Apply constraints: Prevent popup from going outside wrapper
+                newX = Math.max(0, Math.min(newX, maxX));
+                newY = Math.max(0, Math.min(newY, maxY));
 
-                popup.style.left = currentX + 'px';
-                popup.style.top = currentY + 'px';
+                // Apply directly
+                popup.style.left = `${newX}px`;
+                popup.style.top = `${newY}px`;
 
-                // Update arrows
-                draw();
+                // Update arrows immediately
+                drawArrows();
             };
 
-            // End dragging
             const dragEnd = () => {
                 if (isDragging) {
                     isDragging = false;
                     popup.classList.remove('dragging-popup');
+                    drawArrows(); // Ensure arrows are finalized
                 }
             };
 
-            // Mouse Events
             header.addEventListener('mousedown', dragStart);
             window.addEventListener('mousemove', drag);
             window.addEventListener('mouseup', dragEnd);
 
-            // Touch Events
             header.addEventListener('touchstart', (e) => {
                 dragStart(e);
-                // On touch, we need to decide if this is a drag or a tap
-                // but since we drag via header, we usually want to start dragging immediately
-                if (isDragging) e.preventDefault();
             }, { passive: false });
 
             window.addEventListener('touchmove', (e) => {
@@ -1030,64 +1075,67 @@
             window.addEventListener('touchend', dragEnd);
         }
 
-        function positionPopup(popup, polygon, stackIndex) {
+        function positionPopup(popup, polygon, popupIndex) {
             const canvasRect = canvas.getBoundingClientRect();
-            const points = polygon.points;
-
-            // Scale factor to convert 1200x800 coordinates to current canvas size
-            const scaleX = canvas.width / 1200;
-            const scaleY = canvas.height / 800;
-
-            const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
-            const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
-
-            // Point in screen pixels (viewport coordinates)
-            const screenX = canvasRect.left + (centerX * scaleX + state.offset.x) * state.scale;
-
-            const popupWidth = 300;
-            const popupHeight = 220;
-            const edgeMargin = 20;
-            const verticalSpacing = 230; // Space between stacked popups
-
-            let popupX, popupY;
-
-            // Determine if polygon is on left or right half of CANVAS
-            const canvasMidX = canvasRect.left + canvasRect.width / 2;
-            const isLeftSide = screenX < canvasMidX;
-
-            if (isLeftSide) {
-                // Polygon on left → place popup on LEFT side at top
-                popupX = canvasRect.left + edgeMargin;
-            } else {
-                // Polygon on right → place popup on RIGHT side at top
-                popupX = canvasRect.right - popupWidth - edgeMargin;
-            }
-
-            // Position at top of canvas
-            popupY = canvasRect.top + edgeMargin;
-
-            // Stack vertically if multiple popups (don't overlap)
-            popupY += (stackIndex * verticalSpacing);
-
-            // Get wrapper position (viewport)
             const wrapper = document.querySelector('.canvas-wrapper') || document.body;
             const wrapperRect = wrapper.getBoundingClientRect();
 
-            // Convert viewport coordinates to relative to wrapper
-            let relativeX = popupX - wrapperRect.left;
-            let relativeY = popupY - wrapperRect.top;
+            // Dimensions and Config
+            const popupWidth = 300;
+            const popupHeight = 230; // Approx max height
+            const edgeMargin = 20;
+            const columnSpacing = 10;
 
-            // Calculate canvas bounds relative to wrapper
+            // Layout Calculations
             const canvasRelX = canvasRect.left - wrapperRect.left;
             const canvasRelY = canvasRect.top - wrapperRect.top;
+            const canvasWidth = canvasRect.width;
+            const canvasHeight = canvasRect.height;
 
-            // Limit within canvas bounds (relative to wrapper)
+            // Available height for popups
+            const availableHeight = canvasHeight - (edgeMargin * 2);
+
+            // How many popups fit in one column?
+            const popupsPerColumn = Math.floor(availableHeight / popupHeight) || 1;
+
+            // Calculate grid Position (Row, Col)
+            // Index 0 -> Col 0, Row 0
+            // Index 1 -> Col 0, Row 1
+            // ...
+            // Index N -> Col 1, Row 0 ...
+            const colIndex = Math.floor(popupIndex / popupsPerColumn);
+            const rowIndex = popupIndex % popupsPerColumn;
+
+            // Position Logic: Start from Right edge and go Left
+            let relativeX, relativeY;
+
+            // If polygon is on the far right, maybe we want to put popups on the left?
+            // For simplicity, let's default to stacking from the Right side, 
+            // moving inwards (Leftwards) as columns overflow.
+
+            const rightEdge = canvasRelX + canvasWidth - edgeMargin;
+            const leftEdge = canvasRelX + edgeMargin;
+
+            // X Position: RightEdge - Width - (ColIndex * (Width + Spacing))
+            relativeX = rightEdge - popupWidth - (colIndex * (popupWidth + columnSpacing));
+
+            // Check if we ran out of space on the left side
+            if (relativeX < leftEdge) {
+                // Determine layout mode based on map width
+                // Fallback: Just pile them on the left edge or wrap wildly
+                // OR: Start stacking from Left edge going right?
+                relativeX = leftEdge + (colIndex * (popupWidth + columnSpacing));
+            }
+
+            // Y Position: TopEdge + (RowIndex * Height)
+            relativeY = canvasRelY + edgeMargin + (rowIndex * popupHeight);
+
+            // Clamp locally (just in case)
             const minX = canvasRelX + edgeMargin;
-            const maxX = canvasRelX + canvasRect.width - popupWidth - edgeMargin;
+            const maxX = canvasRelX + canvasWidth - popupWidth - edgeMargin;
             const minY = canvasRelY + edgeMargin;
-            const maxY = canvasRelY + canvasRect.height - popupHeight - edgeMargin;
+            const maxY = canvasRelY + canvasHeight - popupHeight - edgeMargin;
 
-            // Clamp position
             relativeX = Math.max(minX, Math.min(relativeX, maxX));
             relativeY = Math.max(minY, Math.min(relativeY, maxY));
 

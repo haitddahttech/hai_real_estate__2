@@ -49,7 +49,7 @@ This module allows you to:
         ],
         'web.assets_frontend': [
             'real_estate_site_plan/static/src/scss/custom_theme.scss',
-            'real_estate_site_plan/static/src/js/portal_site_map.js',
+            # 'real_estate_site_plan/static/src/js/portal_site_map.js',  # Loaded manually in template for cache busting
         ],
     },
     'installable': True,

@@ -361,6 +361,25 @@
             drawArrows();
         }
 
+        function invertColor(hex) {
+            if (!hex) return '#e74c3c';
+            if (hex.indexOf('#') === 0) {
+                hex = hex.slice(1);
+            }
+            // convert 3-digit hex to 6-digits.
+            if (hex.length === 3) {
+                hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+            }
+            if (hex.length !== 6) {
+                return '#e74c3c'; // Fallback
+            }
+            var r = (255 - parseInt(hex.slice(0, 2), 16)).toString(16),
+                g = (255 - parseInt(hex.slice(2, 4), 16)).toString(16),
+                b = (255 - parseInt(hex.slice(4, 6), 16)).toString(16);
+            // pad each with zeros and return
+            return '#' + (r.length < 2 ? '0' + r : r) + (g.length < 2 ? '0' + g : g) + (b.length < 2 ? '0' + b : b);
+        }
+
         function drawPolygonScaled(polygon, isSelected, isEffectivelySold = false) {
             const points = polygon.points;
             if (!points || points.length < 3) return;
@@ -375,48 +394,8 @@
 
             // Determine border color
             let strokeColor = polygon.color || '#3498db';
-            let selectionColor = '#c0392b'; // Default red fallback
-
-            // DYNAMIC CONTRAST LOGIC
-            if (isSelected) {
-                try {
-                    // Calculate pixel coordinates of the first point
-                    const p0 = points[0];
-                    // Map Coord (1200x800) -> Display Coord (Canvas Viewport)
-                    const dx = p0.x * scaleX;
-                    const dy = p0.y * scaleY;
-
-                    // Display Coord -> Transformed Backing Store Pixel (apply Offset, Zoom, Resolution)
-                    // Matches actualDraw transforms: 
-                    // 1. scale(Resolution) 
-                    // 2. scale(Zoom)
-                    // 3. translate(Offset) -- wait, translate is applied AFTER scale(Zoom) in logic but context applies it IN ORDER.
-                    // Context: ctx.scale(Res); ctx.scale(Zoom); ctx.translate(OffX, OffY);
-                    // Point P: ctx.lineTo(dx, dy) -> Final = Res * Zoom * (dx + OffX)
-
-                    const res = state.resolutionScale || 1;
-                    const bX = (dx + state.offset.x) * state.scale * res;
-                    const bY = (dy + state.offset.y) * state.scale * res;
-
-                    // Bounds check before sampling
-                    if (bX >= 0 && bX < canvas.width && bY >= 0 && bY < canvas.height) {
-                        const pixel = ctx.getImageData(Math.floor(bX), Math.floor(bY), 1, 1).data;
-                        // pixel is [r, g, b, a]
-                        const r = pixel[0];
-                        const g = pixel[1];
-                        const b = pixel[2];
-                        // Invert
-                        const rInv = 255 - r;
-                        const gInv = 255 - g;
-                        const bInv = 255 - b;
-
-                        selectionColor = `rgb(${rInv}, ${gInv}, ${bInv})`;
-                    }
-                } catch (e) {
-                    // Ignore errors (e.g. cross-origin taint if images served incorrectly, though on portal usually fine)
-                    console.warn('Contrast calc error:', e);
-                }
-            }
+            // Use inverted color for selection to ensure contrast
+            let selectionColor = isSelected ? invertColor(strokeColor) : strokeColor;
 
             ctx.beginPath();
             ctx.moveTo(points[0].x * scaleX, points[0].y * scaleY);
@@ -436,34 +415,19 @@
                 ctx.fill();
             }
 
-            // ADDED: Glow effect for selected polygon
-            if (isSelected) {
-                ctx.save();
-                ctx.shadowColor = selectionColor; // Match contrast border
-                ctx.shadowBlur = 15;
-            }
+            // No Glow Effect - Solid Border
 
             // Stroke
-            // Use calculated selectionColor if selected
+            // Use solid selectionColor if selected
             ctx.strokeStyle = (polygon.product.is_sold || isEffectivelySold) ? '#bbbbbb' : (isSelected ? selectionColor : strokeColor);
-            const baseStrokeWidth = polygon.product && polygon.product.is_decoration ? 0.6 : 2.0;
 
-            if (isSelected) {
-                ctx.setLineDash([]);
-            } else {
-                ctx.setLineDash([]);
-            }
+            const baseStrokeWidth = polygon.product && polygon.product.is_decoration ? 0.6 : 2.0;
 
             // Make line significantly thicker when selected
             ctx.lineWidth = (isSelected ? baseStrokeWidth * 3.0 : baseStrokeWidth) / state.scale;
-            ctx.stroke();
 
-            if (isSelected) {
-                ctx.restore(); // Remove glow
-            }
-
-            // Always reset line dash after stroke
             ctx.setLineDash([]);
+            ctx.stroke();
         }
 
         function drawArrows() {

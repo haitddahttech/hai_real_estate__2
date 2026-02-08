@@ -454,8 +454,9 @@
             <!-- Load html2canvas library for screenshot -->
             <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
             
-            <!-- Load custom JS -->
-            <script type="text/javascript" src="/real_estate_site_plan/static/src/js/portal_site_map.js"></script>
+            <!-- Load custom JS with cache busting -->
+            <t t-set="ver" t-value="int(datetime.datetime.now().timestamp())"/>
+            <script type="text/javascript" t-attf-src="/real_estate_site_plan/static/src/js/portal_site_map.js?v=#{ver}"></script>
         </t>
     </template>
 

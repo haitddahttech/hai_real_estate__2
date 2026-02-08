@@ -96,14 +96,22 @@ export class SitePlanCanvasWidget extends Component {
         const rect = container.getBoundingClientRect();
 
         // High-resolution multiplier for crisp rendering
-        // 3x means canvas will be 3 times larger than display
-        const RESOLUTION_SCALE = 3;
+        // Reduced to 2 to match portal and improve performance
+        const RESOLUTION_SCALE = 2;
 
-        // Maintain 3:2 aspect ratio (1200:800)
         const displayWidth = rect.width;
-        const displayHeight = Math.round(rect.width * (800 / 1200));
+        let displayHeight;
 
-        // Set canvas internal resolution (3x for crisp rendering)
+        // Use image aspect ratio if loaded, otherwise fallback to 3:2
+        if (this.state.imageLoaded && this.state.image) {
+            const imgAspect = this.state.image.width / this.state.image.height;
+            displayHeight = Math.round(displayWidth / imgAspect);
+        } else {
+            // Maintain 3:2 aspect ratio (1200:800) default
+            displayHeight = Math.round(displayWidth * (800 / 1200));
+        }
+
+        // Set canvas internal resolution
         this.canvas.width = displayWidth * RESOLUTION_SCALE;
         this.canvas.height = displayHeight * RESOLUTION_SCALE;
 
@@ -114,10 +122,9 @@ export class SitePlanCanvasWidget extends Component {
         // Store scale factor for use in draw()
         this.resolutionScale = RESOLUTION_SCALE;
 
-        // Enable high-quality image smoothing for smooth rendering
-        // With 3x resolution, smoothing makes images look better
+        // Enable high-quality image smoothing
         this.ctx.imageSmoothingEnabled = true;
-        this.ctx.imageSmoothingQuality = 'high'; // 'low', 'medium', or 'high'
+        this.ctx.imageSmoothingQuality = 'high';
 
         // Redraw if image loaded
         if (this.state.imageLoaded) {
@@ -148,7 +155,8 @@ export class SitePlanCanvasWidget extends Component {
                 img.onload = () => {
                     this.state.image = img;
                     this.state.imageLoaded = true;
-                    this.draw();
+                    // Resize canvas to match image aspect ratio
+                    this.resizeCanvas();
                 };
                 // Use web/image route to get original image without resizing
                 img.src = `/web/content/${attachmentId}?unique=${attachments[0].checksum}`;
@@ -160,7 +168,8 @@ export class SitePlanCanvasWidget extends Component {
                     img.onload = () => {
                         this.state.image = img;
                         this.state.imageLoaded = true;
-                        this.draw();
+                        // Resize canvas to match image aspect ratio
+                        this.resizeCanvas();
                     };
                     img.src = `data:image/png;base64,${record[0].image}`;
                 }
@@ -540,6 +549,10 @@ export class SitePlanCanvasWidget extends Component {
 
         // Draw image at reference size (1200x800)
         if (this.state.imageLoaded && this.state.image) {
+            // Disable smoothing when zoomed in significantly to see pixel details
+            // This prevents the blurry effect when zooming deep into the image
+            this.ctx.imageSmoothingEnabled = this.state.scale < 3.0; // Disable smoothing if zoom > 3x
+            this.ctx.imageSmoothingQuality = 'high';
             this.ctx.drawImage(this.state.image, 0, 0, 1200, 800);
         }
 

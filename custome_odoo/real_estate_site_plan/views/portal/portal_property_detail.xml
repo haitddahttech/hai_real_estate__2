@@ -609,12 +609,12 @@
                                         <ul class="nav nav-tabs" id="propertyTabs" role="tablist">
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link active fw-bold" id="timeline-tab" data-bs-toggle="tab" data-bs-target="#timeline" type="button" role="tab" aria-controls="timeline" aria-selected="true">
-                                                    <i class="fa fa-calendar-check-o me-1"></i> Lịch Trình Thanh Toán
+                                                    <i class="fa fa-calendar-check-o me-1"></i> Lịch thanh toán
                                                 </button>
                                             </li>
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link fw-bold" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab" aria-controls="documents" aria-selected="false">
-                                                    <i class="fa fa-file-text-o me-1"></i> Tài Liệu Dự Án
+                                                    <i class="fa fa-file-text-o me-1"></i> Tài liệu dự án
                                                 </button>
                                             </li>
                                             <t t-set="site_plan" t-value="product.site_plan_polygon_ids[0].site_plan_id if product.site_plan_polygon_ids and product.site_plan_polygon_ids[0].site_plan_id else False"/>
@@ -773,7 +773,7 @@
                                                 </t>
                                                 <t t-else="">
                                                     <div class="text-center py-4 text-muted">
-                                                        <i class="fa fa-info-circle me-2"></i> Chưa có lịch trình thanh toán cho sản phẩm này.
+                                                        <i class="fa fa-info-circle me-2"></i> Chưa có lịch thanh toán cho sản phẩm này.
                                                     </div>
                                                 </t>
                                             </div>
@@ -923,7 +923,7 @@
                                             </t>
                                             
                                             <!-- Tab 4: Legal Documents -->
-                                            <t t-if="site_plan and (site_plan.project_legal_1 or site_plan.project_legal_2 or site_plan.project_legal_3)">
+                                            <t t-if="site_plan and (site_plan.project_legal_1 or site_plan.project_legal_2 or site_plan.project_legal_3 or site_plan.project_legal_4 or site_plan.project_legal_5)">
                                                 <div class="tab-pane fade" id="legal" role="tabpanel" aria-labelledby="legal-tab">
                                                     <div class="row g-3">
                                                         <t t-if="site_plan.project_legal_1">
@@ -997,6 +997,58 @@
                                                                                  <i class="fa fa-eye"></i> Xem
                                                                              </button>
                                                                              <a t-attf-href="/web/content?model=site.plan&amp;id=#{site_plan.id}&amp;field=project_legal_3&amp;filename_field=project_legal_3_filename&amp;download=true" class="btn btn-sm btn-primary">
+                                                                                 <i class="fa fa-download"></i> Tải về
+                                                                             </a>
+                                                                         </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </t>
+                                                        <t t-if="site_plan.project_legal_4">
+                                                            <div class="col-md-4">
+                                                                <div class="card h-100 border-0 shadow-sm">
+                                                                    <div class="card-body p-3 d-flex flex-column align-items-center text-center">
+                                                                         <i class="fa fa-file-pdf-o text-danger fs-1 mb-2"></i>
+                                                                         <h6 class="text-truncate w-100 mb-2" t-att-title="site_plan.project_legal_4_filename or 'Pháp lý 4'">
+                                                                             <t t-esc="site_plan.project_legal_4_filename or 'Pháp lý 4'"/>
+                                                                         </h6>
+                                                                         <div class="mt-auto">
+                                                                             <button type="button" 
+                                                                                     class="btn btn-sm btn-outline-primary me-1 doc-preview-btn"
+                                                                                     data-bs-toggle="modal" 
+                                                                                     data-bs-target="#docPreviewModal"
+                                                                                     t-att-data-url="'/web/content?model=site.plan&amp;id=' + str(site_plan.id) + '&amp;field=project_legal_4'"
+                                                                                     data-mimetype="application/pdf"
+                                                                                     t-att-data-title="site_plan.project_legal_4_filename or 'Pháp lý 4'">
+                                                                                 <i class="fa fa-eye"></i> Xem
+                                                                             </button>
+                                                                             <a t-attf-href="/web/content?model=site.plan&amp;id=#{site_plan.id}&amp;field=project_legal_4&amp;filename_field=project_legal_4_filename&amp;download=true" class="btn btn-sm btn-primary">
+                                                                                 <i class="fa fa-download"></i> Tải về
+                                                                             </a>
+                                                                         </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </t>
+                                                        <t t-if="site_plan.project_legal_5">
+                                                            <div class="col-md-4">
+                                                                <div class="card h-100 border-0 shadow-sm">
+                                                                    <div class="card-body p-3 d-flex flex-column align-items-center text-center">
+                                                                         <i class="fa fa-file-pdf-o text-danger fs-1 mb-2"></i>
+                                                                         <h6 class="text-truncate w-100 mb-2" t-att-title="site_plan.project_legal_5_filename or 'Pháp lý 5'">
+                                                                             <t t-esc="site_plan.project_legal_5_filename or 'Pháp lý 5'"/>
+                                                                         </h6>
+                                                                         <div class="mt-auto">
+                                                                             <button type="button" 
+                                                                                     class="btn btn-sm btn-outline-primary me-1 doc-preview-btn"
+                                                                                     data-bs-toggle="modal" 
+                                                                                     data-bs-target="#docPreviewModal"
+                                                                                     t-att-data-url="'/web/content?model=site.plan&amp;id=' + str(site_plan.id) + '&amp;field=project_legal_5'"
+                                                                                     data-mimetype="application/pdf"
+                                                                                     t-att-data-title="site_plan.project_legal_5_filename or 'Pháp lý 5'">
+                                                                                 <i class="fa fa-eye"></i> Xem
+                                                                             </button>
+                                                                             <a t-attf-href="/web/content?model=site.plan&amp;id=#{site_plan.id}&amp;field=project_legal_5&amp;filename_field=project_legal_5_filename&amp;download=true" class="btn btn-sm btn-primary">
                                                                                  <i class="fa fa-download"></i> Tải về
                                                                              </a>
                                                                          </div>

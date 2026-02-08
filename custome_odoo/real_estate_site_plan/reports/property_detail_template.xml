@@ -362,7 +362,7 @@
                         <!-- Timeline Section (Web Style) -->
                         <div class="timeline-section">
                             <div class="timeline-title-area">
-                                <span class="timeline-title">Lịch Trình Thanh Toán</span>
+                                <span class="timeline-title">Lịch thanh toán</span>
                                 <span class="timeline-subtitle">Chi tiết từng đợt thanh toán cho sản phẩm <t t-esc="product.name"/></span>
                             </div>
                             

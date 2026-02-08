@@ -204,7 +204,7 @@ class ProductTemplate(models.Model):
         comodel_name='payment.timeline',
         compute='compute_payment_timeline',
         # inverse_name='product_tmpl_id',
-        string='Lịch trình thanh toán',
+        string='Lịch thanh toán',
         help='Payment milestones associated with this product'
     )
 

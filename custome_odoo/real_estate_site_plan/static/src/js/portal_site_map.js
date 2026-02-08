@@ -339,19 +339,34 @@
 
 
             // Draw polygons (need to scale coordinates from 1200x800 to canvas size)
+            // Draw polygons (need to scale coordinates from 1200x800 to canvas size)
             if (state.polygonsVisible) {
+                // First pass: Draw all UNSELECTED polygons
                 state.polygons.forEach((polygon, index) => {
-                    const isSelected = state.selectedPolygons.includes(index);
-                    let isEffectivelySold;
+                    // Skip if selected (will be drawn later)
+                    if (state.selectedPolygons.includes(index)) return;
 
+                    let isEffectivelySold;
                     if (state.forceAllGray) {
-                        // If All Gray is ON: It's sold UNLESS manually un-grayed
                         isEffectivelySold = !state.manuallyUngrayIndices.includes(index);
                     } else {
-                        // If All Gray is OFF: It's sold if manually grayed
                         isEffectivelySold = state.manuallyGrayIndices.includes(index);
                     }
-                    drawPolygonScaled(polygon, isSelected, isEffectivelySold);
+                    drawPolygonScaled(polygon, false, isEffectivelySold);
+                });
+
+                // Second pass: Draw SELECTED polygons on top
+                state.selectedPolygons.forEach(index => {
+                    const polygon = state.polygons[index];
+                    if (!polygon) return;
+
+                    let isEffectivelySold;
+                    if (state.forceAllGray) {
+                        isEffectivelySold = !state.manuallyUngrayIndices.includes(index);
+                    } else {
+                        isEffectivelySold = state.manuallyGrayIndices.includes(index);
+                    }
+                    drawPolygonScaled(polygon, true, isEffectivelySold);
                 });
             }
 
@@ -1253,6 +1268,8 @@
 
         // Touch handlers
         function onTouchStart(e) {
+            if (state.isZoomLocked) return; // Allow native scroll/click if locked
+
             if (e.touches.length === 1) {
                 const pos = getMousePos(e);
                 state.touchStartedOnPolygonIndex = findPolygonAt(pos);
@@ -1263,14 +1280,10 @@
                 state.isPinching = false;
                 state.touchMoved = false;
 
-                // If we started on a polygon, we might want to prevent default 
-                // but we wait for move to decide between tap and pan
-                // Unless it's a very clear "interactive" zone
-                if (state.touchStartedOnPolygonIndex !== -1) {
-                    // We can optionally prevent default here to be more "aggressive" 
-                    // in capturing the touch for the map
-                    // e.preventDefault(); 
-                }
+                // Try to prevent default to stop browser scrolling ONLY if we are unlocked
+                // However, some browsers require passive: false listener to prevent default
+                // Checking Polygon hit might help deciding but if unlocked we want to PAN map anywhere
+                // e.preventDefault(); 
             } else if (e.touches.length === 2) {
                 e.preventDefault(); // Prevent scroll/zoom when pinching
                 state.isPanning = false;
@@ -1288,6 +1301,8 @@
         }
 
         function onTouchMove(e) {
+            if (state.isZoomLocked) return; // Allow native scroll if locked
+
             if (state.isPanning && e.touches.length === 1) {
                 const dx = (e.touches[0].clientX - state.lastTouchPos.x) / state.scale;
                 const dy = (e.touches[0].clientY - state.lastTouchPos.y) / state.scale;
@@ -1305,7 +1320,7 @@
 
                 if (totalDist > threshold) {
                     state.touchMoved = true;
-                    e.preventDefault(); // Start preventing document scroll
+                    if (e.cancelable) e.preventDefault(); // Stop document scroll
                 }
 
                 if (state.touchMoved) {
@@ -1340,6 +1355,8 @@
         }
 
         function onTouchEnd(e) {
+            if (state.isZoomLocked) return; // Allow native processing if locked
+
             if (e.touches.length === 0) {
                 // If it was a quick tap (not panning or pinching long)
                 if (!state.isPinching && state.isPanning && !state.touchMoved) {
@@ -1348,12 +1365,22 @@
                     if (e.cancelable) e.preventDefault();
 
                     // Trigger click logic manually for immediate response
+                    // Construct synthetic mouse event for getMousePos
+                    // We use lastTouchPos which stores the clientX/Y from touchStart/Move
                     const syntheticEvent = {
-                        touches: [{
-                            clientX: state.lastTouchPos.x,
-                            clientY: state.lastTouchPos.y
-                        }]
+                        clientX: state.lastTouchPos.x,
+                        clientY: state.lastTouchPos.y,
+                        // Add other properties if getMousePos needs them
+                        touches: [], // Empty for touchend
+                        target: canvas
                     };
+
+                    // Call click handler with synthetic event
+                    // Since getMousePos handles both touch and mouse, we just need to adapt structure
+                    // But onCanvasClick uses getMousePos(e) which looks for e.touches[0] or e.clientX
+                    // Let's make sure we pass what getMousePos expects
+
+                    // Simple hack: Call click logic directly or ensure event mimics MouseEvent
                     onCanvasClick(syntheticEvent);
                 }
                 state.isPanning = false;

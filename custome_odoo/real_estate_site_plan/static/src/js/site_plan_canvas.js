@@ -25,6 +25,7 @@ export class SitePlanCanvasWidget extends Component {
             color: '#3498db',
             image: null,
             imageLoaded: false,
+            cachedImage: null,
             scale: 1,
             offset: { x: 0, y: 0 },
             isDragging: false,
@@ -155,6 +156,7 @@ export class SitePlanCanvasWidget extends Component {
                 img.onload = () => {
                     this.state.image = img;
                     this.state.imageLoaded = true;
+                    this.createDownsampledImage();
                     // Resize canvas to match image aspect ratio
                     this.resizeCanvas();
                 };
@@ -168,6 +170,7 @@ export class SitePlanCanvasWidget extends Component {
                     img.onload = () => {
                         this.state.image = img;
                         this.state.imageLoaded = true;
+                        this.createDownsampledImage();
                         // Resize canvas to match image aspect ratio
                         this.resizeCanvas();
                     };
@@ -177,6 +180,29 @@ export class SitePlanCanvasWidget extends Component {
         } catch (error) {
             console.error('Error loading image:', error);
         }
+    }
+
+    createDownsampledImage() {
+        if (!this.state.image) return;
+
+        // Target width smaller than full image for performance (e.g., 2048px)
+        const targetWidth = 2048;
+        if (this.state.image.width <= targetWidth) {
+            this.state.cachedImage = this.state.image;
+            return;
+        }
+
+        const scale = targetWidth / this.state.image.width;
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = this.state.image.width * scale;
+        offCanvas.height = this.state.image.height * scale;
+
+        const offCtx = offCanvas.getContext('2d');
+        offCtx.imageSmoothingEnabled = true;
+        offCtx.imageSmoothingQuality = 'high';
+        offCtx.drawImage(this.state.image, 0, 0, offCanvas.width, offCanvas.height);
+
+        this.state.cachedImage = offCanvas;
     }
 
     async loadPolygons() {
@@ -549,11 +575,18 @@ export class SitePlanCanvasWidget extends Component {
 
         // Draw image at reference size (1200x800)
         if (this.state.imageLoaded && this.state.image) {
+            let imgToDraw = this.state.image;
+            // Use downsampled image if zoom is low (e.g. <= 1.5x) and cached image exists
+            // This improves performance when viewing the whole map
+            if (this.state.scale <= 1.5 && this.state.cachedImage) {
+                imgToDraw = this.state.cachedImage;
+            }
+
             // Disable smoothing when zoomed in significantly to see pixel details
             // This prevents the blurry effect when zooming deep into the image
             this.ctx.imageSmoothingEnabled = this.state.scale < 3.0; // Disable smoothing if zoom > 3x
             this.ctx.imageSmoothingQuality = 'high';
-            this.ctx.drawImage(this.state.image, 0, 0, 1200, 800);
+            this.ctx.drawImage(imgToDraw, 0, 0, 1200, 800);
         }
 
 

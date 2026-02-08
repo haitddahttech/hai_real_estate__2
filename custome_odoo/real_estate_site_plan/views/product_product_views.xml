@@ -63,7 +63,7 @@
                             <field name="management_fee" force_save="1"/>
                         </group>
                     </group>
-                    <group string="Lịch trình thanh toán">
+                    <group string="Lịch thanh toán">
                         <group>
                             <group>
                                 <field name="deposit_date" placeholder="Chọn ngày đặt cọc tại đây"/>

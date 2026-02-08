@@ -96,6 +96,20 @@ class SitePlan(models.Model):
     )
     project_legal_3_filename = fields.Char(string='Tên file Pháp lý 3')
 
+    project_legal_4 = fields.Binary(
+        string='Pháp lý dự án 4',
+        attachment=True,
+        help='File pháp lý dự án 4 (PDF)'
+    )
+    project_legal_4_filename = fields.Char(string='Tên file Pháp lý 4')
+
+    project_legal_5 = fields.Binary(
+        string='Pháp lý dự án 5',
+        attachment=True,
+        help='File pháp lý dự án 5 (PDF)'
+    )
+    project_legal_5_filename = fields.Char(string='Tên file Pháp lý 5')
+
     folder_ids = fields.One2many(
         comodel_name='site.plan.folder',
         inverse_name='site_plan_id',

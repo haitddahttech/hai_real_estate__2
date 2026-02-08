@@ -412,3 +412,15 @@ class ProductTemplate(models.Model):
     def compute_list_price(self):
         for product in self:
             product.list_price = product.price_include_land_tax + product.vat_tax + product.maintenance_fee
+
+    def get_available_discounts(self):
+        """Trả về danh sách các discount config áp dụng được cho sản phẩm này"""
+        self.ensure_one()
+        # Nếu đã chọn cụ thể thì chỉ lấy những cái đó
+        if self.discount_config_ids:
+            return self.discount_config_ids
+        
+        # Nếu không chọn cụ thể, lấy tất cả active configs và lọc theo danh mục
+        active_discounts = self.env['product.discount.config'].search([('active', '=', True)])
+        # Filter in Python
+        return active_discounts.filtered(lambda d: d.check_eligibility(self))

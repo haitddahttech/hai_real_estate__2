@@ -23,6 +23,7 @@
                         <group>
                             <field name="sequence"/>
                             <field name="active" widget="boolean_toggle"/>
+                            <field name="product_categ_ids" widget="many2many_tags" placeholder="Áp dụng tất cả nếu để trống"/>
                         </group>
                     </group>
                 </sheet>
@@ -41,6 +42,7 @@
                 <field name="discount_type"/>
                 <field name="formula_type" optional="hide"/>
                 <field name="discount_value"/>
+                <field name="product_categ_ids" widget="many2many_tags" optional="show"/>
                 <field name="active" widget="boolean_toggle"/>
             </list>
         </field>

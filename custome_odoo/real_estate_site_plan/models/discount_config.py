@@ -24,6 +24,16 @@ class ProductDiscountConfig(models.Model):
     ], string='Loại công thức', default='management_fee',
         help="Chọn công thức tính chiết khấu theo sản phẩm")
     active = fields.Boolean(string='Đang hoạt động', default=True)
+    product_categ_ids = fields.Many2many('product.category', string='Áp dụng cho Danh mục',
+        help="Để trống nếu áp dụng cho tất cả danh mục")
+
+    def check_eligibility(self, product):
+        """Kiểm tra xem sản phẩm có được phép áp dụng giảm giá này không"""
+        self.ensure_one()
+        # Nếu đã chọn danh mục cụ thể thì phải thuộc danh mục đó
+        if self.product_categ_ids and product.categ_id not in self.product_categ_ids:
+            return False
+        return True
 
     def compute_discount_for_product(self, product):
         """Tính giá trị chiết khấu cho một sản phẩm cụ thể"""

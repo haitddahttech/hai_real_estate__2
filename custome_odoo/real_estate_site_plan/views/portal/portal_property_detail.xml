@@ -1103,7 +1103,7 @@
 
                                 <!-- Final Pricing Section -->
                                 <div class="row mt-4">
-                                    <t t-set="available_discounts" t-value="product.discount_config_ids or product.env['product.discount.config'].sudo().search([('active', '=', True)])"/>
+                                    <t t-set="available_discounts" t-value="product.get_available_discounts()"/>
                                     <t t-if="available_discounts">
                                         <div class="col-12">
                                             <div class="card border-0 shadow-sm rounded-3 overflow-hidden mt-2">

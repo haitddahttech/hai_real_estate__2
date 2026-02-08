@@ -481,7 +481,7 @@
                                                       <tr>
                                                           <td class="ps-3 py-2 text-muted border-top-0">Phí quản lý</td>
                                                           <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0">
-                                                              <t t-esc="'{:,.0f}'.format(product.management_fee or 0)"/>
+                                                              <t t-esc="'{:,.0f}'.format(product.management_fee or 0)"/>/m²
                                                           </td>
                                                       </tr>
                                                      <tr>
@@ -567,11 +567,11 @@
                                                                             </tbody>
                                                                         </table>
                                                                     </div>
-                                                                    <div t-if="bank.payment_qr_code" class="d-flex flex-column align-items-center justify-content-center p-2" style="width: 160px; min-width: 160px;">
+                                                                    <div t-if="bank.payment_qr_code" class="d-flex flex-column align-items-center justify-content-center p-2" style="width: 200px; min-width: 200px;">
                                                                         <img t-attf-src="data:image/png;base64,#{bank.payment_qr_code.decode('utf-8')}" 
-                                                                             style="width: 130px; height: 130px; object-fit: contain;" 
+                                                                             style="width: 180px; height: 180px; object-fit: contain;" 
                                                                              class="img-fluid rounded border-0 shadow-sm p-1 bg-white"/>
-                                                                        <div class="mt-2 text-center text-muted" style="font-size: 0.65rem; line-height: 1.2;">Quét mã QR<br/>để chuyển khoản</div>
+                                                                        <div class="mt-2 text-center text-muted" style="font-size: 0.7rem; line-height: 1.2;">Quét mã QR<br/>để chuyển khoản</div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1123,12 +1123,15 @@
                                                                            t-att-data-id="discount.id"
                                                                            t-att-data-type="discount.discount_type"
                                                                            t-att-data-value="discount.discount_value"
+                                                                           t-att-data-formula-type="discount.formula_type or ''"
+                                                                           t-att-data-computed-amount="discount.compute_discount_for_product(product)"
                                                                            style="width: 1.1rem; height: 1.1rem; cursor: pointer;"/>
                                                                 </div>
                                                                 <label class="form-check-label flex-grow-1 ms-2 fw-semibold text-dark" t-att-for="'discount_bottom_' + str(discount.id)" style="cursor: pointer;">
                                                                     <t t-esc="discount.name"/>
                                                                     <span class="text-danger ms-2">
                                                                         <t t-if="discount.discount_type == 'percent'">(-<t t-esc="discount.discount_value"/>%)</t>
+                                                                        <t t-elif="discount.discount_type == 'formula'">(<t t-esc="int(discount.discount_value)"/> tháng)</t>
                                                                         <t t-else="">(-<t t-esc="'{:,.0f}'.format(discount.discount_value)"/>)</t>
                                                                     </span>
                                                                 </label>
@@ -1241,8 +1244,13 @@
                                         if (cb.checked) {
                                             const type = cb.getAttribute('data-type');
                                             const value = parseFloat(cb.getAttribute('data-value'));
+                                            const computedAmount = parseFloat(cb.getAttribute('data-computed-amount') || '0');
+                                            
                                             if (type === 'percent') {
                                                 totalDiscount += (listPrice * value / 100);
+                                            } else if (type === 'formula') {
+                                                // Sử dụng giá trị đã được tính sẵn từ server
+                                                totalDiscount += computedAmount;
                                             } else {
                                                 totalDiscount += value;
                                             }

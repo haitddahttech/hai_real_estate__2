@@ -169,6 +169,13 @@
                     box-shadow: 0 20px 48px rgba(0,0,0,0.2) !important;
                     z-index: 1100 !important;
                     opacity: 0.95;
+                    will-change: left, top;
+                    transition: none !important;
+                }
+                
+                .popup-arrow {
+                    will-change: left, top, transform;
+                    backface-visibility: hidden;
                 }
                 
                 @keyframes popupSlideIn {
@@ -355,12 +362,6 @@
                                         <button type="button" class="toolbar-btn" id="toggleZoomLock" title="Khóa/Mở Zoom">
                                             <i class="fa fa-lock"/> Mở Zoom
                                         </button>
-                                        <button type="button" class="toolbar-btn" id="zoomIn">
-                                            <i class="fa fa-search-plus"/> Phóng to
-                                        </button>
-                                        <button type="button" class="toolbar-btn" id="zoomOut">
-                                            <i class="fa fa-search-minus"/> Thu nhỏ
-                                        </button>
                                         <button type="button" class="toolbar-btn" id="resetZoom">
                                             <i class="fa fa-expand"/> Đặt lại
                                         </button>
@@ -368,10 +369,10 @@
                                             <i class="fa fa-eye-slash"/> Ẩn lô đất
                                         </button>
                                         <button type="button" class="toolbar-btn" id="toggleAllGray" title="Tô xám tất cả">
-                                            <i class="fa fa-paint-brush"/> Tô tất cả
+                                            <i class="fa fa-paint-brush"/> Ẩn sản phẩm
                                         </button>
-                                        <button type="button" class="toolbar-btn" id="toggleInteractiveGray" title="Chế độ chọn tô xám">
-                                            <i class="fa fa-magic"/> Chọn tô xám
+                                        <button type="button" class="toolbar-btn" id="toggleInteractiveGray" title="Chế độ chọn sản phẩm" style="display: none;">
+                                            <i class="fa fa-magic"/> Chọn sản phẩm
                                         </button>
                                         <button type="button" class="toolbar-btn" id="downloadScreenshot" style="background: #28a745; color: white; border-color: #28a745;">
                                             <i class="fa fa-camera"/> Chụp màn hình
@@ -393,9 +394,9 @@
                                         <span id="zoomLevel" class="badge bg-secondary" style="min-width: 45px; font-size: 0.75rem;">100%</span>
                                     </div>
                                     
-                                    <div class="info-badge">
-                                        <i class="fa fa-hand-pointer-o"/> Nhấp vào bất động sản để xem chi tiết
-                                    </div>
+<!--                                    <div class="info-badge">-->
+<!--                                        <i class="fa fa-hand-pointer-o"/> Nhấp vào bất động sản để xem chi tiết-->
+<!--                                    </div>-->
                                 </div>
                             </div>
                             
@@ -409,36 +410,36 @@
 
                 <!-- Legend Section -->
                 <div class="row">
-                    <div class="col-12">
-                        <div class="legend-card">
-                            <h5 class="legend-title">
-                                <i class="fa fa-info-circle text-primary"/> Chú thích trạng thái
-                            </h5>
-                            <div class="legend-items">
-                                <div class="legend-item">
-                                    <div class="legend-color" style="border: 1px solid #3498db; background: transparent;"></div>
-                                    <div>
-                                        <span class="legend-label">Còn trống</span>
-                                        <span class="legend-desc">- Trong suốt (Sẵn sàng)</span>
-                                    </div>
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-color" style="background: #cccccc;"></div>
-                                    <div>
-                                        <span class="legend-label">Đã bán</span>
-                                        <span class="legend-desc">- Màu xám</span>
-                                    </div>
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-color" style="background: rgba(231, 76, 60, 0.4); border: 1px solid #e74c3c;"></div>
-                                    <div>
-                                        <span class="legend-label">Đang chọn</span>
-                                        <span class="legend-desc">- Nhấp để xem</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<!--                    <div class="col-12">-->
+<!--                        <div class="legend-card">-->
+<!--                            <h5 class="legend-title">-->
+<!--                                <i class="fa fa-info-circle text-primary"/> Chú thích trạng thái-->
+<!--                            </h5>-->
+<!--                            <div class="legend-items">-->
+<!--                                <div class="legend-item">-->
+<!--                                    <div class="legend-color" style="border: 1px solid #3498db; background: transparent;"></div>-->
+<!--                                    <div>-->
+<!--                                        <span class="legend-label">Còn trống</span>-->
+<!--                                        <span class="legend-desc">- Trong suốt (Sẵn sàng)</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="legend-item">-->
+<!--                                    <div class="legend-color" style="background: #cccccc;"></div>-->
+<!--                                    <div>-->
+<!--                                        <span class="legend-label">Đã bán</span>-->
+<!--                                        <span class="legend-desc">- Màu xám</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="legend-item">-->
+<!--                                    <div class="legend-color" style="background: rgba(231, 76, 60, 0.4); border: 1px solid #e74c3c;"></div>-->
+<!--                                    <div>-->
+<!--                                        <span class="legend-label">Đang chọn</span>-->
+<!--                                        <span class="legend-desc">- Nhấp để xem</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
             </div>
 

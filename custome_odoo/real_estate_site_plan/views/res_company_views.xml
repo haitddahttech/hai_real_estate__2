@@ -39,6 +39,8 @@
                         </sheet>
                     </form>
                 </field>
+                <separator string="Cài đặt PDF/Ảnh" colspan="2"/>
+                <field name="customer_greeting" placeholder="Ví dụ: Cảm ơn Quý khách đã quan tâm đến dự án của chúng tôi!" colspan="2"/>
             </xpath>
         </field>
     </record>

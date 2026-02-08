@@ -209,18 +209,18 @@ class SitePlanPortal(CustomerPortal):
                 return request.redirect('/my')
             
             # Handle discount_ids param to sync state before printing
-            if 'discount_ids' in kw:
-                try:
-                    d_ids = []
-                    if kw['discount_ids']:
-                        d_ids = [int(x) for x in kw['discount_ids'].split(',')]
-                    
-                    # Update product discounts
-                    product.sudo().write({
-                        'selected_discount_ids': [(6, 0, d_ids)]
-                    })
-                except Exception as e:
-                    _logger.error(f"Error applying discounts for PDF: {e}")
+            # Always update to clear old selections if none selected
+            try:
+                d_ids = []
+                if kw.get('discount_ids'):
+                    d_ids = [int(x) for x in kw['discount_ids'].split(',') if x]
+                
+                # Update product discounts (clears if d_ids is empty)
+                product.sudo().write({
+                    'selected_discount_ids': [(6, 0, d_ids)]
+                })
+            except Exception as e:
+                _logger.error(f"Error applying discounts for PDF: {e}")
             
             # Check access rights
             try:
@@ -271,21 +271,21 @@ class SitePlanPortal(CustomerPortal):
                 return request.redirect('/my')
             
             # Handle discount_ids param to sync state before printing
-            if 'discount_ids' in kw:
-                try:
-                    d_ids = []
-                    if kw['discount_ids']:
-                        d_ids = [int(x) for x in kw['discount_ids'].split(',')]
-                    
-                    # Update product discounts
-                    product.sudo().write({
-                        'selected_discount_ids': [(6, 0, d_ids)]
-                    })
-                except Exception as e:
-                    _logger.error(f"Error applying discounts for Image: {e}")
+            # Always update to clear old selections if none selected
+            try:
+                d_ids = []
+                if kw.get('discount_ids'):
+                    d_ids = [int(x) for x in kw['discount_ids'].split(',') if x]
+                
+                # Update product discounts (clears if d_ids is empty)
+                product.sudo().write({
+                    'selected_discount_ids': [(6, 0, d_ids)]
+                })
+            except Exception as e:
+                _logger.error(f"Error applying discounts for Image: {e}")
 
             # Check access rights
-            product.check_access('read')
+            product.sudo().check_access('read')
             
             # Get the report record
             report = request.env['ir.actions.report'].sudo().search([

@@ -366,15 +366,15 @@ class ProductTemplate(models.Model):
         for product in self:
             product.is_real_estate = bool(product.site_plan_polygon_ids)
     
-    @api.depends('list_price', 'selected_discount_ids', 'selected_discount_ids.discount_type', 'selected_discount_ids.discount_value')
+    @api.depends('list_price', 'selected_discount_ids', 'selected_discount_ids.discount_type', 
+                 'selected_discount_ids.discount_value', 'selected_discount_ids.formula_type',
+                 'management_fee', 'maintenance_fee', 'area')
     def _compute_final_price(self):
         for product in self:
             total_discount = 0.0
             for discount in product.selected_discount_ids:
-                if discount.discount_type == 'percent':
-                    total_discount += (product.list_price * (discount.discount_value / 100.0))
-                else:
-                    total_discount += discount.discount_value
+                # Sử dụng method từ discount model để tính giá trị chiết khấu
+                total_discount += discount.compute_discount_for_product(product)
             product.final_price = product.list_price - total_discount
 
     @api.depends('categ_id', 'categ_id.real_estate_color')

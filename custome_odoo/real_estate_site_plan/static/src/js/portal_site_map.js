@@ -51,9 +51,19 @@
             manuallyGrayIndices: [], // Array of indices set to gray manually (added to gray list)
             manuallyUngrayIndices: [], // Array of indices set to NOT gray manually (removed from gray list)
             isDrawing: false, // Flag for requestAnimationFrame
+            isDrawingArrows: false, // Flag for arrow RAF
         };
 
         const MAX_POPUPS = 5;
+
+        // Cached DOM elements for performance
+        let cachedWrapper = null;
+        function getWrapper() {
+            if (!cachedWrapper) {
+                cachedWrapper = document.querySelector('.canvas-wrapper') || document.body;
+            }
+            return cachedWrapper;
+        }
 
         // Initialize
         init();
@@ -457,45 +467,55 @@
         }
 
         function drawArrows() {
-            // Get scroll offset for absolute positioning
-            const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
-            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+            // Use RAF for throttling - only one arrow update per frame
+            if (state.isDrawingArrows) return;
+            state.isDrawingArrows = true;
 
-            state.activePopups.forEach((popupData) => {
+            requestAnimationFrame(() => {
+                actualDrawArrows();
+                state.isDrawingArrows = false;
+            });
+        }
+
+        function actualDrawArrows() {
+            // Cache all expensive DOM operations
+            const canvasRect = canvas.getBoundingClientRect();
+            const wrapper = getWrapper();
+            const wrapperRect = wrapper.getBoundingClientRect();
+
+            const displayWidth = state.displayWidth || canvasRect.width;
+            const displayHeight = state.displayHeight || canvasRect.height;
+            const scaleX = displayWidth / 1200;
+            const scaleY = displayHeight / 800;
+
+            const popupCount = state.activePopups.length;
+            for (let p = 0; p < popupCount; p++) {
+                const popupData = state.activePopups[p];
                 const popup = popupData.element;
                 const popupRect = popup.getBoundingClientRect();
                 const popupCenterX = popupRect.left + popupRect.width / 2;
                 const popupCenterY = popupRect.top + popupRect.height / 2;
 
-                popupData.origins.forEach((origin) => {
+                const originCount = popupData.origins.length;
+                for (let o = 0; o < originCount; o++) {
+                    const origin = popupData.origins[o];
                     const polygon = state.polygons[origin.polygonIndex];
                     const arrow = origin.arrow;
-
-                    const canvasRect = canvas.getBoundingClientRect();
                     const points = polygon.points;
 
                     // Find closest point on polygon edge (in screen coordinates)
                     let minDist = Infinity;
-                    let closestPoint = { x: 0, y: 0 };
+                    let closestX = 0, closestY = 0;
 
-                    const displayWidth = parseFloat(canvas.style.width) || canvasRect.width;
-                    const displayHeight = parseFloat(canvas.style.height) || canvasRect.height;
-                    const scaleX = displayWidth / 1200;
-                    const scaleY = displayHeight / 800;
-
-                    for (let i = 0; i < points.length; i++) {
+                    const pointCount = points.length;
+                    for (let i = 0; i < pointCount; i++) {
                         const p1 = points[i];
-                        const p2 = points[(i + 1) % points.length];
+                        const p2 = points[(i + 1) % pointCount];
 
-                        const canvasX1 = p1.x * scaleX;
-                        const canvasY1 = p1.y * scaleY;
-                        const canvasX2 = p2.x * scaleX;
-                        const canvasY2 = p2.y * scaleY;
-
-                        const zoomedX1 = (canvasX1 + state.offset.x) * state.scale;
-                        const zoomedY1 = (canvasY1 + state.offset.y) * state.scale;
-                        const zoomedX2 = (canvasX2 + state.offset.x) * state.scale;
-                        const zoomedY2 = (canvasY2 + state.offset.y) * state.scale;
+                        const zoomedX1 = (p1.x * scaleX + state.offset.x) * state.scale;
+                        const zoomedY1 = (p1.y * scaleY + state.offset.y) * state.scale;
+                        const zoomedX2 = (p2.x * scaleX + state.offset.x) * state.scale;
+                        const zoomedY2 = (p2.y * scaleY + state.offset.y) * state.scale;
 
                         const x1 = canvasRect.left + zoomedX1;
                         const y1 = canvasRect.top + zoomedY1;
@@ -503,21 +523,24 @@
                         const y2 = canvasRect.top + zoomedY2;
 
                         const edgePoint = closestPointOnSegment(x1, y1, x2, y2, popupCenterX, popupCenterY);
-                        const dist = Math.sqrt((edgePoint.x - popupCenterX) ** 2 + (edgePoint.y - popupCenterY) ** 2);
+                        const edgeDx = edgePoint.x - popupCenterX;
+                        const edgeDy = edgePoint.y - popupCenterY;
+                        const dist = edgeDx * edgeDx + edgeDy * edgeDy; // Skip sqrt for comparison
 
                         if (dist < minDist) {
                             minDist = dist;
-                            closestPoint = edgePoint;
+                            closestX = edgePoint.x;
+                            closestY = edgePoint.y;
                         }
                     }
 
-                    const dx = popupCenterX - closestPoint.x;
-                    const dy = popupCenterY - closestPoint.y;
+                    const dx = popupCenterX - closestX;
+                    const dy = popupCenterY - closestY;
                     const angle = Math.atan2(dy, dx);
 
                     const strokeOffset = 2;
-                    const extendedStartX = closestPoint.x + Math.cos(angle) * strokeOffset;
-                    const extendedStartY = closestPoint.y + Math.sin(angle) * strokeOffset;
+                    const extendedStartX = closestX + Math.cos(angle) * strokeOffset;
+                    const extendedStartY = closestY + Math.sin(angle) * strokeOffset;
 
                     const popupEdgePoint = getPopupEdgePoint(popupRect, angle);
                     const arrowDx = popupEdgePoint.x - extendedStartX;
@@ -525,22 +548,22 @@
                     const arrowAngle = Math.atan2(arrowDy, arrowDx);
                     const length = Math.sqrt(arrowDx * arrowDx + arrowDy * arrowDy);
 
-                    const wrapper = document.querySelector('.canvas-wrapper') || document.body;
-                    const wrapperRect = wrapper.getBoundingClientRect();
-
-                    arrow.style.left = (extendedStartX - wrapperRect.left) + 'px';
-                    arrow.style.top = (extendedStartY - wrapperRect.top) + 'px';
-                    arrow.style.width = length + 'px';
-                    arrow.style.height = '4px';
-                    arrow.style.transform = `rotate(${arrowAngle}rad)`;
-                    arrow.style.transformOrigin = '0 50%';
-                    arrow.style.background = '#e74c3c';
-                    arrow.style.position = 'absolute';
-                    arrow.style.zIndex = '999';
-                    arrow.style.pointerEvents = 'none';
-                    arrow.style.display = 'block';
-                });
-            });
+                    // Batch style updates using cssText for better performance
+                    arrow.style.cssText = `
+                        left: ${extendedStartX - wrapperRect.left}px;
+                        top: ${extendedStartY - wrapperRect.top}px;
+                        width: ${length}px;
+                        height: 4px;
+                        transform: rotate(${arrowAngle}rad);
+                        transform-origin: 0 50%;
+                        background: #e74c3c;
+                        position: absolute;
+                        z-index: 999;
+                        pointer-events: none;
+                        display: block;
+                    `;
+                }
+            }
         }
 
         function closestPointOnSegment(x1, y1, x2, y2, px, py) {
@@ -674,7 +697,7 @@
             arrow.className = 'popup-arrow';
             arrow.style.display = 'none';
 
-            const wrapper = document.querySelector('.canvas-wrapper') || document.body;
+            const wrapper = getWrapper();
             wrapper.appendChild(arrow);
 
             popupData.origins.push({
@@ -948,7 +971,7 @@
             arrow.className = 'popup-arrow';
             arrow.style.display = 'none';
 
-            const wrapper = document.querySelector('.canvas-wrapper') || document.body;
+            const wrapper = getWrapper();
             wrapper.appendChild(popup);
             wrapper.appendChild(arrow);
 
@@ -989,9 +1012,10 @@
             let isDragging = false;
             let startX, startY; // Mouse start position
             let initialPopupX, initialPopupY; // Popup start position relative to wrapper
+            let cachedWrapperWidth, cachedWrapperHeight; // Cache wrapper dimensions
 
             const header = popup.querySelector('.card-header');
-            const wrapper = document.querySelector('.canvas-wrapper') || document.body;
+            const wrapper = getWrapper();
 
             const dragStart = (e) => {
                 if (e.target.closest('.close-popup-btn')) return;
@@ -1004,12 +1028,14 @@
                 startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
 
                 // Get current popup position relative to wrapper
-                // We assume popup.style.left/top are set in px. 
-                // If not (e.g. first render), we need computed style.
-                // But since we position it absolutely in JS, parsing style.left matching '123px' is usually safe.
                 // For safety, use offsetLeft/Top which are relative to offsetParent (wrapper).
                 initialPopupX = popup.offsetLeft;
                 initialPopupY = popup.offsetTop;
+
+                // Cache wrapper dimensions at drag start (don't query during drag)
+                const wrapperRect = wrapper.getBoundingClientRect();
+                cachedWrapperWidth = wrapperRect.width;
+                cachedWrapperHeight = wrapperRect.height;
 
                 if (e.type === 'touchstart') {
                     // e.preventDefault(); 
@@ -1030,25 +1056,23 @@
                 let newX = initialPopupX + dx;
                 let newY = initialPopupY + dy;
 
-                // Optional: Clamp to constraints (wrapper or canvas)
-                // Let's keep it simple: Constrain to wrapper bounds (mostly)
-                const wrapperRect = wrapper.getBoundingClientRect();
+                // Use cached dimensions for faster constraints
                 const popupWidth = popup.offsetWidth;
                 const popupHeight = popup.offsetHeight;
 
                 // Max allowed position (width - popup width)
-                const maxX = wrapperRect.width - popupWidth;
-                const maxY = wrapperRect.height - popupHeight;
+                const maxX = cachedWrapperWidth - popupWidth;
+                const maxY = cachedWrapperHeight - popupHeight;
 
                 // Apply constraints: Prevent popup from going outside wrapper
                 newX = Math.max(0, Math.min(newX, maxX));
                 newY = Math.max(0, Math.min(newY, maxY));
 
-                // Apply directly
+                // Apply directly - left/top for final position
                 popup.style.left = `${newX}px`;
                 popup.style.top = `${newY}px`;
 
-                // Update arrows immediately
+                // Update arrows (already throttled via RAF)
                 drawArrows();
             };
 
@@ -1077,7 +1101,7 @@
 
         function positionPopup(popup, polygon, popupIndex) {
             const canvasRect = canvas.getBoundingClientRect();
-            const wrapper = document.querySelector('.canvas-wrapper') || document.body;
+            const wrapper = getWrapper();
             const wrapperRect = wrapper.getBoundingClientRect();
 
             // Dimensions and Config
@@ -1389,6 +1413,10 @@
         }
 
         function onWheel(e) {
+            // If zoom is locked, allow default scroll behavior
+            if (state.isZoomLocked) return;
+
+            // Prevent page scroll only when zooming
             e.preventDefault();
 
             const rect = canvas.getBoundingClientRect();
@@ -1397,8 +1425,6 @@
 
             const worldPosX = mouseX / state.scale - state.offset.x;
             const worldPosY = mouseY / state.scale - state.offset.y;
-
-            if (state.isZoomLocked) return;
 
             const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
             const oldScale = state.scale;
@@ -1479,7 +1505,7 @@
                 btn.innerHTML = '<i class="fa fa-eye-slash"></i> Ẩn lô đất';
                 btn.title = 'Ẩn các lô đất trên bản đồ';
             } else {
-                btn.innerHTML = '<i class="fa fa-eye"></i> Hiện lô đất';
+                btn.innerHTML = '<i class="fa fa-eye"></i> Tổng';
                 btn.title = 'Hiện các lô đất trên bản đồ';
             }
         }
@@ -1495,15 +1521,33 @@
 
             // Update UI
             const btn = document.getElementById('toggleAllGray');
+            const interactiveBtn = document.getElementById('toggleInteractiveGray');
+
             if (btn) {
                 if (state.forceAllGray) {
                     btn.innerHTML = '<i class="fa fa-undo"></i> Hoàn tác';
                     btn.classList.add('active-tool-btn');
                     btn.style.background = '#e2e8f0';
+                    // Show "Chọn sản phẩm" button when forceAllGray is ON
+                    if (interactiveBtn) {
+                        interactiveBtn.style.display = '';
+                    }
                 } else {
-                    btn.innerHTML = '<i class="fa fa-paint-brush"></i> Tô tất cả';
+                    btn.innerHTML = '<i class="fa fa-paint-brush"></i> Ẩn sản phẩm';
                     btn.classList.remove('active-tool-btn');
                     btn.style.background = 'white';
+                    // Hide "Chọn sản phẩm" button when forceAllGray is OFF
+                    if (interactiveBtn) {
+                        interactiveBtn.style.display = 'none';
+                        // Also turn off interactive mode if it was active
+                        if (state.interactiveGrayMode) {
+                            state.interactiveGrayMode = false;
+                            interactiveBtn.innerHTML = '<i class="fa fa-magic"></i> Chọn sản phẩm';
+                            interactiveBtn.style.background = 'white';
+                            interactiveBtn.style.borderColor = '#dee2e6';
+                            canvas.style.cursor = 'pointer';
+                        }
+                    }
                 }
             }
             draw();
@@ -1520,7 +1564,7 @@
                     btn.style.borderColor = '#cbd5e0';
                     canvas.style.cursor = 'cell';
                 } else {
-                    btn.innerHTML = '<i class="fa fa-magic"></i> Chọn tô xám';
+                    btn.innerHTML = '<i class="fa fa-magic"></i> Chọn sản phẩm';
                     btn.style.background = 'white';
                     btn.style.borderColor = '#dee2e6';
                     canvas.style.cursor = 'pointer';
@@ -1571,8 +1615,8 @@
                 btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang chụp...';
                 btn.disabled = true;
 
-                // Simply capture the canvas wrapper
-                const canvasWrapper = document.querySelector('.canvas-wrapper');
+                // Get canvas wrapper
+                const canvasWrapper = getWrapper();
 
                 if (!canvasWrapper) {
                     alert('Không tìm thấy canvas!');
@@ -1581,19 +1625,37 @@
                     return;
                 }
 
-                // Optimization for screenshot
+                // === FORCE HIGH-RES RENDERING FOR SCREENSHOT ===
+                // Save current state
+                const originalCachedImage = state.cachedImage;
+
+                // Temporarily use original image (not downsampled) for sharper output
+                state.cachedImage = state.image;
+
+                // Force synchronous redraw with original image
+                actualDraw();
+
+                // Add optimization class
                 canvasWrapper.classList.add('taking-screenshot');
 
-                // Capture canvas wrapper directly (includes canvas only, not popups)
+                // Capture canvas wrapper with higher scale for better quality
                 const screenshot = await html2canvas(canvasWrapper, {
                     backgroundColor: '#f8f9fa',
-                    scale: 3,
+                    scale: 4, // Higher scale for sharper output
                     logging: false,
                     useCORS: true,
                     allowTaint: true,
+                    imageTimeout: 0, // Disable timeout for large images
                 });
 
+                // Remove optimization class
                 canvasWrapper.classList.remove('taking-screenshot');
+
+                // === RESTORE ORIGINAL STATE ===
+                state.cachedImage = originalCachedImage;
+
+                // Redraw with original cached image
+                actualDraw();
 
                 // Download
                 screenshot.toBlob((blob) => {
@@ -1607,11 +1669,15 @@
 
                     btn.innerHTML = originalHTML;
                     btn.disabled = false;
-                }, 'image/png');
+                }, 'image/png', 1.0); // Maximum quality
 
             } catch (error) {
                 console.error('Screenshot error:', error);
                 alert('Lỗi: ' + error.message);
+
+                // Restore state on error
+                setCanvasSize();
+                draw();
 
                 const btn = document.getElementById('downloadScreenshot');
                 btn.innerHTML = '<i class="fa fa-camera"></i> Chụp màn hình';

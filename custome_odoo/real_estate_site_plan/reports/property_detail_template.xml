@@ -375,7 +375,7 @@
                                         <th style="width: 12%; text-align: right;">TIỀN NHÀ</th>
                                         <th style="width: 10%; text-align: right;">VAT</th>
                                         <th style="width: 12%; text-align: right;">TỔNG TIỀN</th>
-                                        <th style="width: 14%; text-align: right;">HỖ TRỢ NH</th>
+                                        <th style="width: 14%; text-align: right;">HỖ TRỢ<br/>NGÂN HÀNG</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -480,7 +480,7 @@
                         <!-- Customer Greeting Footer -->
                         <t t-if="product.env.company.customer_greeting">
                             <div style="text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px dashed #E5E7EB;">
-                                <p style="font-size: 14px; color: #333; margin: 0; font-style: italic; white-space: pre-line;">
+                                <p style="font-family: 'DejaVu Serif', serif; font-size: 15px; color: #856404; margin: 0; font-style: italic; white-space: pre-line;">
                                     <t t-esc="product.env.company.customer_greeting"/>
                                 </p>
                             </div>

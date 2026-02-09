@@ -340,8 +340,10 @@
 
             // Draw polygons (need to scale coordinates from 1200x800 to canvas size)
             // Draw polygons (need to scale coordinates from 1200x800 to canvas size)
+            // Draw polygons (need to scale coordinates from 1200x800 to canvas size)
+
+            // First pass: Draw all UNSELECTED polygons (Only if visible)
             if (state.polygonsVisible) {
-                // First pass: Draw all UNSELECTED polygons
                 state.polygons.forEach((polygon, index) => {
                     // Skip if selected (will be drawn later)
                     if (state.selectedPolygons.includes(index)) return;
@@ -354,21 +356,21 @@
                     }
                     drawPolygonScaled(polygon, false, isEffectivelySold);
                 });
-
-                // Second pass: Draw SELECTED polygons on top
-                state.selectedPolygons.forEach(index => {
-                    const polygon = state.polygons[index];
-                    if (!polygon) return;
-
-                    let isEffectivelySold;
-                    if (state.forceAllGray) {
-                        isEffectivelySold = !state.manuallyUngrayIndices.includes(index);
-                    } else {
-                        isEffectivelySold = state.manuallyGrayIndices.includes(index);
-                    }
-                    drawPolygonScaled(polygon, true, isEffectivelySold);
-                });
             }
+
+            // Second pass: Draw SELECTED polygons on top (ALWAYS DRAW)
+            state.selectedPolygons.forEach(index => {
+                const polygon = state.polygons[index];
+                if (!polygon) return;
+
+                let isEffectivelySold;
+                if (state.forceAllGray) {
+                    isEffectivelySold = !state.manuallyUngrayIndices.includes(index);
+                } else {
+                    isEffectivelySold = state.manuallyGrayIndices.includes(index);
+                }
+                drawPolygonScaled(polygon, true, isEffectivelySold);
+            });
 
             ctx.restore();
 
@@ -1161,6 +1163,11 @@
             console.log('Total polygons to check:', state.polygons.length);
 
             for (let i = state.polygons.length - 1; i >= 0; i--) {
+                // If polygons are hidden, only allow interaction with SELECTED ones
+                if (!state.polygonsVisible && !state.selectedPolygons.includes(i)) {
+                    continue;
+                }
+
                 const polygon = state.polygons[i];
                 console.log(`\n=== Polygon ${i}: ${polygon.name} ===`);
                 polygon.points.forEach((p, idx) => {

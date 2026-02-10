@@ -280,47 +280,88 @@ class ProductTemplate(models.Model):
                 (0, 0, vals_3),
             ]
             
+            # Phân loại các đợt thành quá hạn và tương lai
+            passed_configs = []
+            future_configs = []
             for config in milestone_configs:
                 m_date = fixed_deposit_date + relativedelta(months=config['months'])
-                m_share = config['share']
-                m_amount = currency.round(product.price_include_land_tax * config['share'])
-                m_vat = currency.round(product.vat_tax * config['vat_share'])
-                m_bank = currency.round(product.price_include_land_tax * config['bank_share'] + product.vat_tax * config['bank_vat_share'])
-                
+                config['cal_date'] = m_date
                 if m_date < today:
-                    # Nếu đợt này đã quá hạn, gom tiền vào biến tích lũy
-                    accumulated_amount += m_amount
-                    accumulated_share += m_share
-                    accumulated_vat += m_vat
-                    accumulated_bank += m_bank
+                    passed_configs.append(config)
                 else:
-                    # Nếu đợt này ở tương lai, cộng dồn tiền tích lũy vào đây
-                    vals_m = {
-                        'product_tmpl_id': product.id,
-                        'type': config['type'],
-                        'date': m_date,
-                        'name': f"{((accumulated_share + m_share) * 100):.2f}" + '% +VAT tương ứng',
-                        'amount': m_amount + accumulated_amount,
-                        'vat_amount': m_vat + accumulated_vat,
-                        'bank_amount': m_bank + accumulated_bank,
-                        'bank_note': config['bank_note'],
-                    }
-                    timeline_vals_list.append((0, 0, vals_m))
-                    # Reset biến tích lũy sau khi đã gộp
-                    accumulated_amount = 0.0
-                    accumulated_share = 0.0
-                    accumulated_vat = 0.0
-                    accumulated_bank = 0.0
+                    future_configs.append(config)
 
-            # Xử lý Đợt 10 (Giao nhà) - Nhận phần tiền tích lũy còn lại nếu tất cả 4-9 đều quá hạn
+            # Xử lý logic gộp
+            # Xử lý logic gộp
+            if passed_configs:
+                num_passed = len(passed_configs)
+                # Lấy num_passed đợt từ cuối danh sách tương lai để gộp vào đợt hiện tại
+                pulled_back_configs = []
+                for _ in range(num_passed):
+                    if future_configs:
+                        pulled_back_configs.append(future_configs.pop()) # Lấy đợt cuối cùng ra
+                
+                # Danh sách tất cả các đợt sẽ gộp vào đợt hiện tại (Đợt 4)
+                # Bao gồm các đợt đã quá hạn + các đợt bị rút từ cuối lên
+                merged_configs = passed_configs + pulled_back_configs
+                
+                merged_share = 0.0
+                merged_amount = 0.0
+                merged_vat = 0.0
+                merged_bank = 0.0
+                
+                # Tính tổng tiền gộp
+                for c in merged_configs:
+                    c_amount = currency.round(product.price_include_land_tax * c['share'])
+                    c_vat = currency.round(product.vat_tax * c['vat_share'])
+                    c_bank = currency.round(product.price_include_land_tax * c['bank_share'] + product.vat_tax * c['bank_vat_share'])
+                    
+                    merged_share += c['share']
+                    merged_amount += c_amount
+                    merged_vat += c_vat
+                    merged_bank += c_bank
+                
+                # Tạo entry cho đợt gộp (Mang thông tin của đợt quá hạn đầu tiên, thường là Đợt 4)
+                first_passed = passed_configs[0]
+                vals_merged = {
+                    'product_tmpl_id': product.id,
+                    'type': first_passed['type'],
+                    'date': today, # Ngày thanh toán là ngày ký Hợp đồng (hiện tại)
+                    'name': f"{merged_share * 100:.2f}% +VAT tương ứng",
+                    'amount': merged_amount,
+                    'vat_amount': merged_vat,
+                    'bank_amount': merged_bank,
+                    'bank_note': first_passed['bank_note'],
+                }
+                timeline_vals_list.append((0, 0, vals_merged))
+            
+            # Tạo entry cho các đợt tương lai (dù đã bị rút bớt hay còn nguyên)
+            for config in future_configs:
+                amount = currency.round(product.price_include_land_tax * config['share'])
+                vat = currency.round(product.vat_tax * config['vat_share'])
+                bank = currency.round(product.price_include_land_tax * config['bank_share'] + product.vat_tax * config['bank_vat_share'])
+                
+                vals = {
+                    'product_tmpl_id': product.id,
+                    'type': config['type'],
+                    'date': config['cal_date'],
+                    'name': f"{config['share'] * 100:.2f}% +VAT tương ứng",
+                    'amount': amount,
+                    'vat_amount': vat,
+                    'bank_amount': bank,
+                    'bank_note': config['bank_note'],
+                }
+                timeline_vals_list.append((0, 0, vals))
+
+            # Xử lý Đợt 10 (Giao nhà)
             vals_10 = {
                 'product_tmpl_id': product.id,
                 'type': 'giao_nha',
                 'date': fixed_deposit_date + relativedelta(months=18),
                 'name': '45% +VAT còn lại',
-                'amount': currency.round(product.price_include_land_tax * 0.45) + accumulated_amount,
-                'vat_amount': currency.round(product.vat_tax * 0.50) + accumulated_vat,
-                'bank_amount': currency.round(product.price_include_land_tax * 0.35 + product.vat_tax * 0.40) + accumulated_bank,
+                'amount': currency.round(product.price_include_land_tax * 0.45),
+                'vat_amount': currency.round(product.vat_tax * 0.50),
+                'bank_amount': currency.round(product.price_include_land_tax * 0.35 + product.vat_tax * 0.40),
                 'bank_note': 'NGÂN HÀNG 35%',
             }
             timeline_vals_list.append((0, 0, vals_10))

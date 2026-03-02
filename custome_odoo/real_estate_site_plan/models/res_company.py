@@ -19,3 +19,10 @@ class ResCompany(models.Model):
         help='Dòng chữ sẽ hiển thị ở cuối PDF và ảnh tải xuống',
         default='Cảm ơn Quý khách đã quan tâm đến dự án của chúng tôi!'
     )
+
+    nearby_day = fields.Float(
+        string='Số ngày gộp đợt',
+        default=0,
+        help='Nếu khoảng cách giữa ngày Ký HĐ và đợt thanh toán gần nhất nhỏ hơn số ngày này, '
+             'hệ thống sẽ tự động gộp đợt đó vào đợt tiếp theo. Mặc định 0 = không gộp.'
+    )

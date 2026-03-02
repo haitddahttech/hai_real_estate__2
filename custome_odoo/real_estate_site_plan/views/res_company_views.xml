@@ -41,6 +41,8 @@
                 </field>
                 <separator string="Cài đặt PDF/Ảnh" colspan="2"/>
                 <field name="customer_greeting" placeholder="Ví dụ: Cảm ơn Quý khách đã quan tâm đến dự án của chúng tôi!" colspan="2"/>
+                <separator string="Cài đặt Lịch thanh toán" colspan="2"/>
+                <field name="nearby_day" help="Nếu khoảng cách giữa ngày Ký HĐ và đợt thanh toán gần nhất nhỏ hơn số ngày này, hệ thống sẽ tự động gộp đợt đó vào đợt tiếp theo."/>
             </xpath>
         </field>
     </record>

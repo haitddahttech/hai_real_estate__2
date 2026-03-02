@@ -438,7 +438,7 @@
             // Use solid selectionColor if selected
             ctx.strokeStyle = (polygon.product.is_sold || isEffectivelySold) ? '#bbbbbb' : (isSelected ? selectionColor : strokeColor);
 
-            const baseStrokeWidth = polygon.product && polygon.product.is_decoration ? 0.6 : 2.0;
+            const baseStrokeWidth = polygon.product && polygon.product.is_decoration ? 0.3 : 1.0;
 
             // Make line significantly thicker when selected
             ctx.lineWidth = (isSelected ? baseStrokeWidth * 3.0 : baseStrokeWidth) / state.scale;
@@ -946,7 +946,13 @@
                 `;
             }
 
-            popup.innerHTML = popupContent;
+            // Wrap content in a single scalable container
+            popup.innerHTML = `<div class="popup-content-wrapper">${popupContent}</div>`;
+
+            // Add resize handle (outside wrapper so it stays at popup corner)
+            const resizeHandle = document.createElement('div');
+            resizeHandle.className = 'popup-resize-handle';
+            popup.appendChild(resizeHandle);
 
             const arrow = document.createElement('div');
             arrow.className = 'popup-arrow';
@@ -974,8 +980,9 @@
                 }
             });
 
-            // Make popup draggable
+            // Make popup draggable and resizable
             makeDraggable(popup);
+            makeResizable(popup);
 
             state.activePopups.push({
                 productId: product.id,
@@ -1078,6 +1085,92 @@
             }, { passive: false });
 
             window.addEventListener('touchend', dragEnd);
+        }
+
+        function makeResizable(popup) {
+            const handle = popup.querySelector('.popup-resize-handle');
+            if (!handle) return;
+
+            let isResizing = false;
+            let startX, startY;
+            let startWidth, startHeight;
+
+            // Store original dimensions on first resize
+            const origWidth = popup.offsetWidth;
+            const origHeight = popup.offsetHeight;
+            popup._origWidth = origWidth;
+            popup._origHeight = origHeight;
+
+            // Min size = half of original
+            const minWidth = origWidth / 2;
+            const minHeight = origHeight / 2;
+            // Max size = 1.5x the original
+            const maxWidth = origWidth * 1.5;
+            const maxHeight = origHeight * 1.5;
+
+            const resizeStart = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                isResizing = true;
+                popup.classList.add('resizing-popup');
+
+                startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+                startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+                startWidth = popup.offsetWidth;
+                startHeight = popup.offsetHeight;
+            };
+
+            const resize = (e) => {
+                if (!isResizing) return;
+                e.preventDefault();
+
+                const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+                let newWidth = startWidth + (clientX - startX);
+                let newHeight = startHeight + (clientY - startY);
+
+                // Clamp
+                newWidth = Math.max(minWidth, Math.min(newWidth, maxWidth));
+                newHeight = Math.max(minHeight, Math.min(newHeight, maxHeight));
+
+                popup.style.width = newWidth + 'px';
+                popup.style.height = newHeight + 'px';
+                popup.style.maxWidth = 'none';
+                popup.style.minWidth = '0';
+                popup.style.overflow = 'hidden';
+
+                // Scale the entire content wrapper proportionally
+                const scaleFactor = Math.min(newWidth / origWidth, newHeight / origHeight);
+                const contentWrapper = popup.querySelector('.popup-content-wrapper');
+                if (contentWrapper) {
+                    contentWrapper.style.transformOrigin = 'top left';
+                    contentWrapper.style.transform = `scale(${scaleFactor})`;
+                    contentWrapper.style.width = (100 / scaleFactor) + '%';
+                    contentWrapper.style.height = (100 / scaleFactor) + '%';
+                }
+
+                // Update arrows
+                drawArrows();
+            };
+
+            const resizeEnd = () => {
+                if (isResizing) {
+                    isResizing = false;
+                    popup.classList.remove('resizing-popup');
+                    drawArrows();
+                }
+            };
+
+            handle.addEventListener('mousedown', resizeStart);
+            window.addEventListener('mousemove', resize);
+            window.addEventListener('mouseup', resizeEnd);
+
+            handle.addEventListener('touchstart', resizeStart, { passive: false });
+            window.addEventListener('touchmove', (e) => {
+                if (isResizing) resize(e);
+            }, { passive: false });
+            window.addEventListener('touchend', resizeEnd);
         }
 
         function positionPopup(popup, polygon, popupIndex) {

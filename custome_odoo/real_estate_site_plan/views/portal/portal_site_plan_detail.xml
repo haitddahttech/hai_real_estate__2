@@ -317,6 +317,36 @@
                     transform: scale(1.02);
                     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
                 }
+
+                /* Popup Resize Handle */
+                .popup-resize-handle {
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    width: 18px;
+                    height: 18px;
+                    cursor: nwse-resize;
+                    z-index: 10;
+                    border-radius: 0 0 12px 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .popup-resize-handle::after {
+                    content: '';
+                    width: 8px;
+                    height: 8px;
+                    border-right: 2px solid #aaa;
+                    border-bottom: 2px solid #aaa;
+                    display: block;
+                }
+                .popup-resize-handle:hover::after {
+                    border-color: #666;
+                }
+                .property-popup.resizing-popup {
+                    transition: none !important;
+                    user-select: none;
+                }
             </style>
             
             <!-- Header Section -->

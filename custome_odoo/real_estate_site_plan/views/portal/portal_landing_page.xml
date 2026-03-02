@@ -444,19 +444,13 @@
                             <t t-set="total_properties" t-value="len(request.env['site.plan.polygon'].sudo().search([('active', '=', True)]))"/>
                             <t t-set="available_properties" t-value="len(request.env['product.template'].sudo().search([('is_sold', '=', False)]))"/>
                             
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="stat-card">
                                     <div class="stat-number"><t t-esc="total_projects"/></div>
                                     <div class="stat-label">Dự Án</div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="stat-card">
-                                    <div class="stat-number"><t t-esc="total_properties"/></div>
-                                    <div class="stat-label">Tổng Lô Đất</div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="stat-card">
                                     <div class="stat-number"><t t-esc="available_properties"/></div>
                                     <div class="stat-label">Còn Trống</div>
@@ -487,7 +481,7 @@
                         </t>
                         
                         <t t-if="site_plans">
-                            <div class="row g-4">
+                            <div class="row g-4 justify-content-center">
                                 <t t-foreach="site_plans" t-as="site_plan">
                                     <div class="col-lg-4 col-md-6">
                                         <div class="project-card">

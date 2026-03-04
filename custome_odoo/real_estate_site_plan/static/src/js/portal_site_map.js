@@ -1724,78 +1724,316 @@
         async function downloadScreenshot() {
             try {
                 const btn = document.getElementById('downloadScreenshot');
+                if (!btn) return;
                 const originalHTML = btn.innerHTML;
                 btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang chụp...';
                 btn.disabled = true;
 
-                // Get canvas wrapper
-                const canvasWrapper = getWrapper();
-
-                if (!canvasWrapper) {
-                    alert('Không tìm thấy canvas!');
-                    btn.innerHTML = originalHTML;
-                    btn.disabled = false;
-                    return;
+                // Branch based on zoom level
+                if (state.scale === 1) {
+                    // === ZOOM 100%: High-res offscreen canvas approach ===
+                    await _screenshotFullRes(btn, originalHTML);
+                } else {
+                    // === ZOOM != 100%: Capture current view with html2canvas ===
+                    await _screenshotCurrentView(btn, originalHTML);
                 }
-
-                // === FORCE HIGH-RES RENDERING FOR SCREENSHOT ===
-                // Save current state
-                const originalCachedImage = state.cachedImage;
-
-                // Temporarily use original image (not downsampled) for sharper output
-                state.cachedImage = state.image;
-
-                // Force synchronous redraw with original image
-                actualDraw();
-
-                // Add optimization class
-                canvasWrapper.classList.add('taking-screenshot');
-
-                // Capture canvas wrapper with higher scale for better quality
-                const screenshot = await html2canvas(canvasWrapper, {
-                    backgroundColor: '#f8f9fa',
-                    scale: 4, // Higher scale for sharper output
-                    logging: false,
-                    useCORS: true,
-                    allowTaint: true,
-                    imageTimeout: 0, // Disable timeout for large images
-                });
-
-                // Remove optimization class
-                canvasWrapper.classList.remove('taking-screenshot');
-
-                // === RESTORE ORIGINAL STATE ===
-                state.cachedImage = originalCachedImage;
-
-                // Redraw with original cached image
-                actualDraw();
-
-                // Download
-                screenshot.toBlob((blob) => {
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-                    link.download = `site-plan-${timestamp}.png`;
-                    link.href = url;
-                    link.click();
-                    URL.revokeObjectURL(url);
-
-                    btn.innerHTML = originalHTML;
-                    btn.disabled = false;
-                }, 'image/png', 1.0); // Maximum quality
 
             } catch (error) {
                 console.error('Screenshot error:', error);
                 alert('Lỗi: ' + error.message);
 
-                // Restore state on error
-                setCanvasSize();
-                draw();
-
                 const btn = document.getElementById('downloadScreenshot');
-                btn.innerHTML = '<i class="fa fa-camera"></i> Chụp màn hình';
-                btn.disabled = false;
+                if (btn) {
+                    btn.innerHTML = '<i class="fa fa-camera"></i> Chụp màn hình';
+                    btn.disabled = false;
+                }
             }
+        }
+
+        // Screenshot at zoom 100%: use original image at full resolution
+        async function _screenshotFullRes(btn, originalHTML) {
+            // Load a FRESH copy of the original image at full resolution
+            const origImg = await new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = () => reject(new Error('Không thể tải ảnh gốc'));
+                const separator = siteMapData.imageUrl.includes('?') ? '&' : '?';
+                img.src = siteMapData.imageUrl + separator + '_t=' + Date.now();
+            });
+
+            const imgW = origImg.naturalWidth;
+            const imgH = origImg.naturalHeight;
+            console.log('Screenshot (100%): Fresh image dimensions:', imgW, 'x', imgH);
+
+            if (!imgW || !imgH) {
+                alert('Ảnh bản đồ không hợp lệ (kích thước = 0)!');
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+                return;
+            }
+
+            // Create offscreen canvas at original image resolution
+            const offCanvas = document.createElement('canvas');
+            offCanvas.width = imgW;
+            offCanvas.height = imgH;
+            const offCtx = offCanvas.getContext('2d');
+
+            offCtx.imageSmoothingEnabled = true;
+            offCtx.imageSmoothingQuality = 'high';
+
+            // Draw original image at full resolution
+            offCtx.drawImage(origImg, 0, 0, imgW, imgH);
+
+            // Scale factors: reference space (1200x800) → original image size
+            const sX = imgW / 1200;
+            const sY = imgH / 800;
+
+            // Draw polygons
+            function drawPolygonOnOff(polygon, isSelected, isEffectivelySold) {
+                const points = polygon.points;
+                if (!points || points.length < 3) return;
+
+                offCtx.beginPath();
+                offCtx.moveTo(points[0].x * sX, points[0].y * sY);
+                for (let i = 1; i < points.length; i++) {
+                    offCtx.lineTo(points[i].x * sX, points[i].y * sY);
+                }
+                offCtx.closePath();
+
+                if (polygon.product.is_sold || isEffectivelySold) {
+                    offCtx.fillStyle = '#dddddd';
+                    offCtx.fill();
+                } else if (isSelected) {
+                    offCtx.fillStyle = 'rgba(231, 76, 60, 0.4)';
+                    offCtx.fill();
+                }
+
+                let strokeColor = polygon.color || '#3498db';
+                let selectionColor = isSelected ? invertColor(strokeColor) : strokeColor;
+                offCtx.strokeStyle = (polygon.product.is_sold || isEffectivelySold)
+                    ? '#bbbbbb'
+                    : (isSelected ? selectionColor : strokeColor);
+
+                const baseStrokeWidth = polygon.product && polygon.product.is_decoration ? 0.075 : 0.25;
+                const strokeScale = Math.max(sX, sY);
+                offCtx.lineWidth = (isSelected ? baseStrokeWidth * 3.0 : baseStrokeWidth) * strokeScale;
+                offCtx.setLineDash([]);
+                offCtx.stroke();
+            }
+
+            if (state.polygonsVisible) {
+                state.polygons.forEach((polygon, index) => {
+                    if (state.selectedPolygons.includes(index)) return;
+                    let isEffectivelySold;
+                    if (state.forceAllGray) {
+                        isEffectivelySold = !state.manuallyUngrayIndices.includes(index);
+                    } else {
+                        isEffectivelySold = state.manuallyGrayIndices.includes(index);
+                    }
+                    drawPolygonOnOff(polygon, false, isEffectivelySold);
+                });
+            }
+
+            state.selectedPolygons.forEach(index => {
+                const polygon = state.polygons[index];
+                if (!polygon) return;
+                let isEffectivelySold;
+                if (state.forceAllGray) {
+                    isEffectivelySold = !state.manuallyUngrayIndices.includes(index);
+                } else {
+                    isEffectivelySold = state.manuallyGrayIndices.includes(index);
+                }
+                drawPolygonOnOff(polygon, true, isEffectivelySold);
+            });
+
+            // Capture and composite popups
+            const displayWidth = state.displayWidth || canvas.getBoundingClientRect().width;
+            const displayHeight = state.displayHeight || canvas.getBoundingClientRect().height;
+            const wrapper = getWrapper();
+            const wrapperRect = wrapper.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
+            const canvasRelLeft = canvasRect.left - wrapperRect.left;
+            const canvasRelTop = canvasRect.top - wrapperRect.top;
+            const popupToImgX = imgW / displayWidth;
+            const popupToImgY = imgH / displayHeight;
+
+            const popupCaptureScale = Math.max(2, Math.ceil(Math.max(popupToImgX, popupToImgY)));
+
+            // First pass: capture all popups
+            const popupRenderData = [];
+            for (const popupData of state.activePopups) {
+                const popupEl = popupData.element;
+                if (!popupEl) continue;
+
+                const popupCanvas = await html2canvas(popupEl, {
+                    backgroundColor: '#ffffff',
+                    scale: popupCaptureScale,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                });
+
+                const popupLeft = popupEl.offsetLeft;
+                const popupTop = popupEl.offsetTop;
+                const relX = popupLeft - canvasRelLeft;
+                const relY = popupTop - canvasRelTop;
+                const drawX = relX * popupToImgX;
+                const drawY = relY * popupToImgY;
+                const drawW = popupEl.offsetWidth * popupToImgX;
+                const drawH = popupEl.offsetHeight * popupToImgY;
+
+                popupRenderData.push({
+                    canvas: popupCanvas,
+                    drawX, drawY, drawW, drawH,
+                    origins: popupData.origins,
+                });
+            }
+
+            // Draw arrows FIRST (below popups)
+            for (const prd of popupRenderData) {
+                for (const origin of prd.origins) {
+                    const polygon = state.polygons[origin.polygonIndex];
+                    if (!polygon) continue;
+                    const points = polygon.points;
+
+                    const popupCenterOffX = prd.drawX + prd.drawW / 2;
+                    const popupCenterOffY = prd.drawY + prd.drawH / 2;
+
+                    let minDist = Infinity;
+                    let closestX = 0, closestY = 0;
+
+                    for (let i = 0; i < points.length; i++) {
+                        const p1 = points[i];
+                        const p2 = points[(i + 1) % points.length];
+                        const x1 = p1.x * sX, y1 = p1.y * sY;
+                        const x2 = p2.x * sX, y2 = p2.y * sY;
+
+                        const edgePoint = closestPointOnSegment(x1, y1, x2, y2, popupCenterOffX, popupCenterOffY);
+                        const edgeDx = edgePoint.x - popupCenterOffX;
+                        const edgeDy = edgePoint.y - popupCenterOffY;
+                        const dist = edgeDx * edgeDx + edgeDy * edgeDy;
+
+                        if (dist < minDist) {
+                            minDist = dist;
+                            closestX = edgePoint.x;
+                            closestY = edgePoint.y;
+                        }
+                    }
+
+                    const dx = popupCenterOffX - closestX;
+                    const dy = popupCenterOffY - closestY;
+                    const angle = Math.atan2(dy, dx);
+
+                    const offPopupRect = {
+                        left: prd.drawX, top: prd.drawY,
+                        right: prd.drawX + prd.drawW, bottom: prd.drawY + prd.drawH,
+                        width: prd.drawW, height: prd.drawH,
+                    };
+                    const popupEdge = getPopupEdgePoint(offPopupRect, angle);
+
+                    offCtx.beginPath();
+                    offCtx.moveTo(closestX, closestY);
+                    offCtx.lineTo(popupEdge.x, popupEdge.y);
+                    offCtx.strokeStyle = '#e74c3c';
+                    offCtx.lineWidth = 2 * Math.max(sX, sY);
+                    offCtx.setLineDash([]);
+                    offCtx.stroke();
+
+                    const arrowLen = 6 * Math.max(sX, sY);
+                    const arrowAngle = Math.atan2(popupEdge.y - closestY, popupEdge.x - closestX);
+                    offCtx.beginPath();
+                    offCtx.moveTo(popupEdge.x, popupEdge.y);
+                    offCtx.lineTo(
+                        popupEdge.x - arrowLen * Math.cos(arrowAngle - Math.PI / 6),
+                        popupEdge.y - arrowLen * Math.sin(arrowAngle - Math.PI / 6)
+                    );
+                    offCtx.lineTo(
+                        popupEdge.x - arrowLen * Math.cos(arrowAngle + Math.PI / 6),
+                        popupEdge.y - arrowLen * Math.sin(arrowAngle + Math.PI / 6)
+                    );
+                    offCtx.closePath();
+                    offCtx.fillStyle = '#e74c3c';
+                    offCtx.fill();
+                }
+            }
+
+            // Draw popups ON TOP (above arrows)
+            for (const prd of popupRenderData) {
+                offCtx.drawImage(prd.canvas, prd.drawX, prd.drawY, prd.drawW, prd.drawH);
+            }
+
+            // Download
+            console.log('Screenshot (100%): Final size:', offCanvas.width, 'x', offCanvas.height);
+            offCanvas.toBlob((blob) => {
+                if (!blob) {
+                    alert('Không thể tạo ảnh screenshot!');
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                    return;
+                }
+                console.log('Screenshot: Blob size:', (blob.size / 1024 / 1024).toFixed(2), 'MB');
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                link.download = `site-plan-${timestamp}.png`;
+                link.href = url;
+                link.click();
+                URL.revokeObjectURL(url);
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }, 'image/png');
+        }
+
+        // Screenshot at zoom != 100%: capture current view using html2canvas
+        async function _screenshotCurrentView(btn, originalHTML) {
+            const canvasWrapper = getWrapper();
+            if (!canvasWrapper) {
+                alert('Không tìm thấy canvas!');
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+                return;
+            }
+
+            // Force high-res rendering
+            const originalCachedImage = state.cachedImage;
+            state.cachedImage = state.image;
+            actualDraw();
+
+            canvasWrapper.classList.add('taking-screenshot');
+
+            const screenshot = await html2canvas(canvasWrapper, {
+                backgroundColor: '#f8f9fa',
+                scale: 4,
+                logging: false,
+                useCORS: true,
+                allowTaint: true,
+                imageTimeout: 0,
+            });
+
+            canvasWrapper.classList.remove('taking-screenshot');
+
+            // Restore
+            state.cachedImage = originalCachedImage;
+            actualDraw();
+
+            // Download
+            screenshot.toBlob((blob) => {
+                if (!blob) {
+                    alert('Không thể tạo ảnh screenshot!');
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                    return;
+                }
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                link.download = `site-plan-${timestamp}.png`;
+                link.href = url;
+                link.click();
+                URL.revokeObjectURL(url);
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }, 'image/png', 1.0);
         }
 
         function formatNumber(num) {

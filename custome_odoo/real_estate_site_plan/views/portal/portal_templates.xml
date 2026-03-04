@@ -93,7 +93,7 @@
                 <thead>
                     <tr class="active">
                         <th>Tên Dự Án</th>
-                        <th>Số Lô Đất</th>
+                        <th></th>
                         <th class="text-end">Thao Tác</th>
                     </tr>
                 </thead>
@@ -106,7 +106,7 @@
                                 </a>
                             </td>
                             <td>
-                                <span t-esc="site_plan.polygon_count"/> lô đất
+
                             </td>
                             <td class="text-end">
                                 <a t-attf-href="/my/site-plan/#{site_plan.id}" class="btn btn-sm btn-primary">

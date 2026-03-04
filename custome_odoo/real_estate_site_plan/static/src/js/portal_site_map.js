@@ -35,6 +35,8 @@
             offset: { x: 0, y: 0 },
             isPanning: false,
             panStart: null,
+            mouseDownPos: null, // Track initial mouse down position for drag threshold
+            wasPanning: false, // Flag to prevent click after panning
             // Touch state
             lastTouchPos: null,
             pinchStartDist: 0,
@@ -603,6 +605,11 @@
         }
 
         function onCanvasClick(e) {
+            // Skip click if it was actually a pan drag
+            if (state.wasPanning) {
+                state.wasPanning = false;
+                return;
+            }
             const pos = getMousePos(e);
             const clickedIndex = findPolygonAt(pos);
 
@@ -1337,33 +1344,48 @@
         }
 
         function onMouseDown(e) {
-            if (e.button === 2) {
-                e.preventDefault();
-                state.isPanning = true;
+            if (e.button === 0) {
                 state.panStart = { x: e.clientX, y: e.clientY };
-                canvas.style.cursor = 'grabbing';
+                state.mouseDownPos = { x: e.clientX, y: e.clientY };
+                state.isPanning = false;
+                state.wasPanning = false;
             }
         }
 
         function onMouseMove(e) {
-            if (state.isPanning && state.panStart) {
-                const dx = (e.clientX - state.panStart.x) / state.scale;
-                const dy = (e.clientY - state.panStart.y) / state.scale;
+            if (state.panStart && state.mouseDownPos) {
+                // Check drag threshold to distinguish click vs drag
+                const totalDist = Math.sqrt(
+                    Math.pow(e.clientX - state.mouseDownPos.x, 2) +
+                    Math.pow(e.clientY - state.mouseDownPos.y, 2)
+                );
 
-                state.offset.x += dx;
-                state.offset.y += dy;
+                if (totalDist > 5) {
+                    if (!state.isPanning) {
+                        state.isPanning = true;
+                        state.wasPanning = true;
+                        canvas.style.cursor = 'grabbing';
+                    }
 
-                state.panStart = { x: e.clientX, y: e.clientY };
-                draw(); // Only redraw canvas and arrows, don't move popups
+                    const dx = (e.clientX - state.panStart.x) / state.scale;
+                    const dy = (e.clientY - state.panStart.y) / state.scale;
+
+                    state.offset.x += dx;
+                    state.offset.y += dy;
+
+                    state.panStart = { x: e.clientX, y: e.clientY };
+                    draw(); // Only redraw canvas and arrows, don't move popups
+                }
             }
         }
 
         function onMouseUp(e) {
             if (state.isPanning) {
                 state.isPanning = false;
-                state.panStart = null;
                 canvas.style.cursor = 'pointer';
             }
+            state.panStart = null;
+            state.mouseDownPos = null;
         }
 
         // Touch handlers

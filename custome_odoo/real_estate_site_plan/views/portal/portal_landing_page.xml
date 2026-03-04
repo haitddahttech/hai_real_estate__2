@@ -437,7 +437,7 @@
                 </section>
                 
                 <!-- Stats Section -->
-                <section class="stats-section">
+                <section class="stats-section" style="display: none;">
                     <div class="container">
                         <div class="row g-4">
                             <t t-set="total_projects" t-value="len(request.env['site.plan'].sudo().search([('active', '=', True)]))"/>
@@ -505,8 +505,6 @@
                                                 </p>
                                                 <div class="project-meta">
                                                     <div class="project-count">
-                                                        <i class="fa fa-map-marker"/>
-                                                        <span><t t-esc="site_plan.polygon_count"/> lô đất</span>
                                                     </div>
                                                     <a t-attf-href="/my/site-plan/#{site_plan.id}" class="btn-view-project">
                                                         Xem Bản Đồ <i class="fa fa-arrow-right"/>

@@ -1857,7 +1857,9 @@
             const popupToImgX = imgW / displayWidth;
             const popupToImgY = imgH / displayHeight;
 
-            const popupCaptureScale = Math.max(2, Math.ceil(Math.max(popupToImgX, popupToImgY)));
+            const popupCaptureScale = Math.max(6, Math.ceil(Math.max(popupToImgX, popupToImgY)) * 3);
+
+            wrapper.classList.add('taking-screenshot');
 
             // First pass: capture all popups
             const popupRenderData = [];
@@ -1877,10 +1879,12 @@
                 const popupTop = popupEl.offsetTop;
                 const relX = popupLeft - canvasRelLeft;
                 const relY = popupTop - canvasRelTop;
-                const drawX = relX * popupToImgX;
-                const drawY = relY * popupToImgY;
-                const drawW = popupEl.offsetWidth * popupToImgX;
-                const drawH = popupEl.offsetHeight * popupToImgY;
+
+                // Using Math.round to prevent subpixel anti-aliasing blur when drew onto offCtx
+                const drawX = Math.round(relX * popupToImgX);
+                const drawY = Math.round(relY * popupToImgY);
+                const drawW = Math.round(popupEl.offsetWidth * popupToImgX);
+                const drawH = Math.round(popupEl.offsetHeight * popupToImgY);
 
                 popupRenderData.push({
                     canvas: popupCanvas,
@@ -1888,6 +1892,8 @@
                     origins: popupData.origins,
                 });
             }
+
+            wrapper.classList.remove('taking-screenshot');
 
             // Draw arrows FIRST (below popups)
             for (const prd of popupRenderData) {
@@ -2003,7 +2009,7 @@
 
             const screenshot = await html2canvas(canvasWrapper, {
                 backgroundColor: '#f8f9fa',
-                scale: 4,
+                scale: 6,
                 logging: false,
                 useCORS: true,
                 allowTaint: true,

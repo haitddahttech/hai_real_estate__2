@@ -18,7 +18,7 @@ async function downloadScreenshot() {
         // Capture the map container directly
         const screenshot = await html2canvas(mapContainer, {
             backgroundColor: '#f8f9fa',
-            scale: 2,
+            scale: 6,
             logging: false,
             useCORS: true,
             allowTaint: true,

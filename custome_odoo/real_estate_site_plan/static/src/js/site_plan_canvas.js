@@ -138,7 +138,37 @@ export class SitePlanCanvasWidget extends Component {
         if (!recordId) return;
 
         try {
-            // First, try to get the attachment URL for better quality
+            // Priority 1: Use the physical file saved to static disk (NO compression from Odoo)
+            const record = await this.orm.read('site.plan', [recordId], ['image_path', 'image']);
+
+            if (record && record[0] && record[0].image_path) {
+                const img = new Image();
+                img.onload = () => {
+                    this.state.image = img;
+                    this.state.imageLoaded = true;
+                    this.createDownsampledImage();
+                    this.resizeCanvas();
+                };
+                img.onerror = () => {
+                    console.warn("Failed to load image from disk path:", record[0].image_path);
+                    this.loadFallbackImage(recordId, record[0]);
+                };
+                // Adding timestamp to bypass browser cache if image was updated
+                img.src = record[0].image_path + '?t=' + Date.now();
+                return;
+            }
+
+            // Fallback methods if image_path doesn't exist
+            await this.loadFallbackImage(recordId, record ? record[0] : null);
+
+        } catch (error) {
+            console.error('Error loading image:', error);
+        }
+    }
+
+    async loadFallbackImage(recordId, recordData) {
+        try {
+            // Priority 2: Use ir.attachment to get original untouched binary
             const attachments = await this.orm.searchRead(
                 'ir.attachment',
                 [
@@ -150,35 +180,31 @@ export class SitePlanCanvasWidget extends Component {
             );
 
             if (attachments && attachments.length > 0) {
-                // Load image from attachment URL (preserves original quality)
                 const attachmentId = attachments[0].id;
                 const img = new Image();
                 img.onload = () => {
                     this.state.image = img;
                     this.state.imageLoaded = true;
                     this.createDownsampledImage();
-                    // Resize canvas to match image aspect ratio
                     this.resizeCanvas();
                 };
-                // Use web/image route to get original image without resizing
                 img.src = `/web/content/${attachmentId}?unique=${attachments[0].checksum}`;
-            } else {
-                // Fallback to base64 if no attachment found
-                const record = await this.orm.read('site.plan', [recordId], ['image']);
-                if (record && record[0] && record[0].image) {
-                    const img = new Image();
-                    img.onload = () => {
-                        this.state.image = img;
-                        this.state.imageLoaded = true;
-                        this.createDownsampledImage();
-                        // Resize canvas to match image aspect ratio
-                        this.resizeCanvas();
-                    };
-                    img.src = `data:image/png;base64,${record[0].image}`;
-                }
+                return;
+            }
+
+            // Priority 3: Fallback to base64
+            if (recordData && recordData.image) {
+                const img = new Image();
+                img.onload = () => {
+                    this.state.image = img;
+                    this.state.imageLoaded = true;
+                    this.createDownsampledImage();
+                    this.resizeCanvas();
+                };
+                img.src = `data:image/png;base64,${recordData.image}`;
             }
         } catch (error) {
-            console.error('Error loading image:', error);
+            console.error('Error loading fallback image:', error);
         }
     }
 
@@ -443,7 +469,7 @@ export class SitePlanCanvasWidget extends Component {
         // Calculate zoom factor
         const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9; // Scroll up = zoom in, scroll down = zoom out
         const oldScale = this.state.scale;
-        const newScale = Math.max(0.1, Math.min(10, oldScale * zoomFactor));
+        const newScale = Math.max(0.1, Math.min(30, oldScale * zoomFactor));
 
         // If scale didn't change (hit limits), don't update
         if (oldScale === newScale) {
@@ -573,20 +599,62 @@ export class SitePlanCanvasWidget extends Component {
         this.ctx.scale(this.state.scale, this.state.scale);
         this.ctx.translate(this.state.offset.x, this.state.offset.y);
 
-        // Draw image at reference size (1200x800)
+        // Draw image at highest possible quality by bypassing canvas CTM bugs at extreme scales
+        // We do this by calculating the exact visible crop of the image and using the 9-argument drawImage
         if (this.state.imageLoaded && this.state.image) {
             let imgToDraw = this.state.image;
-            // Use downsampled image if zoom is low (e.g. <= 1.5x) and cached image exists
-            // This improves performance when viewing the whole map
+            // Use downsampled image if zoom is low
             if (this.state.scale <= 1.5 && this.state.cachedImage) {
                 imgToDraw = this.state.cachedImage;
             }
 
-            // Disable smoothing when zoomed in significantly to see pixel details
-            // This prevents the blurry effect when zooming deep into the image
-            this.ctx.imageSmoothingEnabled = this.state.scale < 3.0; // Disable smoothing if zoom > 3x
+            this.ctx.save();
+            // Reset to identity (plus resolution scale for Retina)
+            this.ctx.setTransform(resScale, 0, 0, resScale, 0, 0);
+
+            // Always enable smoothing to prevent pixelated image when zooming in
+            this.ctx.imageSmoothingEnabled = true;
             this.ctx.imageSmoothingQuality = 'high';
-            this.ctx.drawImage(imgToDraw, 0, 0, 1200, 800);
+
+            // The image corresponds to the 1200x800 logical space.
+            const sRatioX = imgToDraw.width / 1200;
+            const sRatioY = imgToDraw.height / 800;
+
+            // Visible world coordinates
+            const worldLeft = -this.state.offset.x;
+            const worldTop = -this.state.offset.y;
+            const worldRight = (1200 / this.state.scale) - this.state.offset.x;
+            const worldBottom = (800 / this.state.scale) - this.state.offset.y;
+
+            // Clamp source world coordinates to [0..1200] and [0..800]
+            const cropWorldLeft = Math.max(0, worldLeft);
+            const cropWorldTop = Math.max(0, worldTop);
+            const cropWorldRight = Math.min(1200, worldRight);
+            const cropWorldBottom = Math.min(800, worldBottom);
+
+            if (cropWorldRight > cropWorldLeft && cropWorldBottom > cropWorldTop) {
+                // Calculate source pixel coordinates (from the img object)
+                const sx = cropWorldLeft * sRatioX;
+                const sy = cropWorldTop * sRatioY;
+                const sWidth = (cropWorldRight - cropWorldLeft) * sRatioX;
+                const sHeight = (cropWorldBottom - cropWorldTop) * sRatioY;
+
+                // Calculate destination screen coordinates (CSS pixels)
+                const worldVisibleW = worldRight - worldLeft;
+                const worldVisibleH = worldBottom - worldTop;
+
+                const dx = ((cropWorldLeft - worldLeft) / worldVisibleW) * displayWidth;
+                const dy = ((cropWorldTop - worldTop) / worldVisibleH) * displayHeight;
+                const dWidth = ((cropWorldRight - cropWorldLeft) / worldVisibleW) * displayWidth;
+                const dHeight = ((cropWorldBottom - cropWorldTop) / worldVisibleH) * displayHeight;
+
+                this.ctx.drawImage(imgToDraw,
+                    sx, sy, sWidth, sHeight,
+                    dx, dy, dWidth, dHeight
+                );
+            }
+
+            this.ctx.restore();
         }
 
 

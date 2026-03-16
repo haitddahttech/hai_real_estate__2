@@ -128,7 +128,8 @@ class ProductTemplate(models.Model):
     deposit = fields.Monetary(
         string='Đặt cọc',
         currency_field='currency_id',
-        help='Số tiền đặt cọc'
+        help='Số tiền đặt cọc',
+        default=200000000,
     )
     
     discount_config_ids = fields.Many2many(
@@ -208,7 +209,6 @@ class ProductTemplate(models.Model):
         help='Payment milestones associated with this product'
     )
 
-    @api.depends('deposit_date', 'price_include_land_tax', 'vat_tax')
     @api.onchange('deposit_date', 'price_include_land_tax', 'vat_tax')
     def compute_payment_timeline(self):
         """Auto-fill payment timeline based on deposit date and total price"""
@@ -410,11 +410,11 @@ class ProductTemplate(models.Model):
             else:
                 product.price_per_m2 = 0.0
 
-    @api.onchange('price_exclude_land_tax', 'land_tax')
     @api.depends('price_exclude_land_tax', 'land_tax')
     def _compute_price_include_land_tax(self):
         for product in self:
             product.price_include_land_tax = product.price_exclude_land_tax + product.land_tax
+        self.compute_list_price()
 
     # @api.depends('price_include_land_tax')
     # def _inverse_price_exclude_land_tax(self):
@@ -423,11 +423,23 @@ class ProductTemplate(models.Model):
     #             'price_exclude_land_tax':product.price_include_land_tax - product.land_tax
     #         })
 
-    # @api.onchange('price_include_land_tax', 'vat_tax', 'maintenance_fee')
     @api.depends('price_include_land_tax', 'vat_tax', 'maintenance_fee')
     def compute_list_price(self):
         for product in self:
             product.list_price = product.price_include_land_tax + product.vat_tax + product.maintenance_fee
+
+    def action_recalculate_prices(self):
+        """Action to manually recalculate prices (land tax, list price, avg price) for selected products"""
+        for product in self:
+            # Recompute price include land tax
+            product.price_include_land_tax = product.price_exclude_land_tax + product.land_tax
+            # Recompute list price
+            product.list_price = product.price_include_land_tax + product.vat_tax + product.maintenance_fee
+            # Recompute avg price per m2
+            if product.area and product.area > 0:
+                product.price_per_m2 = product.list_price / product.area
+            else:
+                product.price_per_m2 = 0.0
 
     def get_available_discounts(self):
         """Trả về danh sách các discount config áp dụng được cho sản phẩm này"""

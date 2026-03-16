@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
+    <record id="action_recalculate_prices_server" model="ir.actions.server">
+        <field name="name">Tính lại giá BĐS</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                records.action_recalculate_prices()
+        </field>
+    </record>
+
     <!-- Product Form View - Add Site Plan Info -->
     <record id="view_product_template_form_inherit" model="ir.ui.view">
         <field name="name">product.template.form.inherit</field>
@@ -34,6 +46,9 @@
             </xpath>
             <xpath expr="//form//sheet//notebook" position="inside">
                 <page string="Thông tin Bất động sản" name="real_estate_info" invisible="is_decoration">
+                    <div class="oe_button_box" name="real_estate_button_box" style="margin-bottom: 15px;">
+                        <button name="action_recalculate_prices" type="object" string=" Tính lại giá BĐS" class="btn-primary" icon="fa-calculator"/>
+                    </div>
                     <group>
                         <group string="Thông tin chung">
                             <field name="site_plan_polygon_ids" widget="many2many_tags" readonly="1" string="Lô đất"/>

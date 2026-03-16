@@ -171,6 +171,7 @@
                     // Calculate new offset to keep image center at same screen position
                     state.offset.x = screenX / newScale - displayCenterX;
                     state.offset.y = screenY / newScale - displayCenterY;
+                    clampOffset();
 
                     updateZoomDisplay();
                     draw();
@@ -602,6 +603,39 @@
             }
 
             return { x, y };
+        }
+
+        /**
+         * Clamp the offset so the image edges never go past the canvas edges.
+         * The image is drawn at (offset.x, offset.y) with size (displayWidth x displayHeight)
+         * in "world" space. The visible canvas area in world space is
+         * [0, 0] to [displayWidth/scale, displayHeight/scale].
+         *
+         * Constraints:
+         *   - Left edge:   offset.x <= 0  (image left doesn't go right of canvas left)
+         *   - Top edge:    offset.y <= 0  (image top doesn't go below canvas top)
+         *   - Right edge:  offset.x + displayWidth >= displayWidth / scale
+         *   - Bottom edge: offset.y + displayHeight >= displayHeight / scale
+         */
+        function clampOffset() {
+            const displayWidth = state.displayWidth || 1200;
+            const displayHeight = state.displayHeight || 800;
+            const scale = state.scale;
+
+            // Visible area in world space
+            const viewW = displayWidth / scale;
+            const viewH = displayHeight / scale;
+
+            // If scale is 1, image fits exactly => offset must be 0
+            // Right edge:  offset.x >= viewW - displayWidth  (i.e. offset.x >= displayWidth/scale - displayWidth)
+            // Left edge:   offset.x <= 0
+            const minOffsetX = viewW - displayWidth;  // negative or 0 when zoomed in
+            const maxOffsetX = 0;
+            const minOffsetY = viewH - displayHeight;
+            const maxOffsetY = 0;
+
+            state.offset.x = Math.max(minOffsetX, Math.min(maxOffsetX, state.offset.x));
+            state.offset.y = Math.max(minOffsetY, Math.min(maxOffsetY, state.offset.y));
         }
 
         function onCanvasClick(e) {
@@ -1108,12 +1142,12 @@
             popup._origWidth = origWidth;
             popup._origHeight = origHeight;
 
-            // Min size = half of original
-            const minWidth = origWidth / 2;
-            const minHeight = origHeight / 2;
-            // Max size = 1.5x the original
-            const maxWidth = origWidth * 1.5;
-            const maxHeight = origHeight * 1.5;
+            // Aspect ratio to maintain
+            const aspectRatio = origWidth / origHeight;
+
+            // Min/max scale factors (0.5x to 1.5x of original)
+            const minScale = 0.5;
+            const maxScale = 1.5;
 
             const resizeStart = (e) => {
                 e.preventDefault();
@@ -1134,12 +1168,22 @@
                 const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
                 const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
 
-                let newWidth = startWidth + (clientX - startX);
-                let newHeight = startHeight + (clientY - startY);
+                const deltaX = clientX - startX;
+                const deltaY = clientY - startY;
 
-                // Clamp
-                newWidth = Math.max(minWidth, Math.min(newWidth, maxWidth));
-                newHeight = Math.max(minHeight, Math.min(newHeight, maxHeight));
+                // Use diagonal distance to determine uniform scale change
+                // Project the mouse delta onto the diagonal direction of the popup
+                const diagLength = Math.sqrt(startWidth * startWidth + startHeight * startHeight);
+                const diagDirX = startWidth / diagLength;
+                const diagDirY = startHeight / diagLength;
+                const projection = deltaX * diagDirX + deltaY * diagDirY;
+
+                // Calculate new width based on projection, maintaining aspect ratio
+                let newWidth = startWidth + projection * diagDirX;
+
+                // Clamp to min/max scale
+                newWidth = Math.max(origWidth * minScale, Math.min(newWidth, origWidth * maxScale));
+                let newHeight = newWidth / aspectRatio;
 
                 popup.style.width = newWidth + 'px';
                 popup.style.height = newHeight + 'px';
@@ -1148,7 +1192,7 @@
                 popup.style.overflow = 'hidden';
 
                 // Scale the entire content wrapper proportionally
-                const scaleFactor = Math.min(newWidth / origWidth, newHeight / origHeight);
+                const scaleFactor = newWidth / origWidth;
                 const contentWrapper = popup.querySelector('.popup-content-wrapper');
                 if (contentWrapper) {
                     contentWrapper.style.transformOrigin = 'top left';
@@ -1372,6 +1416,7 @@
 
                     state.offset.x += dx;
                     state.offset.y += dy;
+                    clampOffset();
 
                     state.panStart = { x: e.clientX, y: e.clientY };
                     draw(); // Only redraw canvas and arrows, don't move popups
@@ -1448,6 +1493,7 @@
                 if (state.touchMoved) {
                     state.offset.x += dx;
                     state.offset.y += dy;
+                    clampOffset();
                     state.lastTouchPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
                     draw();
                 }
@@ -1470,6 +1516,7 @@
                 state.scale = newScale;
                 state.offset.x = midX / newScale - worldPosX;
                 state.offset.y = midY / newScale - worldPosY;
+                clampOffset();
 
                 updateZoomDisplay();
                 draw();
@@ -1548,6 +1595,7 @@
             state.scale = newScale;
             state.offset.x = mouseX / newScale - worldPosX;
             state.offset.y = mouseY / newScale - worldPosY;
+            clampOffset();
 
             updateZoomDisplay();
             draw(); // Only redraw canvas and arrows
@@ -1591,6 +1639,7 @@
             // Calculate new offset to keep image center at same screen position
             state.offset.x = screenX / newScale - displayCenterX;
             state.offset.y = screenY / newScale - displayCenterY;
+            clampOffset();
 
             updateZoomDisplay();
             draw(); // Only redraw canvas and arrows
@@ -1862,29 +1911,49 @@
             wrapper.classList.add('taking-screenshot');
 
             // First pass: capture all popups
+            // The status ribbon (CÒN TRỐNG / ĐÃ BÁN) overflows the popup with
+            // top: -8px, right: -5px. We need to expand the capture area to include it.
+            const RIBBON_OVERFLOW_TOP = 10;  // px above popup (ribbon top: -8px + padding)
+            const RIBBON_OVERFLOW_RIGHT = 6; // px right of popup (ribbon right: -5px + padding)
+
             const popupRenderData = [];
             for (const popupData of state.activePopups) {
                 const popupEl = popupData.element;
                 if (!popupEl) continue;
 
+                const elWidth = popupEl.offsetWidth;
+                const elHeight = popupEl.offsetHeight;
+
+                // Expand capture bounds to include ribbon overflow
+                const captureX = 0;  // left edge stays the same
+                const captureY = -RIBBON_OVERFLOW_TOP;  // expand upward
+                const captureW = elWidth + RIBBON_OVERFLOW_RIGHT;  // expand rightward
+                const captureH = elHeight + RIBBON_OVERFLOW_TOP;   // total height includes top overflow
+
                 const popupCanvas = await html2canvas(popupEl, {
-                    backgroundColor: '#ffffff',
+                    backgroundColor: null,  // transparent so overflow area doesn't cover map
                     scale: popupCaptureScale,
                     logging: false,
                     useCORS: true,
                     allowTaint: true,
+                    x: captureX,
+                    y: captureY,
+                    width: captureW,
+                    height: captureH,
+                    scrollX: 0,
+                    scrollY: 0,
                 });
 
                 const popupLeft = popupEl.offsetLeft;
                 const popupTop = popupEl.offsetTop;
-                const relX = popupLeft - canvasRelLeft;
-                const relY = popupTop - canvasRelTop;
+                const relX = popupLeft - canvasRelLeft + captureX;
+                const relY = popupTop - canvasRelTop + captureY;  // shift up to account for ribbon
 
                 // Using Math.round to prevent subpixel anti-aliasing blur when drew onto offCtx
                 const drawX = Math.round(relX * popupToImgX);
                 const drawY = Math.round(relY * popupToImgY);
-                const drawW = Math.round(popupEl.offsetWidth * popupToImgX);
-                const drawH = Math.round(popupEl.offsetHeight * popupToImgY);
+                const drawW = Math.round(captureW * popupToImgX);
+                const drawH = Math.round(captureH * popupToImgY);
 
                 popupRenderData.push({
                     canvas: popupCanvas,

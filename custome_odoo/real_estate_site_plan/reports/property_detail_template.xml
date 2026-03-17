@@ -291,7 +291,22 @@
                                             <t t-else="">---</t>
                                         </td></tr>
                                         <tr><td class="info-label">Hướng nhà</td><td class="info-value">
-                                            <t t-set="direction_map" t-value="{'north': 'Bắc', 'northeast': 'Đông Bắc', 'east': 'Đông', 'southeast': 'Đông Nam', 'south': 'Nam', 'southwest': 'Tây Nam', 'west': 'Tây', 'northwest': 'Tây Bắc'}"/>
+                                            <t t-set="direction_map" t-value="{
+                                            'north': 'Bắc',
+                                            'northeast': 'Đông Bắc',
+                                            'east': 'Đông',
+                                            'southeast': 'Đông Nam',
+                                            'south': 'Nam',
+                                            'southwest': 'Tây Nam',
+                                            'west': 'Tây',
+                                            'northwest': 'Tây Bắc',
+                                            'north_east': 'Bắc - Đông',
+                                            'east_west': 'Đông - Tây',
+                                            'south_north': 'Nam - Bắc',
+                                            'south_east': 'Nam - Đông',
+                                            'west_east': 'Tây - Đông',
+                                            'southwest_northeast': 'Tây Nam - Đông Bắc',
+                                            }"/>
                                             <t t-esc="direction_map.get(product.direction, '---')"/>
                                         </td></tr>
                                         <tr><td class="info-label">Diện tích đất</td><td class="info-value"><t t-esc="product.area"/> m²</td></tr>

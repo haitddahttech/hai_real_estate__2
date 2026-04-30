@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 import json
 
@@ -98,8 +98,8 @@ class SitePlanPolygon(models.Model):
             ]
             if self.search_count(domain) > 0:
                 raise ValidationError(
-                    f'Sản phẩm "{record.product_template_id.name}" đã được gán cho lô đất khác. '
-                    'Mỗi sản phẩm chỉ được gán cho 1 lô (trừ vật trang trí).'
+                    _('Sản phẩm "%s" đã được gán cho lô đất khác. '
+                      'Mỗi sản phẩm chỉ được gán cho 1 lô (trừ vật trang trí).') % record.product_template_id.name
                 )
     
     @api.constrains('name', 'site_plan_id', 'product_template_id')
@@ -117,8 +117,8 @@ class SitePlanPolygon(models.Model):
             ]
             if self.search_count(domain) > 0:
                 raise ValidationError(
-                    f'Tên lô đất "{record.name}" đã tồn tại trong bản đồ này. '
-                    'Vui lòng chọn tên khác.'
+                    _('Tên lô đất "%s" đã tồn tại trong bản đồ này. '
+                      'Vui lòng chọn tên khác.') % record.name
                 )
     
     @api.constrains('coordinates')
@@ -129,11 +129,11 @@ class SitePlanPolygon(models.Model):
                 coords = json.loads(record.coordinates)
                 if not isinstance(coords, list) or len(coords) < 3:
                     raise ValidationError(
-                        'Tọa độ phải là mảng JSON với ít nhất 3 điểm.'
+                        _('Tọa độ phải là mảng JSON với ít nhất 3 điểm.')
                     )
             except (json.JSONDecodeError, TypeError):
                 raise ValidationError(
-                    'Tọa độ phải là chuỗi JSON hợp lệ.'
+                    _('Tọa độ phải là chuỗi JSON hợp lệ.')
                 )
     
     @api.model_create_multi
@@ -146,7 +146,7 @@ class SitePlanPolygon(models.Model):
                     vals['product_template_id'] = vals.pop('product_id')
                 else:
                     raise ValidationError(
-                        'Vui lòng chọn sản phẩm cho lô đất này.'
+                        _('Vui lòng chọn sản phẩm cho lô đất này.')
                     )
             
             product = self.env['product.template'].browse(vals['product_template_id'])

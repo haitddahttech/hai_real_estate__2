@@ -1,0 +1,2864 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* real_estate_site_plan
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-30 12:27+0000\n"
+"PO-Revision-Date: 2026-04-30 12:27+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: real_estate_site_plan
+#. odoo-python
+#: code:addons/real_estate_site_plan/models/product_template.py:0
+msgid "% +VAT tương ứng"
+msgstr "% + 增值稅（相應）"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "/m²"
+msgstr "/m²"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "100%"
+msgstr ""
+
+#. module: real_estate_site_plan
+#. odoo-python
+#: code:addons/real_estate_site_plan/models/product_template.py:0
+msgid "45% +VAT còn lại"
+msgstr "45% + 剩餘稅額"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
+msgid "<i class=\"fa fa-arrow-left\"/> Quay lại"
+msgstr "<i class=\"fa fa-arrow-left\"/> 碼頭"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-arrow-left\"/> Quay lại Bản đồ"
+msgstr "<i class=\"fa fa-arrow-left\"/> 返回地圖"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-bank me-1\"/>Thông Tin Thanh Toán"
+msgstr "<i class=\"fa fa-bank me-1\"/>付款資訊"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-book me-1\"/> Catalogue"
+msgstr "<i class=\"fa fa-book me-1\"/> 目錄"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-book me-2\"/>Catalogue Dự Án"
+msgstr "<i class=\"fa fa-book me-2\"/>目錄 Dự Án"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-calendar-check-o me-1\"/> Lịch thanh toán"
+msgstr "<i class=\"fa fa-calendar-check-o me-1\"/> 付款時間表"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
+msgid "<i class=\"fa fa-camera\"/> Chụp màn hình"
+msgstr "<i class=\"fa fa-camera\"/> 截圖"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-download me-1\"/> Tải về"
+msgstr "<i class=\"fa fa-download me-1\"/> 下載"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-download me-1\"/> Tải về Catalogue"
+msgstr "<i class=\"fa fa-download me-1\"/> Tải về 目錄"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-download me-1\"/> Tải về để xem"
+msgstr "<i class=\"fa fa-download me-1\"/> 下載查看"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-download\"/> Tải về"
+msgstr "<i class=\"fa fa-download\"/> 下載"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
+msgid "<i class=\"fa fa-expand\"/> Đặt lại"
+msgstr "<i class=\"fa fa-expand\"/> 重置"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-eye me-1\"/> Xem"
+msgstr "<i class=\"fa fa-eye me-1\"/> 看"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-eye\"/> Xem"
+msgstr "<i class=\"fa fa-eye me-1\"/> 看"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
+msgid "<i class=\"fa fa-eye-slash\"/> Ẩn lô đất"
+msgstr "<i class=\"fa fa-eye-slash\"/> 隱藏情節"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid ""
+"<i class=\"fa fa-file-image-o me-2\"/>\n"
+"                                            Tải về Ảnh"
+msgstr ""
+"<i class=\"fa fa-file-image-o me-2\"/>\n"
+"                                            下載照片"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid ""
+"<i class=\"fa fa-file-pdf-o me-2\"/>\n"
+"                                            Tải về PDF"
+msgstr ""
+"<i class=\"fa fa-file-pdf-o me-2\"/>\n"
+"                                            下載PDF"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid ""
+"<i class=\"fa fa-file-pdf-o text-danger me-2\"/>\n"
+"                                        Tải xuống thông tin chi tiết"
+msgstr ""
+"<i class=\"fa fa-file-pdf-o text-danger me-2\"/>\n"
+"                                        下載詳細資料"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-file-text-o me-1\"/> Tài liệu dự án"
+msgstr "<i class=\"fa fa-file-text-o me-1\"/> 專案文檔"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-gavel me-1\"/> Pháp lý dự án"
+msgstr "<i class=\"fa fa-gavel me-1\"/> 專案合法"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid ""
+"<i class=\"fa fa-info-circle me-1\"/> Chưa có thông tin tài khoản ngân hàng."
+msgstr "<i class=\"fa fa-info-circle me-1\"/> 尚無銀行帳戶資訊。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-info-circle me-1\"/> Mô Tả"
+msgstr "<i class=\"fa fa-info-circle me-1\"/> 描述"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid ""
+"<i class=\"fa fa-info-circle me-1\"/> Tích chọn các chương trình để xem giá "
+"sau giảm giá."
+msgstr "<i class=\"fa fa-info-circle me-1\"/> 選擇節目以查看折扣後的價格。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-info-circle me-1\"/>Click vào hình ảnh để phóng to"
+msgstr "<i class=\"fa fa-info-circle me-1\"/>點擊圖片可放大"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid ""
+"<i class=\"fa fa-info-circle me-2\"/> Chưa có lịch thanh toán cho sản phẩm "
+"này."
+msgstr "<i class=\"fa fa-info-circle me-2\"/> 此產品沒有付款時間表。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
+msgid "<i class=\"fa fa-lock\"/> Mở Zoom"
+msgstr "<i class=\"fa fa-lock\"/> 放大"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
+msgid "<i class=\"fa fa-magic\"/> Chọn sản phẩm"
+msgstr "<i class=\"fa fa-magic\"/> 選擇產品"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_my_site_plans
+msgid "<i class=\"fa fa-map\"/> Xem Bản Đồ"
+msgstr "<i class=\"fa fa-map\"/> 看地圖"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "<i class=\"fa fa-map-marker\"/> Xem Dự Án"
+msgstr "<i class=\"fa fa-map-marker\"/> 查看項目"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
+msgid "<i class=\"fa fa-map-marker\"/> Xem trên Google Maps"
+msgstr "<i class=\"fa fa-map-marker\"/> 在 Google 地圖上查看"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
+msgid "<i class=\"fa fa-paint-brush\"/> Ẩn sản phẩm"
+msgstr "<i class=\"fa fa-paint-brush\"/> 隱藏產品"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "<i class=\"fa fa-phone\"/> Liên Hệ Ngay"
+msgstr "<i class=\"fa fa-phone\"/> 立即聯繫"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-picture-o me-1\"/> Mặt bằng phối cảnh"
+msgstr "<i class=\"fa fa-picture-o me-1\"/> 透視圖"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
+msgid ""
+"<i class=\"fa fa-search-plus text-muted\" style=\"font-size: 0.8rem;\"/>\n"
+"                                        <span id=\"zoomLevel\" class=\"badge bg-secondary\" style=\"min-width: 45px; font-size: 0.75rem;\">100%</span>"
+msgstr ""
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "<i class=\"fa fa-tags me-2\"/>Chương Trình Giảm Giá Có Thể Áp Dụng"
+msgstr "<i class=\"fa fa-tags me-2\"/>可享折扣"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "<small style=\"font-size: 10px; vertical-align: baseline;\">VNĐ</small>"
+msgstr "<small style=\"font-size:10px;vertical-align:baseline;\">VNĐ</small>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "<small style=\"font-size: 9px; vertical-align: baseline;\">VNĐ</small>"
+msgstr "<small style=\"font-size:9px;vertical-align:baseline;\">VNĐ</small>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid ""
+"<span class=\"badge bg-danger fs-6\">\n"
+"                                            <i class=\"fa fa-check-circle\"/> ĐÃ BÁN\n"
+"                                        </span>"
+msgstr ""
+"<span class=\"badge bg-danger fs-6\">\n"
+"                                            <i class=\"fa fa-check-circle\"/> 賣\n"
+"                                        </span>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid ""
+"<span class=\"badge bg-success fs-6\">\n"
+"                                            <i class=\"fa fa-home\"/> CÒN TRỐNG\n"
+"                                        </span>"
+msgstr "<span class=\"badge bg-success fs-6\">\n"
+"                                            <i class=\"fa fa-home\"/> 可用的\n"
+"                                        </span>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid ""
+"<span class=\"carousel-control-next-icon bg-dark rounded-circle p-3\" aria-hidden=\"true\"/>\n"
+"                                                                                            <span class=\"visually-hidden\">Sau</span>"
+msgstr ""
+"<span class=\"carousel-control-next-icon bg-dark rounded-circle p-3\" aria-hidden=\"true\"/>\n"
+"                                                                                            <span class=\"visually-hidden\">秀</span>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid ""
+"<span class=\"carousel-control-next-icon\" aria-hidden=\"true\"/>\n"
+"                            <span class=\"visually-hidden\">Next</span>"
+msgstr ""
+"<span class=\"carousel-control-next-icon\" aria-hidden=\"true\"/>\n"
+"                            <span class=\"visually-hidden\">下一步</span>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid ""
+"<span class=\"carousel-control-prev-icon bg-dark rounded-circle p-3\" aria-hidden=\"true\"/>\n"
+"                                                                                            <span class=\"visually-hidden\">Trước</span>"
+msgstr "<span class=\"carousel-control-prev-icon bg-dark rounded-circle p-3\" aria-hidden=\"true\"/>\n"
+"                                                                                            <span class=\"visually-hidden\">前</span>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid ""
+"<span class=\"carousel-control-prev-icon\" aria-hidden=\"true\"/>\n"
+"                            <span class=\"visually-hidden\">Previous</span>"
+msgstr ""
+"<span class=\"carousel-control-prev-icon\" aria-hidden=\"true\"/>\n"
+"                            <span class=\"visually-hidden\">上一頁</span>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid ""
+"<span class=\"info-label\" style=\"display: block; text-align: left;\">THUẾ "
+"VAT</span>"
+msgstr ""
+"<span class=\"info-label\" style=\"display: block; text-align: "
+"left;\">週四增值稅</span>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid ""
+"<span class=\"info-label\" style=\"display: block; text-align: left;\">TIỀN "
+"NHÀ</span>"
+msgstr "<span class=\"info-label\" style=\"display: block; text-align: left;\">房屋租金</span>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid ""
+"<span class=\"info-label\" style=\"display: block; text-align: left;\">TỔNG "
+"THANH TOÁN</span>"
+msgstr "<span class=\"info-label\" style=\"display: block; text-align: left;\">總付款額</span>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid ""
+"<span class=\"mx-2\">|</span>\n"
+"                                        <i class=\"fa fa-phone me-1\" style=\"font-size: 0.8rem;\"/>"
+msgstr ""
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "<span class=\"percentage-badge\">100%</span>"
+msgstr ""
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid ""
+"<span class=\"price-label\" style=\"color: #92400E;\">GIÁ SAU CHIẾT "
+"KHẤU</span>"
+msgstr "<span class=\"price-label\" style=\"color: #92400E;\">折扣後價格</span>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "<span class=\"price-label\">GIÁ NIÊM YẾT CÔNG BỐ</span>"
+msgstr "<span class=\"price-label\">公佈的標價</span>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "<span class=\"timeline-title\">Lịch thanh toán</span>"
+msgstr "<span class=\"timeline-title\">付款時間表</span>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
+msgid ""
+"<span data-term=\"CHI TIẾT\">CHI TIẾT</span>\n"
+"                <span data-term=\"Chưa có ảnh\">Chưa có ảnh</span>\n"
+"                <span data-term=\"CÒN TRỐNG\">CÒN TRỐNG</span>\n"
+"                <span data-term=\"ĐÃ BÁN\">ĐÃ BÁN</span>\n"
+"                <span data-term=\"Diện tích đất\">Diện tích đất</span>\n"
+"                <span data-term=\"Đơn giá/m²\">Đơn giá/m²</span>\n"
+"                <span data-term=\"DT xây dựng\">DT xây dựng</span>\n"
+"                <span data-term=\"Giá bán\">Giá bán</span>\n"
+"                <span data-term=\"Hình ảnh\">Hình ảnh</span>\n"
+"                <span data-term=\"Hướng\">Hướng</span>\n"
+"                <span data-term=\"Loại hình\">Loại hình</span>\n"
+"                <span data-term=\"Mã căn\">Mã căn</span>\n"
+"                <span data-term=\"TIỆN ÍCH DỰ ÁN\">TIỆN ÍCH DỰ ÁN</span>\n"
+"                <span data-term=\"Xem thêm\">Xem thêm</span>"
+msgstr ""
+"<span data-term=\"CHI TIẾT\">詳情</span>"
+"<span data-term=\"Chưa có ảnh\">暫無圖片</span>"
+"<span data-term=\"CÒN TRỐNG\">待售</span>"
+"<span data-term=\"ĐÃ BÁN\">已售</span>"
+"<span data-term=\"Diện tích đất\">土地面積</span>"
+"<span data-term=\"Đơn giá/m²\">單價/m²</span>"
+"<span data-term=\"DT xây dựng\">建築面積</span>"
+"<span data-term=\"Giá bán\">售價</span>"
+"<span data-term=\"Hình ảnh\">圖片</span>"
+"<span data-term=\"Hướng\">朝向</span>"
+"<span data-term=\"Loại hình\">類型</span>"
+"<span data-term=\"Mã căn\">房號</span>"
+"<span data-term=\"TIỆN ÍCH DỰ ÁN\">項目設施</span>"
+"<span data-term=\"Xem thêm\">查看更多</span>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.site_plan_navbar_menus
+msgid ""
+"<span style=\"font-size: 1.1rem;\">🇹🇼</span>\n"
+"                            <span class=\"d-none d-md-inline\">繁中</span>"
+msgstr ""
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.site_plan_navbar_menus
+msgid ""
+"<span style=\"font-size: 1.1rem;\">🇻🇳</span>\n"
+"                            <span class=\"d-none d-md-inline\">VI</span>"
+msgstr ""
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.site_plan_navbar_menus
+msgid ""
+"<span style=\"font-size: 1.2rem;\">🇹🇼</span>\n"
+"                                <span>繁體中文</span>"
+msgstr ""
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.site_plan_navbar_menus
+msgid ""
+"<span style=\"font-size: 1.2rem;\">🇻🇳</span>\n"
+"                                <span>Tiếng Việt</span>"
+msgstr ""
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid ""
+"<strong>Chỉnh sửa:</strong> Click và kéo các điểm của hình để điều chỉnh "
+"hình dạng"
+msgstr "<strong>編輯：</strong>點擊並拖曳形狀的點來調整形狀"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "<strong>Hình chữ nhật:</strong> Click và kéo để tạo hình chữ nhật"
+msgstr "<strong>矩形：</strong>點擊並拖曳以建立矩形"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "<strong>Hướng dẫn sử dụng:</strong>"
+msgstr "<strong>使用說明：</strong>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid ""
+"<strong>Lưu:</strong> Chọn sản phẩm tương ứng và màu sắc, sau đó nhấn Lưu"
+msgstr "<strong>儲存：</strong>選擇對應的產品和顏色，然後按“儲存”"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "<strong>Xóa:</strong> Chọn một hình và nhấn nút Xóa (hoặc phím Delete)"
+msgstr "<strong>刪除</strong>：選擇影像並按下「刪除」按鈕（或「刪除」鍵）"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid ""
+"<strong>Đa giác:</strong> Click chuột lên canvas để thêm điểm, click đúp để "
+"hoàn tất"
+msgstr "<strong>多邊形：</strong>點選畫布新增點，雙擊完成"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__message_needaction
+msgid "Action Needed"
+msgstr "需要採取行動"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__activity_ids
+msgid "Activities"
+msgstr "活動"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "活動異常裝飾"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__activity_state
+msgid "Activity State"
+msgstr "活動狀態"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "活動類型圖示"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "An Toàn Bảo Mật"
+msgstr "安全保障"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__message_attachment_count
+msgid "Attachment Count"
+msgstr "附件數"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Banner Hồng Hạc"
+msgstr "火烈鳥旗幟"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__property_type__semi_detached_villa
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Biệt thự song lập"
+msgstr "半獨立別墅"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__property_type__detached_villa
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Biệt thự đơn lập"
+msgstr "獨棟別墅"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_my_site_plans
+msgid "Bản Đồ Dự Án"
+msgstr "專案地圖"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Bản Đồ Tương Tác"
+msgstr "互動地圖"
+
+#. module: real_estate_site_plan
+#: model:ir.ui.menu,name:real_estate_site_plan.menu_portal_site_plan_shortcut
+msgid "Bản đồ Dự án"
+msgstr "專案地圖"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan_polygon__site_plan_id
+msgid "Bản đồ chứa lô đất này"
+msgstr "地圖包含這塊土地"
+
+#. module: real_estate_site_plan
+#: model:ir.actions.act_window,name:real_estate_site_plan.action_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__site_plan_id
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_list
+msgid "Bản đồ mặt bằng"
+msgstr "樓層地圖"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_my_home_site_plans
+msgid "Bản đồ mặt bằng dự án"
+msgstr "專案樓層圖"
+
+#. module: real_estate_site_plan
+#: model:ir.ui.menu,name:real_estate_site_plan.menu_real_estate_root
+msgid "Bất động sản"
+msgstr "房地產"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__direction__north
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Bắc"
+msgstr "北"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__direction__north_east
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Bắc - Đông"
+msgstr "東北"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/js/portal_site_map.js:0
+msgid "CHI TIẾT"
+msgstr "細節"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "CHỦ TÀI KHOẢN"
+msgstr "帳戶持有人"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Catalogue Dự Án"
+msgstr "專案目錄"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__catalog
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Catalogue dự án"
+msgstr "專案目錄"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Chi tiết Thuế và Phí"
+msgstr "稅費詳情"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Chi tiết từng đợt thanh toán cho sản phẩm"
+msgstr "產品每期付款的詳細信息"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Chưa Có Dự Án"
+msgstr "還沒有項目"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Chưa có tài liệu đính kèm cho sản phẩm này."
+msgstr "該產品沒有附加文件。"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/js/portal_site_map.js:0
+msgid "Chưa có ảnh"
+msgstr "還沒有照片"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Chưa có ảnh trong thư mục này."
+msgstr "該資料夾中還沒有照片。"
+
+#. module: real_estate_site_plan
+#: model:ir.ui.menu,name:real_estate_site_plan.menu_discount_config
+msgid "Chương trình chiết khấu"
+msgstr "折扣計劃"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Chế độ"
+msgstr "政權"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
+msgid "Chế độ chọn sản phẩm"
+msgstr "產品選型方式"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Chế độ:"
+msgstr "政權："
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Chỉnh sửa"
+msgstr "編輯"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Chỉnh sửa:"
+msgstr "編輯："
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Chọn"
+msgstr "選擇"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_image_upload_form
+msgid "Chọn các file ảnh"
+msgstr "選擇圖像文件"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_discount_config__formula_type
+msgid "Chọn công thức tính chiết khấu theo sản phẩm"
+msgstr "依產品選擇折扣計算公式"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Chọn ngày đặt cọc tại đây"
+msgstr "在此選擇存款日期"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image_upload__attachment_ids
+msgid "Chọn ảnh"
+msgstr "選擇照片"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Click chuột trái và kéo"
+msgstr "左鍵單擊並拖曳"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Click để thêm điểm, click đúp chuột để vẽ xong"
+msgstr "點選新增點，雙擊完成繪製"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Close"
+msgstr "關閉"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_res_company
+msgid "Companies"
+msgstr "公司"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_res_company_bank
+msgid "Company Bank Account"
+msgstr "公司銀行帳戶"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__create_uid
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__create_uid
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__create_uid
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__create_uid
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_folder__create_uid
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image__create_uid
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image_upload__create_uid
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__create_uid
+msgid "Created by"
+msgstr "創建者："
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__create_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__create_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__create_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__create_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_folder__create_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image__create_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image_upload__create_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__create_date
+msgid "Created on"
+msgstr "創建於"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__currency_id
+msgid "Currency"
+msgstr "貨幣"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/js/portal_site_map.js:0
+msgid "CÒN TRỐNG"
+msgstr "可用的"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_company_form_bank_info
+msgid "Cài đặt Lịch thanh toán"
+msgstr "設定付款計劃"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_company_form_bank_info
+msgid "Cài đặt PDF/Ảnh"
+msgstr "PDF/照片設定"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__discount_config_ids
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__discount_config_ids
+msgid "Các chương trình giảm giá có thể áp dụng cho sản phẩm này"
+msgstr "該產品可能有折扣"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__selected_discount_ids
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__selected_discount_ids
+msgid "Các chương trình giảm giá đã được chọn để áp dụng (hiển thị trong PDF)"
+msgstr "已選擇應用程式的折扣（以 PDF 形式顯示）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__polygon_ids
+msgid "Các lô đất đã vẽ trên bản đồ này"
+msgstr "這張地圖上繪製的土地"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan_polygon__unavailable_product_template_ids
+msgid "Các sản phẩm đã được gán"
+msgstr "產品已分配"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company__customer_greeting
+msgid "Câu chúc khách hàng"
+msgstr "客戶問候"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Còn Trống"
+msgstr "和鼓"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Còn trống"
+msgstr "仍然空著"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Công cụ"
+msgstr "工具"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_discount_config__discount_type__formula
+msgid "Công thức theo sản phẩm"
+msgstr "按產品配方"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__company_id
+msgid "Công ty"
+msgstr "公司"
+
+#. module: real_estate_site_plan
+#: model:ir.ui.menu,name:real_estate_site_plan.menu_configuration
+msgid "Cấu hình"
+msgstr "配置"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_discount_inherit
+msgid "Cấu hình Giảm Giá"
+msgstr "配置折扣"
+
+#. module: real_estate_site_plan
+#: model:ir.actions.act_window,name:real_estate_site_plan.action_product_discount_config
+#: model:ir.model,name:real_estate_site_plan.model_product_discount_config
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_discount_config_form
+msgid "Cấu hình giảm giá"
+msgstr "折扣配置"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Cập Nhật Realtime"
+msgstr "即時更新"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Cập nhật màu"
+msgstr "更新顏色"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "D.Tích xây dựng"
+msgstr "D.建築面積"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/js/portal_site_map.js:0
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "DT xây dựng"
+msgstr "建築面積"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "DT đất"
+msgstr "土地面積"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_polygon_list
+msgid "Danh sách Lô đất"
+msgstr "地塊清單"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_discount_config_tree
+msgid "Danh sách giảm giá"
+msgstr "折扣清單"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__polygon_ids
+msgid "Danh sách lô đất"
+msgstr "地塊清單"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "Danh sách Đa giác"
+msgstr "多邊形列表"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_folder__image_ids
+msgid "Danh sách ảnh"
+msgstr "照片一覽"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__display_name
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_category__display_name
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__display_name
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__display_name
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__display_name
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company__display_name
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__display_name
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_users__display_name
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__display_name
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_folder__display_name
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image__display_name
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image_upload__display_name
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__display_name
+msgid "Display Name"
+msgstr "顯示名稱"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__construction_area
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__construction_area
+msgid "Diện tích sàn xây dựng"
+msgstr "建築面積"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Diện tích và Giá"
+msgstr "面積及價格"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__construction_area
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__construction_area
+msgid "Diện tích xây dựng (m²)"
+msgstr "建築面積（平方公尺）"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/js/portal_site_map.js:0
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Diện tích đất"
+msgstr "土地面積"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__area
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__area
+msgid "Diện tích đất (m²)"
+msgstr "土地面積（平方公尺）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__area
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__area
+msgid "Diện tích đất của lô"
+msgstr "該地塊土地面積"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_res_company__customer_greeting
+msgid "Dòng chữ sẽ hiển thị ở cuối PDF và ảnh tải xuống"
+msgstr "文字將出現在 PDF 和下載圖像的底部"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid ""
+"Dễ dàng tìm kiếm và lọc bất động sản theo diện tích, giá cả và vị trí phù "
+"hợp với nhu cầu."
+msgstr "按面積、價格和位置輕鬆搜尋和過濾房地產，以滿足您的需求。"
+
+#. module: real_estate_site_plan
+#: model:website.menu,name:real_estate_site_plan.menu_site_plans_parent
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Dự Án"
+msgstr "專案"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Dự Án Nổi Bật"
+msgstr "特色項目"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_folder__site_plan_id
+msgid "Dự án"
+msgstr "專案"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Dựa trên các chương trình giảm giá bạn đã chọn"
+msgstr "根據您選擇的折扣計劃"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__project_legal_1
+msgid "File pháp lý dự án 1 (PDF)"
+msgstr "項目法律文件1 (PDF)"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__project_legal_2
+msgid "File pháp lý dự án 2 (PDF)"
+msgstr "項目法律文件2 (PDF)"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__project_legal_3
+msgid "File pháp lý dự án 3 (PDF)"
+msgstr "項目法律文件3 (PDF)"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__project_legal_4
+msgid "File pháp lý dự án 4 (PDF)"
+msgstr ""
+"項目法律文件 4（PDF）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__project_legal_5
+msgid "File pháp lý dự án 5 (PDF)"
+msgstr "項目法律文件5 (PDF)"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__message_follower_ids
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Followers"
+msgstr "追隨者"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "關注者（合作夥伴）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "字體很棒的圖標，例如fa 任務"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "GIÁ CUỐI CÙNG SAU GIẢM GIÁ"
+msgstr "折扣後最終價格"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Ghi chú"
+msgstr "筆記"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__bank_note
+msgid "Ghi chú ngân hàng"
+msgstr "銀行票據"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__giao_nha
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Giao nhà"
+msgstr "送貨上門"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Giá (Chưa thuế SDĐ)"
+msgstr "價格（不含土地使用稅）"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/js/portal_site_map.js:0
+msgid "Giá bán"
+msgstr "售價"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Giá chưa thuế SDĐ"
+msgstr "價格不含土地使用稅"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__final_price
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__final_price
+msgid "Giá cuối cùng"
+msgstr "最終價格"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Giá gồm SDĐ"
+msgstr "價格包含SD卡"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__price_include_land_tax
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__price_include_land_tax
+msgid "Giá nhà bao gồm thuế SDĐ"
+msgstr "房價含土地使用稅"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__price_exclude_land_tax
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__price_exclude_land_tax
+msgid "Giá nhà chưa bao gồm thuế SDĐ"
+msgstr "房價不含土地使用稅"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Giá niêm yết"
+msgstr "標價"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__final_price
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__final_price
+msgid "Giá sau khi trừ các khoản giảm giá (mặc định bằng giá niêm yết)"
+msgstr "扣除折扣後的價格（預設等於標價）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__discount_value
+msgid "Giá trị giảm"
+msgstr "降低價值"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__price_include_land_tax
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__price_include_land_tax
+msgid "Giá trị nhà bao gồm thuế sử dụng đất (trường chính - nhập trực tiếp)"
+msgstr "房屋價值含土地使用稅（主領域-直接投入）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__price_exclude_land_tax
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__price_exclude_land_tax
+msgid ""
+"Giá trị nhà không bao gồm thuế sử dụng đất (tự động tính từ giá bao gồm "
+"thuế)"
+msgstr "房屋價值不含土地使用稅（依含稅價格自動計算）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__selected_discount_ids
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__selected_discount_ids
+msgid "Giảm giá đã chọn"
+msgstr "精選折扣"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_discount_inherit
+msgid "Giảm giá đã chọn (hiển thị trong PDF)"
+msgstr "精選折扣（以 PDF 形式顯示）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__discount_config_ids
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__discount_config_ids
+msgid "Giảm giá được phép"
+msgstr "允許折扣"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_discount_inherit
+msgid "Giảm giá được phép (hiển thị trên portal)"
+msgstr "允許的折扣（顯示在入口網站上）"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Giữ chuột phải và kéo"
+msgstr "按住滑鼠右鍵並拖曳"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__has_message
+msgid "Has Message"
+msgstr "有留言"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_my_site_plans
+msgid "Hiện tại chưa có bản đồ dự án nào."
+msgstr "目前還沒有專案地圖。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Hiện tại chưa có dự án nào. Vui lòng quay lại sau!"
+msgstr "目前没有项目。請稍後再回來！"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Hãy để chúng tôi giúp bạn tìm được bất động sản hoàn hảo"
+msgstr "讓我們幫助您找到完美的房產"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__site_plan_polygon__polygon_type__rectangle
+msgid "Hình chữ nhật"
+msgstr "長方形"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Hình chữ nhật:"
+msgstr "長方形："
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/js/portal_site_map.js:0
+msgid "Hình ảnh"
+msgstr "影像"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_res_company_bank__payment_qr_code
+msgid "Hình ảnh mã QR để khách hàng quét chuyển khoản"
+msgstr "二維碼圖片供客戶掃描轉賬"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#. odoo-python
+#: code:addons/real_estate_site_plan/controllers/portal.py:0
+#: code:addons/real_estate_site_plan/static/src/js/portal_site_map.js:0
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__direction
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__direction
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Hướng"
+msgstr "方向"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__direction
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__direction
+msgid "Hướng của bất động sản"
+msgstr "物業方向"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Hướng nhà"
+msgstr "房屋方向"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Hồng Hạc City • Khu đô thị cao cấp"
+msgstr "紅鶴市 • 高級城區"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "HỖ TRỢ NGÂN HÀNG"
+msgstr "銀行支持"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "HỖ TRỢ<br/>NGÂN HÀNG"
+msgstr "銀行支持"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_image_upload_form
+msgid "Hủy"
+msgstr "取消"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__id
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_category__id
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__id
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__id
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__id
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company__id
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__id
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_users__id
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__id
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_folder__id
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image__id
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image_upload__id
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__id
+msgid "ID"
+msgstr "識別號"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__activity_exception_icon
+msgid "Icon"
+msgstr "圖示"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "指示異常活動的圖示。"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "如果選中，則有新訊息需要您注意。"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__message_has_error
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "如果檢查，則某些訊息有傳送錯誤。"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__is_real_estate
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__is_real_estate
+msgid "Indicates if this product is linked to one or more site plan polygons"
+msgstr "指示該產品是否連結到一個或多個場地規劃多邊形"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__message_is_follower
+msgid "Is Follower"
+msgstr "是追隨者"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__is_real_estate
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__is_real_estate
+msgid "Is Real Estate"
+msgstr "是房地產"
+
+#. module: real_estate_site_plan
+#. odoo-python
+#: code:addons/real_estate_site_plan/models/product_template.py:0
+msgid "KH 10% + QBT"
+msgstr "客戶 10% + 維護基金"
+
+#. module: real_estate_site_plan
+#. odoo-python
+#: code:addons/real_estate_site_plan/models/product_template.py:0
+msgid "KH 20%"
+msgstr "客戶 20%"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Khám phá bản đồ chi tiết và chọn lô đất phù hợp với nhu cầu của bạn."
+msgstr "探索詳細的地圖並選擇適合您需求的地塊。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Khám phá các dự án bất động sản cao cấp với bản đồ tương tác"
+msgstr "透過互動式地圖探索高端房地產項目"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
+msgid "Khóa/Mở Zoom"
+msgstr "鎖定/解鎖縮放"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Kéo các điểm để điều chỉnh hình dạng"
+msgstr "拖曳點來調整形狀"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__ky_hop_dong
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Ký Hợp Đồng"
+msgstr "簽訂合約"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "KỲ THANH TOÁN"
+msgstr "付款期限"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__type
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Kỳ thanh toán"
+msgstr "付款期限"
+
+#. module: real_estate_site_plan
+#: model:ir.actions.act_url,name:real_estate_site_plan.action_landing_page
+#: model:ir.ui.menu,name:real_estate_site_plan.menu_landing_page
+msgid "Landing Page"
+msgstr "登陸頁面"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__write_uid
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__write_uid
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__write_uid
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__write_uid
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_folder__write_uid
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image__write_uid
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image_upload__write_uid
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__write_uid
+msgid "Last Updated by"
+msgstr "最後更新者"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__write_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__write_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__write_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__write_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_folder__write_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image__write_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image_upload__write_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__write_date
+msgid "Last Updated on"
+msgstr "最後更新時間"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__property_type__townhouse_garden
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Liền kề vườn"
+msgstr "毗鄰花園"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Loại Hình"
+msgstr "圖片類型"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__formula_type
+msgid "Loại công thức"
+msgstr "配方類型"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__discount_type
+msgid "Loại giảm giá"
+msgstr "折扣類型"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/js/portal_site_map.js:0
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__property_type
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__property_type
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__polygon_type
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Loại hình"
+msgstr "類型"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__property_type
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__property_type
+msgid "Loại hình bất động sản"
+msgstr "房地產類型"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__is_decoration
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__is_decoration
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Là vật trang trí"
+msgstr "作為裝飾品"
+
+#. module: real_estate_site_plan
+#: model:ir.actions.act_window,name:real_estate_site_plan.action_site_plan_polygons
+msgid "Lô Đất"
+msgstr "大量土地"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_polygon_form
+msgid "Lô đất"
+msgstr "地塊"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Lăn chuột |"
+msgstr "滑鼠滾輪|"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Lưu"
+msgstr "節省"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__payment_timeline_ids
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__payment_timeline_ids
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Lịch thanh toán"
+msgstr "付款時間表"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__message_has_error
+msgid "Message Delivery error"
+msgstr "訊息傳遞錯誤"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__message_ids
+msgid "Messages"
+msgstr "留言"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "我的活動截止日期"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "MÔ TẢ"
+msgstr "描述"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_category__real_estate_color
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__real_estate_color
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__real_estate_color
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__color
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Màu sắc"
+msgstr "顏色"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_company_form_bank_info
+msgid "Mã QR Chuyển khoản"
+msgstr "QR 圖碼轉帳"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_res_company_bank__swift_code
+msgid "Mã SWIFT của ngân hàng"
+msgstr "銀行 SWIFT 代碼"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/js/portal_site_map.js:0
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Mã căn"
+msgstr "基本程式碼"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Mã căn:"
+msgstr "基本程式碼："
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan_polygon__color
+msgid "Mã màu Hex (ví dụ: #3498db)"
+msgstr "十六進位顏色代碼（例如#3498db）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_category__real_estate_color
+msgid "Mã màu Hex cho các sản phẩm trong danh mục này (ví dụ: #3498db)"
+msgstr "此類別產品的十六進位顏色代碼（例如#3498db）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__real_estate_color
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__real_estate_color
+msgid "Mã màu Hex cho polygon (mặc định lấy từ danh mục)"
+msgstr "多邊形的十六進位顏色代碼（預設取自目錄）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__description
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image__description
+msgid "Mô tả"
+msgstr "描述"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__decoration_note
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__decoration_note
+msgid "Mô tả về vật trang trí"
+msgstr "裝修說明"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan_polygon__coordinates
+msgid "Mảng JSON tọa độ [{x: 0, y: 0}, ...]"
+msgstr "JSON 座標數組 [{x: 0, y: 0}, ...]"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Mặc định"
+msgstr "預設"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Mẹo nhanh"
+msgstr "快速提示"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "NGÀY"
+msgstr "天"
+
+#. module: real_estate_site_plan
+#. odoo-python
+#: code:addons/real_estate_site_plan/models/product_template.py:0
+msgid "NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI"
+msgstr "本金和利率均有30%的寬限期。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "NGÂN HÀNG"
+msgstr "銀行"
+
+#. module: real_estate_site_plan
+#. odoo-python
+#: code:addons/real_estate_site_plan/models/product_template.py:0
+msgid "NGÂN HÀNG 35%"
+msgstr "銀行 35%"
+
+#. module: real_estate_site_plan
+#. odoo-python
+#: code:addons/real_estate_site_plan/models/product_template.py:0
+msgid "NGÂN HÀNG 5%"
+msgstr "銀行 5%"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__direction__south
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Nam"
+msgstr "南"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__direction__south_north
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Nam - Bắc"
+msgstr "南 - 北"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__direction__south_east
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Nam - Đông"
+msgstr "東南"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "下一個活動截止日期"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__activity_summary
+msgid "Next Activity Summary"
+msgstr "下一步活動總結"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__activity_type_id
+msgid "Next Activity Type"
+msgstr "下一個活動類型"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__date
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Ngày thanh toán"
+msgstr "付款日期"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__deposit_date
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__deposit_date
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__deposit_date
+msgid "Ngày thực hiện đặt cọc"
+msgstr "存款日期"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__deposit_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__deposit_date
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__deposit_date
+msgid "Ngày đặt cọc"
+msgstr "存款日期"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__bank_name
+msgid "Ngân hàng"
+msgstr "銀行"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Người mua"
+msgstr "買方"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Người theo dõi"
+msgstr "追隨者"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "Nhập mô tả..."
+msgstr "輸入描述..."
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__message_needaction_counter
+msgid "Number of Actions"
+msgstr "動作數"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__message_has_error_counter
+msgid "Number of errors"
+msgstr "錯誤數"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "需要採取行動的訊息數量"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "發送錯誤的訊息數"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_company_form_bank_info
+msgid ""
+"Nếu khoảng cách giữa ngày Ký HĐ và đợt thanh toán gần nhất nhỏ hơn số ngày "
+"này, hệ thống sẽ tự động gộp đợt đó vào đợt tiếp theo."
+msgstr "如果合約簽訂日期與最近一次付款日期之間的差距小於此天數，系統將自動將該次付款納入下一次付款中。"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_res_company__nearby_day
+msgid ""
+"Nếu khoảng cách giữa ngày Ký HĐ và đợt thanh toán gần nhất nhỏ hơn số ngày "
+"này, hệ thống sẽ tự động gộp đợt đó vào đợt tiếp theo. Mặc định 0 = không "
+"gộp."
+msgstr "如果合約簽訂日期與最近一次付款日期之間的差距小於此天數，系統將自動將該次付款納入下一次付款中。預設 0 = 無池化。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Nội dung"
+msgstr "內容"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__decoration_note
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__decoration_note
+msgid "Nội dung giới thiệu hoặc mô tả ngắn sẽ hiển thị trên popup bản đồ."
+msgstr "介紹性內容或簡短描述將顯示在地圖彈出視窗上。"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Pan:"
+msgstr "平底鍋："
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__payment_timeline_ids
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__payment_timeline_ids
+msgid "Payment milestones associated with this product"
+msgstr "與該產品相關的付款里程碑"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_1
+msgid "Pháp lý dự án 1"
+msgstr "項目合法性1"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_2
+msgid "Pháp lý dự án 2"
+msgstr "項目合法性2"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_3
+msgid "Pháp lý dự án 3"
+msgstr "項目法律3"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_4
+msgid "Pháp lý dự án 4"
+msgstr "項目法律4"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_5
+msgid "Pháp lý dự án 5"
+msgstr "項目法律5"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_discount_config__formula_type__maintenance_fee
+msgid "Phí bảo trì × Diện tích × Hệ số"
+msgstr "維護費×面積×係數"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__management_fee
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__management_fee
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Phí quản lý"
+msgstr "管理費"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_discount_config__formula_type__management_fee
+msgid "Phí quản lý × Diện tích × Hệ số"
+msgstr "管理費×面積×係數"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_discount_config__discount_type__percent
+msgid "Phần trăm (%)"
+msgstr "百分比(%)"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "Polygons"
+msgstr "多邊形"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__site_plan_polygon_id
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__site_plan_polygon_id
+msgid "Primary polygon (for backward compatibility)"
+msgstr "主多邊形（為了向後相容）"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_product_template
+msgid "Product"
+msgstr "商品"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_product_category
+msgid "Product Category"
+msgstr "產品分類"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__product_tmpl_id
+msgid "Product Template"
+msgstr "產品模板"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_product_product
+msgid "Product Variant"
+msgstr "產品款式"
+
+#. module: real_estate_site_plan
+#: model:ir.actions.report,name:real_estate_site_plan.action_report_property_detail
+msgid "Property Detail"
+msgstr "物業詳情"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__payment_qr_code
+msgid "QR Chuyển khoản"
+msgstr "QR 圖碼轉帳"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Quét mã QR<br/>để chuyển khoản"
+msgstr "掃描二維碼<br/>轉賬"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__maintenance_fee
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__maintenance_fee
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__quy_bao_tri
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Quỹ bảo trì"
+msgstr "維修基金"
+
+#. module: real_estate_site_plan
+#: model:res.groups,name:real_estate_site_plan.group_real_estate_manager
+msgid "Real Estate Manager (Deprecated)"
+msgstr "房地產經理（已棄用）"
+
+#. module: real_estate_site_plan
+#: model:res.groups,name:real_estate_site_plan.group_real_estate_user
+msgid "Real Estate User (Deprecated)"
+msgstr "房地產用戶（已棄用）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__activity_user_id
+msgid "Responsible User"
+msgstr "負責任的用戶"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Responsive Design"
+msgstr "響應式設計"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "簡訊發送錯誤"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "SWIFT CODE"
+msgstr "SWIFT代碼"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__swift_code
+msgid "SWIFT Code"
+msgstr "SWIFT代碼"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Sale Gallery"
+msgstr "拍賣畫廊"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__property_type__shophouse
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Shophouse"
+msgstr "店屋"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_site_plan
+msgid "Site Plan / Master Plan"
+msgstr "場地規劃/總體規劃"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_site_plan_polygon
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__site_plan_polygon_id
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__site_plan_polygon_id
+msgid "Site Plan Polygon"
+msgstr "場地規劃多邊形"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__site_plan_polygon_ids
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__site_plan_polygon_ids
+msgid "Site Plan Polygons"
+msgstr "場地規劃多邊形"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Slide 1"
+msgstr "幻燈片 1"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Slide 2"
+msgstr "投影片 2"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Slide 3"
+msgstr "幻燈片 3"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"基於活動的狀態\n"
+"逾期：截止日期已過\n"
+"今天：活動日期是今天\n"
+"計劃：未來的活動。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Swift Code"
+msgstr "SWIFT代碼"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "SĐT:"
+msgstr "電話號碼："
+
+#. module: real_estate_site_plan
+#: model:ir.ui.menu,name:real_estate_site_plan.menu_site_plans
+msgid "Sơ đồ phân lô"
+msgstr "地段劃分圖"
+
+#. module: real_estate_site_plan
+#: model:ir.actions.act_window,name:real_estate_site_plan.action_real_estate_products
+#: model:ir.ui.menu,name:real_estate_site_plan.menu_real_estate_products
+msgid "Sản Phẩm BĐS"
+msgstr "房地產產品"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__product_template_id
+msgid "Sản phẩm"
+msgstr "產品"
+
+#. module: real_estate_site_plan
+#. odoo-python
+#: code:addons/real_estate_site_plan/models/site_plan_polygon.py:0
+msgid ""
+"Sản phẩm \"%s\" đã được gán cho lô đất khác. Mỗi sản phẩm chỉ được gán cho 1"
+" lô (trừ vật trang trí)."
+msgstr "產品“%s”已分配給另一個地塊。每個產品只能分配到 1 個批次（裝飾品除外）。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_search_inherit
+msgid "Sản phẩm BĐS"
+msgstr "房地產產品"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan_polygon__product_template_id
+msgid "Sản phẩm liên kết với lô đất này (mỗi sản phẩm chỉ được gán cho 1 lô)"
+msgstr "與該批次相關的產品（每個產品只能分配到 1 個批次）"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Sẵn Sàng Tìm Ngôi Nhà Mơ Ước?"
+msgstr ""
+"準備好尋找您的夢想家園了嗎？"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "SỐ TÀI KHOẢN"
+msgstr "帳號"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Số TK"
+msgstr "帳號"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__qty
+msgid "Số lượng"
+msgstr "數量"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__polygon_count
+msgid "Số lượng lô"
+msgstr "批次數量"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_discount_config__qty
+msgid "Số lượng mua tối thiểu để áp dụng"
+msgstr "申請的最低購買數量"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_folder__image_count
+msgid "Số lượng ảnh"
+msgstr "照片數量"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company__nearby_day
+msgid "Số ngày gộp đợt"
+msgstr "合併批次的天數"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Số tiền"
+msgstr "數量"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_discount_config__discount_type__amount
+msgid "Số tiền cố định"
+msgstr "固定金額"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__name
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Số tiền thanh toán"
+msgstr "付款金額"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__deposit
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__deposit
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Số tiền đặt cọc"
+msgstr "存款金額"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__bank_account_number
+msgid "Số tài khoản"
+msgstr "帳號"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_res_company_bank__bank_account_number
+msgid "Số tài khoản ngân hàng"
+msgstr "銀行帳號"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "TIỀN NHÀ"
+msgstr "房子錢"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/js/portal_site_map.js:0
+msgid "TIỆN ÍCH DỰ ÁN"
+msgstr "專案配套設施"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Thanh toán căn"
+msgstr "公寓付款"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_my_site_plans
+msgid "Thao Tác"
+msgstr "手術"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Thao tác"
+msgstr "手術"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_payment_timeline__vat_amount
+msgid "The VAT amount for this payment milestone"
+msgstr "此付款里程碑的增值稅金額"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_payment_timeline__amount
+msgid "The amount to be paid at this milestone"
+msgstr "此里程碑需支付的金額"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_payment_timeline__date
+msgid "The date for this payment milestone"
+msgstr "此付款里程碑的日期"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_payment_timeline__name
+msgid "The name or description of this payment milestone"
+msgstr "此付款里程碑的名稱或描述"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__site_plan_polygon_ids
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__site_plan_polygon_ids
+msgid "The polygons on the site plan linked to this product"
+msgstr "與該產品連結的場地平面圖上的多邊形"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_payment_timeline__product_tmpl_id
+msgid "The product template associated with this payment timeline"
+msgstr "與此付款時間表關聯的產品模板"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_payment_timeline__total_amount
+msgid "The total amount including VAT for this payment milestone"
+msgstr "此付款里程碑的總金額（含增值稅）"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Thu phóng"
+msgstr "飛漲"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Thuế SDĐ"
+msgstr "土地使用稅"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__vat_tax
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__vat_tax
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Thuế VAT"
+msgstr "加值稅"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__land_tax
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__land_tax
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Thuế sử dụng đất"
+msgstr "土地使用稅"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Thông Tin Chi Tiết"
+msgstr "詳情"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Thông Tin Cơ Bản"
+msgstr "基本訊息"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Thông Tin Thanh Toán"
+msgstr "付款資訊"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Thông Tin Tài Chính"
+msgstr "財務資訊"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Thông Tin Tài Chính (Dự kiến)"
+msgstr "財務資訊（預期）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__thong_bao_so_hong
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Thông báo sổ hồng"
+msgstr "粉紅皮書通知"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Thông tin Bất động sản"
+msgstr "房地產資訊"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Thông tin chung"
+msgstr "一般資訊"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid ""
+"Thông tin cá nhân và giao dịch được bảo mật tuyệt đối với công nghệ mã hóa "
+"hiện đại."
+msgstr "透過現代加密技術，個人資訊和交易絕對保密。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_company_form_bank_info
+msgid "Thông tin ngân hàng"
+msgstr "銀行資訊"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__description
+msgid "Thông tin thêm về bản đồ này"
+msgstr "有關此地圖的更多信息"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid ""
+"Thông tin trạng thái lô đất được cập nhật liên tục, đảm bảo độ chính xác cao"
+" nhất."
+msgstr "土地狀態資訊不斷更新，確保最高的準確性。"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image__folder_id
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image_upload__folder_id
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "Thư mục"
+msgstr "目錄"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__folder_ids
+msgid "Thư mục ảnh"
+msgstr "照片資料夾"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_site_plan_folder
+msgid "Thư mục ảnh phối cảnh"
+msgstr ""
+"透視圖像資料夾"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "Thư viện ảnh"
+msgstr "照片庫"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__sequence
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__sequence
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_folder__sequence
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image__sequence
+msgid "Thứ tự"
+msgstr "命令"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_discount_config__sequence
+msgid "Thứ tự hiển thị, số nhỏ hơn sẽ hiển thị trước"
+msgstr "顯示順序，較小的數字先顯示"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Tiết kiệm tối đa: <span id=\"totalSavings\">0</span>"
+msgstr "最大儲蓄：<span id=\"totalSavings\">0</span>"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__bank_amount
+msgid "Tiền ngân hàng hỗ trợ"
+msgstr "銀行資金支持"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__amount
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Tiền nhà"
+msgstr "房屋費"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Tiện ích trung tâm"
+msgstr "中央設施"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__trong_3_ngay
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Trong 3 ngày"
+msgstr "3天內"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid ""
+"Truy cập mọi lúc mọi nơi trên mọi thiết bị - máy tính, tablet hay điện "
+"thoại."
+msgstr "隨時隨地透過任何裝置（電腦、平板電腦或手機）存取。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Trải nghiệm công nghệ hiện đại trong việc tìm kiếm bất động sản"
+msgstr "體驗現代科技尋找房地產"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "記錄的異常活動的類型。"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company__bank_account_ids
+msgid "Tài khoản ngân hàng"
+msgstr "銀行帳戶"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__direction__west
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Tây"
+msgstr "西方"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__direction__west_east
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Tây - Đông"
+msgstr "西 - 東"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__direction__northwest
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Tây Bắc"
+msgstr "西北"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__direction__southwest
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Tây Nam"
+msgstr "西南"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__direction__southwest_northeast
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Tây Nam - Đông Bắc"
+msgstr "西南 - 東北"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_my_site_plans
+msgid "Tên Dự Án"
+msgstr "項目名稱"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Tên TK"
+msgstr "帳戶名稱"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__name
+msgid "Tên bản đồ dự án hoặc phân khu"
+msgstr "項目地圖或細分名稱"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__name
+msgid "Tên chương trình"
+msgstr "節目名稱"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__bank_account_holder_name
+msgid "Tên chủ tài khoản"
+msgstr "帳戶持有人姓名"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_res_company_bank__bank_account_holder_name
+msgid "Tên chủ tài khoản ngân hàng"
+msgstr "銀行帳戶持有人姓名"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__name
+msgid "Tên dự án"
+msgstr "項目名稱"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__catalog_filename
+msgid "Tên file Catalogue"
+msgstr "目錄檔案名稱"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_1_filename
+msgid "Tên file Pháp lý 1"
+msgstr "文件名稱 法律 1"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_2_filename
+msgid "Tên file Pháp lý 2"
+msgstr "文件名稱 法律 2"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_3_filename
+msgid "Tên file Pháp lý 3"
+msgstr "文件名稱 法律 3"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_4_filename
+msgid "Tên file Pháp lý 4"
+msgstr "文件名稱 法律 4"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_5_filename
+msgid "Tên file Pháp lý 5"
+msgstr "文件名稱 法律 5"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__image_filename
+msgid "Tên file ảnh"
+msgstr "圖片檔案名稱"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__catalog_filename
+msgid "Tên gốc của file Catalogue đã tải lên"
+msgstr ""
+"上傳的目錄檔案的原始名稱"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__image_filename
+msgid "Tên gốc của file ảnh đã tải lên"
+msgstr "上傳圖片檔案的原名稱"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__name
+msgid "Tên lô đất"
+msgstr "地塊名稱"
+
+#. module: real_estate_site_plan
+#. odoo-python
+#: code:addons/real_estate_site_plan/models/site_plan_polygon.py:0
+msgid "Tên lô đất \"%s\" đã tồn tại trong bản đồ này. Vui lòng chọn tên khác."
+msgstr "該地圖中已存在地塊名稱「%s」。請選擇其他名稱。"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan_polygon__name
+msgid "Tên lô đất (sẽ được dùng làm tên sản phẩm)"
+msgstr "地塊名稱（將用作產品名稱）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_res_company_bank__bank_name
+msgid "Tên ngân hàng"
+msgstr "銀行名稱"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_folder__name
+msgid "Tên thư mục"
+msgstr "目錄名稱"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image__name
+msgid "Tên ảnh"
+msgstr "照片名稱"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_search
+msgid "Tìm Bản đồ mặt bằng"
+msgstr "尋找樓層地圖"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Tìm Kiếm Nhanh"
+msgstr "快速搜尋"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Tính Năng Nổi Bật"
+msgstr "突出特點"
+
+#. module: real_estate_site_plan
+#: model:ir.actions.server,name:real_estate_site_plan.action_recalculate_prices_server
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Tính lại giá BĐS"
+msgstr "重新計算房地產價格"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
+msgid "Tô xám tất cả"
+msgstr "一切都是灰色的"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_discount_config__formula_type__custom
+msgid "Tùy chỉnh"
+msgstr "客製化"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.actions.act_window,help:real_estate_site_plan.action_site_plan
+msgid "Tạo bản đồ mặt bằng đầu tiên của bạn"
+msgstr "建立您的一樓平面圖"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_image_upload_form
+msgid "Tải lên"
+msgstr "上傳"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__catalog
+msgid "Tải lên file Catalogue của dự án (PDF hoặc hình ảnh)"
+msgstr "上傳項目目錄檔（PDF或圖像）"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_image_upload_form
+msgid "Tải lên nhiều ảnh"
+msgstr "上傳多張照片"
+
+#. module: real_estate_site_plan
+#: model:ir.actions.act_window,name:real_estate_site_plan.action_site_plan_image_upload
+msgid "Tải lên ảnh"
+msgstr "上傳照片"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__image
+msgid "Tải lên ảnh quy hoạch hoặc sơ đồ mặt bằng (giữ nguyên chất lượng gốc)"
+msgstr "上傳規劃照片或平面圖（保留原始品質）"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.actions.act_window,help:real_estate_site_plan.action_site_plan
+msgid "Tải lên ảnh quy hoạch và vẽ các lô đất để đại diện cho bất động sản."
+msgstr "上傳分區照片和地塊來代表該房產。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid ""
+"Tải về tất cả thông tin của căn hộ dưới dạng file PDF để lưu trữ hoặc in ấn"
+msgstr "將所有公寓資訊下載為 PDF 檔案以供儲存或列印"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__coordinates
+msgid "Tọa độ"
+msgstr "座標"
+
+#. module: real_estate_site_plan
+#. odoo-python
+#: code:addons/real_estate_site_plan/models/site_plan_polygon.py:0
+msgid "Tọa độ phải là chuỗi JSON hợp lệ."
+msgstr "座標必須是有效的 JSON 字串。"
+
+#. module: real_estate_site_plan
+#. odoo-python
+#: code:addons/real_estate_site_plan/models/site_plan_polygon.py:0
+msgid "Tọa độ phải là mảng JSON với ít nhất 3 điểm."
+msgstr "座標必須是至少包含 3 個點的 JSON 陣列。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "TỔNG CỘNG"
+msgstr "全部的"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "TỔNG GIÁ"
+msgstr "總價"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "TỔNG TIỀN"
+msgstr "總金額"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__total_amount
+msgid "Tổng tiền (bao gồm VAT)"
+msgstr "總金額（含增值稅）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__unavailable_product_template_ids
+msgid "Unavailable Product Template"
+msgstr "不可用的產品模板"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_res_users
+msgid "User"
+msgstr "使用者"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__vat_amount
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "VAT"
+msgstr "加值稅"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "VNĐ"
+msgstr "越南盾"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "VNĐ/m²"
+msgstr "越南盾/平方米"
+
+#. module: real_estate_site_plan
+#. odoo-python
+#: code:addons/real_estate_site_plan/models/site_plan_polygon.py:0
+msgid "Vui lòng chọn sản phẩm cho lô đất này."
+msgstr "請為此批次選擇產品。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_company_form_bank_info
+msgid "Ví dụ: Cảm ơn Quý khách đã quan tâm đến dự án của chúng tôi!"
+msgstr ""
+"Error 500 (Server Error)!!1500.That’s an error.There was an error. Please "
+"try again later.That’s all we know."
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_discount_config_form
+msgid "Ví dụ: Giảm giá mua sỉ 5 căn"
+msgstr "例如：批發購買 5 件可享折扣"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
+msgid "Ví dụ: Giới thiệu về loài cây hoặc tiện ích này..."
+msgstr "例如：關於這個植物或小工具......"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "Ví dụ: Vinhomes Grand Park - Giai đoạn 1"
+msgstr "例如：Vinhomes Grand Park - 一期"
+
+#. module: real_estate_site_plan
+#: model:ir.ui.menu,name:real_estate_site_plan.menu_polygons
+msgid "Vùng bản đồ"
+msgstr "地圖區域"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "Vẽ Bản Đồ"
+msgstr "地圖"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_discount_config__discount_value
+msgid "Với loại 'Công thức': đây là hệ số nhân (ví dụ: 24 cho 24 tháng)"
+msgstr "對於「公式」類型：這是乘數（例如 24 表示 24 個月）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__website_menu_id
+msgid "Website Menu"
+msgstr "網站選單"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__website_message_ids
+msgid "Website Messages"
+msgstr "網站留言"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__website_message_ids
+msgid "Website communication history"
+msgstr "網站通訊歷史"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__website_menu_id
+msgid "Website menu item for this site plan"
+msgstr "此網站計劃的網站選單項"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_site_plan_image_upload
+msgid "Wizard tải lên nhiều ảnh"
+msgstr "精靈上傳多張照片"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Xem Bản Đồ <i class=\"fa fa-arrow-right\"/>"
+msgstr "看地圖 <i class=\"fa fa-arrow-right\"/>"
+
+#. module: real_estate_site_plan
+#: model:ir.actions.act_url,name:real_estate_site_plan.action_portal_maps
+#: model:ir.actions.act_url,name:real_estate_site_plan.action_portal_maps_current
+#: model:ir.ui.menu,name:real_estate_site_plan.menu_portal_maps
+msgid "Xem Portal"
+msgstr "查看入口網站"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "Xem Portal Map"
+msgstr "Xem 入口網站地圖"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid "Xem Tất Cả Dự Án <i class=\"fa fa-arrow-right\"/>"
+msgstr "看全部項目 <i class=\"fa fa-arrow-right\"/>"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid ""
+"Xem chi tiết vị trí từng lô đất trên bản đồ quy hoạch với khả năng zoom và "
+"tương tác trực quan."
+msgstr "在規劃地圖上查看每塊土地的詳細位置，並能夠進行縮放和視覺互動。"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/js/portal_site_map.js:0
+msgid "Xem thêm"
+msgstr "查看更多"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Xem tài liệu"
+msgstr "查看文件"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
+msgid ""
+"Xem đầy đủ thông tin về diện tích, giá bán, tiền đặt cọc và các chi phí liên"
+" quan."
+msgstr "查看有關面積、售價、押金和相關費用的完整資訊。"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Xóa"
+msgstr "擦除"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Xóa trắng"
+msgstr "擦除白色"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Zoom:"
+msgstr "飛漲："
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "m²"
+msgstr "平方米"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_payment_timeline
+msgid "payment.timeline"
+msgstr "付款時間表"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "tháng)"
+msgstr "月）"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__product_categ_ids
+msgid "Áp dụng cho Danh mục"
+msgstr "適用於類別"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_discount_config_form
+msgid "Áp dụng tất cả nếu để trống"
+msgstr "如果留空則全部應用"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__site_plan_polygon__polygon_type__polygon
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "Đa giác"
+msgstr "多邊形"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Đa giác:"
+msgstr "多邊形："
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__active
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__active
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__active
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_polygon__active
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_search
+msgid "Đang hoạt động"
+msgstr "積極的"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/js/portal_site_map.js:0
+msgid "ĐÃ BÁN"
+msgstr "賣"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__is_decoration
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__is_decoration
+msgid ""
+"Đánh dấu sản phẩm này là vật trang trí trên bản đồ (cây, hồ nước, tiện "
+"ích...) để có thể gán cho nhiều polygon và hiển thị thông tin rút gọn."
+msgstr "將此產品標記為地圖上的裝飾品（樹、湖、公用設施...），以便將其分配給多個多邊形並顯示濃縮資訊。"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Đã bán"
+msgstr "賣"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/xml/site_plan_canvas.xml:0
+msgid "Đã chọn:"
+msgstr "已選擇："
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_search
+msgid "Đã lưu trữ"
+msgstr "已存檔"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Đóng"
+msgstr "關閉"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__direction__east
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Đông"
+msgstr "冬天"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__direction__east_west
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Đông - Tây"
+msgstr "東 - 西"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__direction__northeast
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Đông Bắc"
+msgstr "東北"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_template__direction__southeast
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Đông Nam"
+msgstr "東南"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__price_per_m2
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__price_per_m2
+msgid "Đơn giá trung bình"
+msgstr "平均單價"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_product__price_per_m2
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_template__price_per_m2
+msgid "Đơn giá trung bình trên m2 đất"
+msgstr "每平方米土地平均單價"
+
+#. module: real_estate_site_plan
+#. odoo-javascript
+#: code:addons/real_estate_site_plan/static/src/js/portal_site_map.js:0
+msgid "Đơn giá/m²"
+msgstr "單價/m²"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__image_path
+msgid "Đường dẫn ảnh local"
+msgstr "本機圖片路徑"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Đặt Cọc"
+msgstr "訂金"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__deposit
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__deposit
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__dat_coc
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Đặt cọc"
+msgstr "訂金"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_product_discount_config__product_categ_ids
+msgid "Để trống nếu áp dụng cho tất cả danh mục"
+msgstr "如果適用於所有類別，請留空"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Định dạng file không hỗ trợ xem trực tiếp."
+msgstr "該文件格式不支援直接查看。"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__dot_4
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Đợt 4"
+msgstr "第四階段"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__dot_5
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Đợt 5"
+msgstr "第五階段"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__dot_6
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Đợt 6"
+msgstr "第六階段"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__dot_7
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Đợt 7"
+msgstr "第七階段"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__dot_8
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Đợt 8"
+msgstr "第八階段"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__dot_9
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Đợt 9"
+msgstr "第九階段"
+
+#. module: real_estate_site_plan
+#. odoo-python
+#: code:addons/real_estate_site_plan/models/product_template.py:0
+msgid "Đủ 20% +VAT"
+msgstr "20% + 增值稅"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Ưu đãi &amp; Chiết khấu áp dụng"
+msgstr "優惠及優惠折扣適用"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan_image__image
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
+msgid "Ảnh"
+msgstr "影像"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__image
+msgid "Ảnh bản đồ"
+msgstr "地圖照片"
+
+#. module: real_estate_site_plan
+#: model:ir.model,name:real_estate_site_plan.model_site_plan_image
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "Ảnh phối cảnh"
+msgstr "透視照片"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__cover_image
+msgid "Ảnh đại diện"
+msgstr "阿凡達"
+
+#. module: real_estate_site_plan
+#: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__cover_image
+msgid "Ảnh đại diện cho dự án, hiển thị trên portal"
+msgstr "項目的代表性圖像，顯示在門戶上"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
+msgid "ảnh"
+msgstr "影像"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
+msgid "Ẩn/Hiện Lô đất"
+msgstr "隱藏/顯示圖"

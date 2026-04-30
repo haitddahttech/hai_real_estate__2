@@ -477,10 +477,13 @@
             <script type="text/javascript">
                 var siteMapData = {
                     imageUrl: '<t t-if="site_plan.image_path" t-esc="site_plan.image_path"/><t t-else="">/web/content/site.plan/<t t-esc="site_plan.id"/>/image</t>',
-                    polygons: <t t-raw="polygon_data_json"/>
+                    polygons: <t t-raw="polygon_data_json"/>,
+                    translations: <t t-raw="js_translations_json"/>
                 };
             </script>
-            
+
+
+
             <!-- Load html2canvas library for screenshot -->
             <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
             

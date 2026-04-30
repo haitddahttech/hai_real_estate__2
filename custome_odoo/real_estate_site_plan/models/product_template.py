@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 
@@ -39,6 +39,7 @@ class ProductTemplate(models.Model):
 
     decoration_note = fields.Text(
         string='Mô tả về vật trang trí',
+        translate=True,
         help='Nội dung giới thiệu hoặc mô tả ngắn sẽ hiển thị trên popup bản đồ.'
     )
 
@@ -194,6 +195,7 @@ class ProductTemplate(models.Model):
             ('west_east', 'Tây - Đông'),
             ('southwest_northeast', 'Tây Nam - Đông Bắc'),
         ],
+        translate=True,
         string='Hướng',
         help='Hướng của bất động sản'
     )
@@ -230,7 +232,7 @@ class ProductTemplate(models.Model):
                 'amount': product.deposit,
                 'vat_amount': 0.0,
                 'bank_amount': 0.0,
-                'bank_note': 'KH 20%',
+                'bank_note': _('KH 20%'),
             }
             paid_amount += product.deposit
             vals_2 = {
@@ -241,18 +243,18 @@ class ProductTemplate(models.Model):
                 'amount': currency.round(product.price_include_land_tax * 0.05) - product.deposit,
                 'vat_amount': 0.0,
                 'bank_amount': 0,
-                'bank_note': 'KH 20%',
+                'bank_note': _('KH 20%'),
             }
             paid_amount += vals_2['amount']
             vals_3 = {
                 'product_tmpl_id': product.id,
                 'type': 'ky_hop_dong',
                 'date': deposit_date + relativedelta(months=1),#12/01
-                'name': 'Đủ 20% +VAT',
+                'name': _('Đủ 20% +VAT'),
                 'amount': currency.round(product.price_include_land_tax * 0.20) - paid_amount,
                 'vat_amount': currency.round(product.vat_tax * 0.20),
                 'bank_amount': 0.0,
-                'bank_note': 'KH 20%',
+                'bank_note': _('KH 20%'),
             }
             vals_1_2_3_total = currency.round(product.price_include_land_tax * 0.20) + currency.round(product.vat_tax * 0.20)
             vals_1['bank_amount'] = vals_1_2_3_total
@@ -266,12 +268,12 @@ class ProductTemplate(models.Model):
             
             # Danh sách cấu hình các đợt 4-9
             milestone_configs = [
-                {'type': 'dot_4', 'months': 2, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0.3, 'bank_vat_share': 0.3, 'bank_note': 'NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI'},
-                {'type': 'dot_5', 'months': 4, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': 'NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI'},
-                {'type': 'dot_6', 'months': 6, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': 'NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI'},
-                {'type': 'dot_7', 'months': 9, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': 'NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI'},
-                {'type': 'dot_8', 'months': 12, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': 'NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI'},
-                {'type': 'dot_9', 'months': 15, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': 'NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI'},
+                {'type': 'dot_4', 'months': 2, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0.3, 'bank_vat_share': 0.3, 'bank_note': _('NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI')},
+                {'type': 'dot_5', 'months': 4, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': _('NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI')},
+                {'type': 'dot_6', 'months': 6, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': _('NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI')},
+                {'type': 'dot_7', 'months': 9, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': _('NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI')},
+                {'type': 'dot_8', 'months': 12, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': _('NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI')},
+                {'type': 'dot_9', 'months': 15, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': _('NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI')},
             ]
             
             timeline_vals_list = [
@@ -315,7 +317,7 @@ class ProductTemplate(models.Model):
                         'product_tmpl_id': product.id,
                         'type': current_type,
                         'date': m_date,
-                        'name': f"{((accumulated_share + m_share) * 100):.2f}" + '% +VAT tương ứng',
+                        'name': f"{((accumulated_share + m_share) * 100):.2f}" + _('% +VAT tương ứng'),
                         'amount': m_amount + accumulated_amount,
                         'vat_amount': m_vat + accumulated_vat,
                         'bank_amount': m_bank + accumulated_bank,
@@ -333,11 +335,11 @@ class ProductTemplate(models.Model):
                 'product_tmpl_id': product.id,
                 'type': 'giao_nha',
                 'date': fixed_deposit_date + relativedelta(months=18),
-                'name': '45% +VAT còn lại',
+                'name': _('45% +VAT còn lại'),
                 'amount': currency.round(product.price_include_land_tax * 0.45) + accumulated_amount,
                 'vat_amount': currency.round(product.vat_tax * 0.50) + accumulated_vat,
                 'bank_amount': currency.round(product.price_include_land_tax * 0.35 + product.vat_tax * 0.40) + accumulated_bank,
-                'bank_note': 'NGÂN HÀNG 35%',
+                'bank_note': _('NGÂN HÀNG 35%'),
             }
             timeline_vals_list.append((0, 0, vals_10))
 
@@ -349,7 +351,7 @@ class ProductTemplate(models.Model):
                 'amount': currency.round(product.maintenance_fee),
                 'vat_amount': 0.0,
                 'bank_amount': currency.round(product.price_include_land_tax * 0.10 + product.vat_tax * 0.10 + product.maintenance_fee),
-                'bank_note': 'KH 10% + QBT',
+                'bank_note': _('KH 10% + QBT'),
             }
             timeline_vals_list.append((0, 0, vals_11))
 
@@ -361,7 +363,7 @@ class ProductTemplate(models.Model):
                 'amount': currency.round(product.price_include_land_tax * 0.05),
                 'vat_amount': 0.0,
                 'bank_amount': currency.round(product.price_include_land_tax * 0.05),
-                'bank_note': 'NGÂN HÀNG 5%',
+                'bank_note': _('NGÂN HÀNG 5%'),
             }
             timeline_vals_list.append((0, 0, vals_12))
             # Clear existing timelines

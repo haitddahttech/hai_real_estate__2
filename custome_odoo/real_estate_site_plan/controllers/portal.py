@@ -5,7 +5,7 @@ import logging
 import subprocess
 import tempfile
 import os
-from odoo import http
+from odoo import http, _
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 
@@ -113,8 +113,9 @@ class SitePlanPortal(CustomerPortal):
             # 3. Cache selection fields to avoid repeated introspection
             # Create a dummy instance to access fields once
             ProductTemplate = request.env['product.template']
-            property_type_selection = dict(ProductTemplate._fields['property_type'].selection) if hasattr(ProductTemplate, 'property_type') else {}
-            direction_selection = dict(ProductTemplate._fields['direction'].selection) if hasattr(ProductTemplate, 'direction') else {}
+            pt_fields = ProductTemplate.fields_get(['property_type', 'direction'])
+            property_type_selection = dict(pt_fields.get('property_type', {}).get('selection', []))
+            direction_selection = dict(pt_fields.get('direction', {}).get('selection', []))
             
             # --- OPTIMIZATION END ---
 
@@ -160,9 +161,26 @@ class SitePlanPortal(CustomerPortal):
                     _logger.error(f"Error preparing polygon data for polygon {polygon.id}: {e}")
                     continue
         
+            js_translations = {
+                'CHI TIẾT': _('CHI TIẾT'),
+                'Chưa có ảnh': _('Chưa có ảnh'),
+                'CÒN TRỐNG': _('CÒN TRỐNG'),
+                'ĐÃ BÁN': _('ĐÃ BÁN'),
+                'Diện tích đất': _('Diện tích đất'),
+                'Đơn giá/m²': _('Đơn giá/m²'),
+                'DT xây dựng': _('DT xây dựng'),
+                'Giá bán': _('Giá bán'),
+                'Hình ảnh': _('Hình ảnh'),
+                'Hướng': _('Hướng'),
+                'Loại hình': _('Loại hình'),
+                'Mã căn': _('Mã căn'),
+                'TIỆN ÍCH DỰ ÁN': _('TIỆN ÍCH DỰ ÁN'),
+                'Xem thêm': _('Xem thêm')
+            }
             values = {
                 'site_plan': site_plan,
                 'polygon_data_json': json.dumps(polygon_data),
+                'js_translations_json': json.dumps(js_translations),
                 'page_name': 'site_plan_detail',
             }
             return request.render('real_estate_site_plan.portal_site_plan_detail', values)
@@ -371,3 +389,18 @@ class SitePlanPortal(CustomerPortal):
         except Exception as e:
             _logger.error(f"Error saving discounts: {str(e)}")
             return {'success': False, 'error': str(e)}
+
+    @http.route(['/change_lang/<string:lang>'], type='http', auth='user', website=True)
+    def change_language(self, lang, **kw):
+        """Switch the current user's language and redirect back"""
+        allowed_langs = ['vi_VN', 'zh_TW']
+        if lang in allowed_langs:
+            # Update the user's language preference in the database
+            request.env.user.sudo().write({'lang': lang})
+            # Also set the frontend cookie for immediate effect
+            redirect_url = request.httprequest.referrer or '/'
+            response = request.redirect(redirect_url)
+            response.set_cookie('frontend_lang', lang, max_age=365*24*60*60, httponly=False, samesite='Lax')
+            return response
+        return request.redirect(request.httprequest.referrer or '/')
+

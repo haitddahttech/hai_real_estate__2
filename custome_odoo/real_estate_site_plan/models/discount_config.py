@@ -7,7 +7,7 @@ class ProductDiscountConfig(models.Model):
     _description = 'Cấu hình giảm giá'
     _order = 'sequence, name'
 
-    name = fields.Char(string='Tên chương trình', required=True)
+    name = fields.Char(string='Tên chương trình', translate=True, required=True)
     sequence = fields.Integer(string='Thứ tự', default=10, help="Thứ tự hiển thị, số nhỏ hơn sẽ hiển thị trước")
     qty = fields.Integer(string='Số lượng', default=1, help="Số lượng mua tối thiểu để áp dụng")
     discount_type = fields.Selection([

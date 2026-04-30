@@ -1,0 +1,217 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* web_view_enterprise
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-30 08:07+0000\n"
+"PO-Revision-Date: 2026-04-30 08:07+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/views/list/list_renderer_desktop.xml:0
+msgid "Add Custom Field"
+msgstr "新增自訂字段"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/views/kanban/kanban_header_patch.js:0
+msgid "Automations"
+msgstr "自動化"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
+msgid "Build new apps from scratch"
+msgstr "從頭開始建立新應用程式"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
+msgid "Build new reports"
+msgstr "建構新報告"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/share_url/burger_menu.xml:0
+msgid "Close menu"
+msgstr "關閉選單"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
+msgid "Create automation rules"
+msgstr "建立自動化規則"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
+msgid "Customize Reports"
+msgstr "客製化報告"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
+msgid "Customize any screen"
+msgstr "自訂任何螢幕"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/color_scheme/color_scheme_menu_items.js:0
+msgid "Dark Mode"
+msgstr "深色模式"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
+msgid "Define webhooks"
+msgstr "定義網路鉤子"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
+msgid "Discard"
+msgstr "丟棄"
+
+#. module: web_view_enterprise
+#: model:ir.model.fields,field_description:web_view_enterprise.field_ir_http__display_name
+#: model:ir.model.fields,field_description:web_view_enterprise.field_res_users_settings__display_name
+msgid "Display Name"
+msgstr "顯示名稱"
+
+#. module: web_view_enterprise
+#: model:ir.model,name:web_view_enterprise.model_ir_http
+msgid "HTTP Routing"
+msgstr "HTTP 路由"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/home_menu/home_menu_service.js:0
+msgid "Home"
+msgstr "家"
+
+#. module: web_view_enterprise
+#: model:ir.model.fields,field_description:web_view_enterprise.field_res_users_settings__homemenu_config
+msgid "Home Menu Configuration"
+msgstr "主選單配置"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/navbar/navbar.js:0
+msgid "Home menu"
+msgstr "主選單"
+
+#. module: web_view_enterprise
+#: model:ir.model.fields,field_description:web_view_enterprise.field_ir_http__id
+#: model:ir.model.fields,field_description:web_view_enterprise.field_res_users_settings__id
+msgid "ID"
+msgstr "識別號"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
+msgid "Install Odoo Studio and its dependencies"
+msgstr "安裝 Odoo Studio 及其相依性"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
+msgid "Learn More"
+msgstr "了解更多"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/home_menu/home_menu.xml:0
+msgid "No result"
+msgstr "沒有結果"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/views/list/list_renderer_desktop.js:0
+msgid "Odoo Studio - Add new fields to any view"
+msgstr "Odoo Studio - 將新欄位新增至任何視圖"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/views/kanban/kanban_header_patch.js:0
+msgid "Odoo Studio - Customize workflows in minutes"
+msgstr "Odoo Studio - 在幾分鐘內自訂工作流程"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/navbar/navbar.js:0
+msgid "Previous view"
+msgstr "上一視圖"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/share_url/share_url.js:0
+msgid "Share"
+msgstr "分享"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/share_url/burger_menu.xml:0
+msgid "Share URL"
+msgstr "分享網址"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
+msgid "Start using Odoo Studio"
+msgstr "開始使用 Odoo Studio"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/home_menu/home_menu.xml:0
+msgid "TIP"
+msgstr "提示"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
+msgid "Unleash the power of Odoo Studio:"
+msgstr "釋放 Odoo Studio 的力量："
+
+#. module: web_view_enterprise
+#: model:ir.model,name:web_view_enterprise.model_res_users_settings
+msgid "User Settings"
+msgstr "使用者設定"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
+msgid "Want to tailor-make your Odoo?"
+msgstr "想要客製化您的 Odoo？"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
+msgid "and more!"
+msgstr "還有更多！"
+
+#. module: web_view_enterprise
+#. odoo-javascript
+#: code:addons/web_view_enterprise/static/src/webclient/home_menu/home_menu.xml:0
+msgid "— open me anywhere with"
+msgstr "— 打開我的任何地方"
+
+#. module: web_view_enterprise
+msgid "props.title"
+msgstr "道具.標題"
+
+#. module: web_view_enterprise
+msgid "nav"
+msgstr "導航"
+
+#. module: web_view_enterprise
+msgid "root"
+msgstr "根"

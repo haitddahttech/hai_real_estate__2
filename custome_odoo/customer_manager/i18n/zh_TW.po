@@ -1,0 +1,1256 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* customer_manager
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-30 08:40+0000\n"
+"PO-Revision-Date: 2026-04-30 08:40+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/wizard/change_partner_user_wizard.py:0
+msgid "%s contact(s) have been assigned to %s"
+msgstr "%s 個聯絡人已分配給 %s"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-address-card\"/> Thông tin cơ bản"
+msgstr "<i class=\"fa fa-address-card\"/> 基本訊息"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-arrow-left\"/> Quay lại"
+msgstr "<i class=\"fa fa-arrow-left\"/> 碼頭"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-calendar\"/> Thông tin cuộc hẹn"
+msgstr "<i class=\"fa fa-calendar\"/> 預約訊息"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-check-circle\"/> Cập nhật thông tin thành công!"
+msgstr "<i class=\"fa fa-check-circle\"/> 資訊更新成功！"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-clock-o\"/> Ngày hẹn"
+msgstr "<i class=\"fa fa-clock-o\"/> 預約日期"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-clock-o\"/> Đang chờ phê duyệt"
+msgstr "<i class=\"fa fa-clock-o\"/> 等待批准"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-comment\"/> Ghi chú"
+msgstr "<i class=\"fa fa-comment\"/> Ghi chú"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-edit\"/> Chỉnh sửa thông tin"
+msgstr "<i class=\"fa fa-edit\"/> 編輯訊息"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-envelope\"/> Email"
+msgstr "<i class=\"fa fa-envelope\"/> 電子郵件"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-envelope\"/> Email:"
+msgstr "<i class=\"fa fa-envelope\"/> 電子郵件："
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "<i class=\"fa fa-eye\"/> Xem"
+msgstr "<i class=\"fa fa-eye\"/> Xem"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-file-text-o\"/> Nội dung cuộc hẹn"
+msgstr "<i class=\"fa fa-file-text-o\"/> 預約內容"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "<i class=\"fa fa-info-circle\"/> Không tìm thấy khách hàng nào."
+msgstr "<i class=\"fa fa-info-circle\"/> 未找到客戶。"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid ""
+"<i class=\"fa fa-info-circle\"/> Yêu cầu chỉnh sửa đã được gửi. Vui lòng chờ"
+" quản lý phê duyệt."
+msgstr "<i class=\"fa fa-info-circle\"/> 編輯請求已傳送。請等待管理層批准。"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-map-marker\"/> Địa chỉ"
+msgstr "<i class=\"fa fa-map-marker\"/> 位址"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-map-marker\"/> Địa điểm hẹn"
+msgstr "<i class=\"fa fa-map-marker\"/> 集合地點"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-phone\"/> Điện thoại"
+msgstr "<i class=\"fa fa-phone\"/> 電話"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-phone\"/> Điện thoại:"
+msgstr "<i class=\"fa fa-phone\"/> 電話："
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-save\"/> Lưu thay đổi"
+msgstr "<i class=\"fa fa-save\"/> 儲存更改"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-times\"/> Hủy"
+msgstr "<i class=\"fa fa-times\"/> 你好"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<i class=\"fa fa-unlock-alt\"/> Yêu cầu chỉnh sửa"
+msgstr "<i class=\"fa fa-unlock-alt\"/> 編輯請求"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "<span class=\"text-muted\">-</span>"
+msgstr "<span class=\"text-muted\">-</span>"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<span class=\"text-muted\">Chưa có</span>"
+msgstr "<span class=\"text-muted\">不可用</span>"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "<span>×</span>"
+msgstr "<跨度>×</跨度>"
+
+#. module: customer_manager
+#: model:ir.model.fields.selection,name:customer_manager.selection__res_partner__customer_sale_state__after_sale_service
+msgid "After-sale Caring Service"
+msgstr "售後貼心服務"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__appointment_date
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__appointment_date
+msgid "Appointment Date"
+msgstr "預約日期"
+
+#. module: customer_manager
+#: model:ir.model.fields.selection,name:customer_manager.selection__res_partner__edit_state__draft
+msgid "Available to Edit"
+msgstr "可編輯"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__x_bought_product_ids
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__x_bought_product_ids
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Bought Products"
+msgstr "購買的產品"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_product_product__buyer_id
+#: model:ir.model.fields,field_description:customer_manager.field_product_template__buyer_id
+msgid "Buyer"
+msgstr "買方"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/models/res_partner.py:0
+msgid ""
+"Bạn không thể chỉnh sửa khách hàng này. Trạng thái hiện tại: %s. Vui lòng "
+"yêu cầu quyền chỉnh sửa."
+msgstr "您無法編輯該客戶。目前狀態：%s。請請求編輯權限。"
+
+#. module: customer_manager
+#: model:ir.model.fields.selection,name:customer_manager.selection__res_partner__customer_sale_state__can_not_contact
+msgid "Cannot contact"
+msgstr "無法聯繫"
+
+#. module: customer_manager
+#: model:ir.model.fields.selection,name:customer_manager.selection__res_partner__customer_sale_state__caring
+msgid "Caring"
+msgstr "關懷"
+
+#. module: customer_manager
+#: model:ir.model,name:customer_manager.model_change_partner_user_wizard
+msgid "Change Partner User Wizard"
+msgstr "變更合作夥伴使用者精靈"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/models/res_partner.py:0
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_change_partner_user_wizard_form
+msgid "Change Salesperson"
+msgstr "更換銷售員"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Chăm sóc sau bán"
+msgstr "售後關懷"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.product_template_kanban_customer_manager_view
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_product_template_search_inherit
+msgid "Chưa bán"
+msgstr "尚未出售"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Chưa liên hệ"
+msgstr "還沒有聯繫"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_change_partner_user_wizard_form
+msgid "Chọn nhân viên sale mới"
+msgstr "選擇新的銷售人員"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Chốt đơn"
+msgstr "關閉訂單"
+
+#. module: customer_manager
+#: model:ir.model,name:customer_manager.model_res_partner
+msgid "Contact"
+msgstr "聯絡人"
+
+#. module: customer_manager
+#: model:ir.model.fields,help:customer_manager.field_change_partner_user_wizard__partner_ids
+msgid "Contacts that will be reassigned"
+msgstr "將重新分配的聯絡人"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__count_bought_product
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__count_bought_product
+msgid "Count Bought Products"
+msgstr "計算已購買的產品"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__count_follower_product
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__count_follower_product
+msgid "Count Followed Products"
+msgstr "計數關注的產品"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_change_partner_user_wizard__create_uid
+msgid "Created by"
+msgstr "創建者："
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_change_partner_user_wizard__create_date
+msgid "Created on"
+msgstr "創建於"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__company_currency_id
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__company_currency_id
+msgid "Currency"
+msgstr "貨幣"
+
+#. module: customer_manager
+#: model:res.groups,name:customer_manager.group_custom_partner_manager
+msgid "Custom Partner Manager"
+msgstr "客製化合作夥伴經理"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_users_form_customer_manager_inherit
+msgid "Customer"
+msgstr "顧客"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_inherit_graph_report_by_customer
+msgid "Customer Analysis"
+msgstr "客戶分析"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/models/product_template.py:0
+msgid "Customer Followers"
+msgstr "客戶追隨者"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_users_form_customer_manager_inherit
+msgid "Customer Information"
+msgstr "客戶資訊"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__customer_sale_state
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__customer_sale_state
+msgid "Customer Sale State"
+msgstr "客戶銷售狀態"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__customer_ids
+msgid "Customers"
+msgstr "顧客"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_change_partner_user_wizard_form
+msgid "Các khách hàng cần thay đổi nhân viên Sale"
+msgstr "客戶需要更換銷售人員"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/controllers/portal_customer.py:0
+msgid "Có email"
+msgstr "有電子郵件"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/controllers/portal_customer.py:0
+msgid "Có số điện thoại"
+msgstr "有電話號碼"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Có thể chỉnh sửa"
+msgstr "可編輯"
+
+#. module: customer_manager
+#: model:ir.model.fields.selection,name:customer_manager.selection__res_partner__customer_sale_state__deposited
+msgid "Deposited"
+msgstr "已存入"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Disable Edit"
+msgstr "禁用編輯"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_change_partner_user_wizard__display_name
+#: model:ir.model.fields,field_description:customer_manager.field_product_category__display_name
+#: model:ir.model.fields,field_description:customer_manager.field_product_template__display_name
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__display_name
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__display_name
+msgid "Display Name"
+msgstr "顯示名稱"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__edit_state
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__edit_state
+msgid "Edit State"
+msgstr "編輯狀態"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/controllers/portal_customer.py:0
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Email"
+msgstr "電子郵件"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Enable Edit"
+msgstr "啟用編輯"
+
+#. module: customer_manager
+#: model:ir.model.fields.selection,name:customer_manager.selection__res_partner__customer_sale_state__finalize
+msgid "Finalize"
+msgstr "最終確定"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__follower_product_ids
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__follower_product_ids
+msgid "Followed Products"
+msgstr "關注產品"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_product_product__customer_follower_ids
+#: model:ir.model.fields,field_description:customer_manager.field_product_template__customer_follower_ids
+msgid "Followers"
+msgstr "追隨者"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_product_customer_manager_inherit
+msgid "Following customers"
+msgstr "關注客戶"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.product_template_kanban_customer_manager_view
+msgid "Giá bán:"
+msgstr "價格："
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Giá trị GD"
+msgstr "教育價值"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__has_group_admin
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__has_group_admin
+msgid "Has Group Admin"
+msgstr "有群組管理員"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_change_partner_user_wizard_form
+msgid "Hủy"
+msgstr "取消"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_change_partner_user_wizard__id
+#: model:ir.model.fields,field_description:customer_manager.field_product_category__id
+#: model:ir.model.fields,field_description:customer_manager.field_product_template__id
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__id
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__id
+msgid "ID"
+msgstr "識別號"
+
+#. module: customer_manager
+#: model:ir.model.fields,help:customer_manager.field_product_product__is_sold
+#: model:ir.model.fields,help:customer_manager.field_product_template__is_sold
+msgid "Indicates if this product/property has been sold"
+msgstr "表示該產品/財產是否已售出"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Interested Products"
+msgstr "有興趣的產品"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_home_menu_customers
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_res_partner_filter_inherit_customer_manager
+msgid "Khách hàng"
+msgstr "客戶"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Không liên hệ được"
+msgstr "無法聯繫"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Không tiềm năng"
+msgstr "沒有潛力"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_change_partner_user_wizard__write_uid
+msgid "Last Updated by"
+msgstr "最後更新者"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_change_partner_user_wizard__write_date
+msgid "Last Updated on"
+msgstr "最後更新時間"
+
+#. module: customer_manager
+#: model:ir.model.fields.selection,name:customer_manager.selection__res_partner__edit_state__manager_edit
+msgid "Manager Edite"
+msgstr "經理編輯"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Mark as After Sale Service"
+msgstr "標記為售後服務"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Mark as Cannot Contact"
+msgstr "標記為無法聯繫"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Mark as Deposited"
+msgstr "標記為已存入"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Mark as Finalize"
+msgstr "標記為最終確定"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Mark as Non-Potential Customer"
+msgstr "標記為非潛在客戶"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Mark as Not Contact Yet"
+msgstr "標記為尚未聯繫"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Mark as Passed"
+msgstr "標記為透過"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Mark as Potential Customer"
+msgstr "標記為潛在客戶"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Mark as caring"
+msgstr "標記為關心"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/controllers/portal_customer.py:0
+msgid "Mã tham chiếu"
+msgstr "參考程式碼"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Mã:"
+msgstr "代碼："
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_change_partner_user_wizard__new_user_id
+msgid "New Salesperson"
+msgstr "新銷售員"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Ngày hẹn:"
+msgstr "預約日期："
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/controllers/portal_customer.py:0
+msgid "Ngày tạo mới nhất"
+msgstr "最新建立日期"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Người phụ trách"
+msgstr "負責人"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_change_partner_user_wizard_form
+msgid "Nhân viên Sale mới"
+msgstr "新銷售人員"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Nhập ghi chú..."
+msgstr "輸入註釋..."
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Nhập nội dung cuộc hẹn..."
+msgstr "輸入預約內容..."
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Nhập địa điểm hẹn..."
+msgstr "輸入集合地點..."
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/wizard/change_partner_user_wizard.py:0
+msgid "No contacts selected. Please select at least one contact."
+msgstr "未選擇聯繫人。請至少選擇一位聯絡人。"
+
+#. module: customer_manager
+#: model:ir.model.fields.selection,name:customer_manager.selection__res_partner__customer_sale_state__non_potential_customers
+msgid "Non-potential Customers"
+msgstr "非潛在客戶"
+
+#. module: customer_manager
+#: model:ir.model.fields.selection,name:customer_manager.selection__res_partner__customer_sale_state__not_contact_yet
+msgid "Not contact yet"
+msgstr "還沒有聯繫"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_change_partner_user_wizard__partner_count
+msgid "Number of Contacts"
+msgstr "聯絡人數量"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_product_product__count_customer_followers
+#: model:ir.model.fields,field_description:customer_manager.field_product_template__count_customer_followers
+msgid "Number of Customer Followers"
+msgstr "客戶追蹤者數量"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__count_customers
+msgid "Number of Customers"
+msgstr "顧客數量"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__appointment_note
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__appointment_note
+msgid "Nội dung cuộc hẹn"
+msgstr "預約內容"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Nội dung:"
+msgstr "內容："
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.product_category_search_view_inherit
+msgid "Parent Category"
+msgstr "家長類別"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__pass_change
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__pass_change
+msgid "Pass Change (%)"
+msgstr "通過率變化 (%)"
+
+#. module: customer_manager
+#: model:ir.model.fields.selection,name:customer_manager.selection__res_partner__customer_sale_state__passed
+msgid "Passed"
+msgstr "透過"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/wizard/change_partner_user_wizard.py:0
+msgid "Please select a salesperson."
+msgstr "請選擇一位銷售人員。"
+
+#. module: customer_manager
+#: model:ir.model.fields.selection,name:customer_manager.selection__res_partner__customer_sale_state__potential_customers
+msgid "Potential Customers"
+msgstr "潛在客戶"
+
+#. module: customer_manager
+#: model:ir.model,name:customer_manager.model_product_template
+#: model_terms:ir.ui.view,arch_db:customer_manager.product_template_kanban_customer_manager_view
+msgid "Product"
+msgstr "商品"
+
+#. module: customer_manager
+#: model:ir.model,name:customer_manager.model_product_category
+msgid "Product Category"
+msgstr "產品分類"
+
+#. module: customer_manager
+#: model:ir.ui.menu,name:customer_manager.menu_categ_manager
+msgid "Quản lý Danh mục Nhà"
+msgstr "管理房屋清單"
+
+#. module: customer_manager
+#: model:ir.ui.menu,name:customer_manager.menu_user_account_manager
+msgid "Quản lý Người dùng"
+msgstr "使用者管理"
+
+#. module: customer_manager
+#: model:ir.ui.menu,name:customer_manager.menu_house_manager
+msgid "Quản lý Nhà"
+msgstr "房屋管理"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Request Edit"
+msgstr "請求編輯"
+
+#. module: customer_manager
+#: model:ir.model.fields.selection,name:customer_manager.selection__res_partner__edit_state__request_edit
+msgid "Request to Edit"
+msgstr "請求編輯"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_customer_manager
+msgid "Sale information"
+msgstr "銷售訊息"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__saled_amount
+msgid "Saled Amount"
+msgstr "銷售金額"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_form_save_button
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_product_category_form_save_button
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_product_template_form_save_button
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_users_form_save_button
+msgid "Save"
+msgstr "節省"
+
+#. module: customer_manager
+#: model:ir.model.fields,help:customer_manager.field_change_partner_user_wizard__new_user_id
+msgid "Select the new salesperson to assign to selected contacts"
+msgstr "選擇要指派給選定聯絡人的新銷售人員"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_change_partner_user_wizard__partner_ids
+msgid "Selected Contacts"
+msgstr "選定的聯絡人"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_users_form_customer_manager_inherit
+msgid "Statistics"
+msgstr "統計數據"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/wizard/change_partner_user_wizard.py:0
+msgid "Success"
+msgstr "成功"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_change_partner_user_wizard_form
+msgid "Số lượng khách hàng cần thay đổi nhân viên sale"
+msgstr "需要更換銷售人員的客戶數量"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_list_inherit_customer_manager
+msgid "Số ngày từ khi sale nhận"
+msgstr "自收到銷售以來的天數"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/controllers/portal_customer.py:0
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Số điện thoại"
+msgstr "電話號碼"
+
+#. module: customer_manager
+#: model:ir.model.fields,help:customer_manager.field_res_partner__pass_change
+#: model:ir.model.fields,help:customer_manager.field_res_users__pass_change
+msgid ""
+"The percentage change in the number of passed products compared to the "
+"followed products."
+msgstr "通過的產品數量與後續產品數量相比的百分比變化。"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Thành phố"
+msgstr "城市"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Thành phố:"
+msgstr "城市："
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__assign_sale_date
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__assign_sale_date
+msgid "Thời gian Sale nhận khách"
+msgstr "銷售時間接待顧客"
+
+#. module: customer_manager
+#: model:ir.model.fields,help:customer_manager.field_res_partner__assign_sale_date
+#: model:ir.model.fields,help:customer_manager.field_res_users__assign_sale_date
+msgid "Thời gian khách hàng được giao cho sale hiện tại phụ trách"
+msgstr "客戶分配給目前銷售負責人的時間"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Tiềm năng"
+msgstr "潛在的"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_list_inherit_customer_manager
+msgid "Total Transaction Amount"
+msgstr "交易總額"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__transaction_amount
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__transaction_amount
+msgid "Transaction Amount"
+msgstr "交易金額"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Trạng thái"
+msgstr "地位"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/controllers/portal_customer.py:0
+msgid "Tên"
+msgstr "姓名"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Tên khách hàng"
+msgstr "客戶名稱"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Tên khách hàng <span class=\"text-danger\">*</span>"
+msgstr "客戶名稱<span class=\"text-danger\">*</span>"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Tên:"
+msgstr "姓名："
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/controllers/portal_customer.py:0
+msgid "Tất cả"
+msgstr "全部"
+
+#. module: customer_manager
+#: model:ir.model,name:customer_manager.model_res_users
+msgid "User"
+msgstr "使用者"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.product_template_kanban_customer_manager_view
+msgid "Variants"
+msgstr "變體"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_change_partner_user_wizard_form
+msgid "Xác nhận"
+msgstr "確認"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/controllers/portal_customer.py:0
+msgid "email"
+msgstr "電子郵件"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/models/product_template.py:0
+msgid "id"
+msgstr "ID"
+
+#. module: customer_manager
+#. odoo-python
+#: code:addons/customer_manager/controllers/portal_customer.py:0
+msgid "phone"
+msgstr "電話"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Đang chăm sóc"
+msgstr "照顧"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Đang chờ duyệt"
+msgstr "等待批准"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_tree_change_salesperson_button
+msgid "Đánh dấu là chăm sóc sau khi bán thành công"
+msgstr "成功銷售後標記為關心"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_tree_change_salesperson_button
+msgid "Đánh dấu là chưa liên hệ"
+msgstr "標記為未聯繫"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_tree_change_salesperson_button
+msgid "Đánh dấu là khách hàng không tiềm năng"
+msgstr "標記為非潛在客戶"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_tree_change_salesperson_button
+msgid "Đánh dấu là khách hàng tiềm năng"
+msgstr "標記為潛在客戶"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_tree_change_salesperson_button
+msgid "Đánh dấu là không thể liên hệ"
+msgstr "標記為無法聯繫"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_tree_change_salesperson_button
+msgid "Đánh dấu là thành công"
+msgstr "標記為成功"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_tree_change_salesperson_button
+msgid "Đánh dấu là đang chăm sóc"
+msgstr "標記為護理中"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_tree_change_salesperson_button
+msgid "Đánh dấu là đã chốt"
+msgstr "標記為已關閉"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_tree_change_salesperson_button
+msgid "Đánh dấu là đã đặt cọc"
+msgstr "標記為已存入"
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_product_product__is_sold
+#: model:ir.model.fields,field_description:customer_manager.field_product_template__is_sold
+#: model_terms:ir.ui.view,arch_db:customer_manager.product_template_kanban_customer_manager_view
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_product_customer_manager_inherit
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_product_template_search_inherit
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_product_template_tree_view_a1_inherit
+msgid "Đã bán"
+msgstr "賣"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Đã cọc"
+msgstr "已存入"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Đã khóa"
+msgstr "鎖定"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_my_customers
+msgid "Đã qua"
+msgstr "過去的"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Đường"
+msgstr "路"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Đường:"
+msgstr "路："
+
+#. module: customer_manager
+#: model:ir.model.fields,field_description:customer_manager.field_res_partner__appointment_address
+#: model:ir.model.fields,field_description:customer_manager.field_res_users__appointment_address
+msgid "Địa điểm hẹn"
+msgstr "預約地點"
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.portal_customer_detail
+msgid "Địa điểm:"
+msgstr "地點："
+
+#. module: customer_manager
+#: model_terms:ir.ui.view,arch_db:customer_manager.view_partner_tree_change_salesperson_button
+msgid "Đổi nhân viên Sale phụ trách"
+msgstr "變更銷售負責人"
+
+#. module: customer_manager
+msgid "VietQR:"
+msgstr "越南QR："
+
+#. module: customer_manager
+msgid "Client ID:"
+msgstr "客戶編號："
+
+#. module: customer_manager
+msgid "API key:"
+msgstr "API 金鑰："
+
+#. module: customer_manager
+msgid "Đà Nẵng"
+msgstr "峴港"
+
+#. module: customer_manager
+msgid "res.users.list.inherit"
+msgstr "res.users.list.inherit"
+
+#. module: customer_manager
+msgid "CUST002"
+msgstr "CUST002"
+
+#. module: customer_manager
+msgid "0923456789"
+msgstr "0923456789"
+
+#. module: customer_manager
+msgid "Res Partner: Portal user có thể xem và cập nhật appointment"
+msgstr "Res Partner：門戶使用者可以查看和更新​​銷售預約"
+
+#. module: customer_manager
+msgid "Hồ Chí Minh"
+msgstr "胡志明市"
+
+#. module: customer_manager
+msgid "Yêu cầu chỉnh sửa"
+msgstr "編輯請求"
+
+#. module: customer_manager
+msgid "res.users"
+msgstr "資源用戶"
+
+#. module: customer_manager
+msgid "Điện thoại"
+msgstr "電話"
+
+#. module: customer_manager
+msgid "Quay lại"
+msgstr "回來"
+
+#. module: customer_manager
+msgid "Hà Nội"
+msgstr "河內"
+
+#. module: customer_manager
+msgid "CUST003"
+msgstr "客製003"
+
+#. module: customer_manager
+msgid "change.partner.user.wizard.form"
+msgstr "更改.partner.user.wizard.form"
+
+#. module: customer_manager
+msgid "tranthib@example.com"
+msgstr "tranthib@example.com"
+
+#. module: customer_manager
+msgid "Thông tin cuộc hẹn"
+msgstr "預約資訊"
+
+#. module: customer_manager
+msgid "levanc@example.com"
+msgstr "levanc@example.com"
+
+#. module: customer_manager
+msgid "Email:"
+msgstr "電子郵件："
+
+#. module: customer_manager
+msgid "portal"
+msgstr "入口網站"
+
+#. module: customer_manager
+msgid "Ngày hẹn"
+msgstr "預約日期"
+
+#. module: customer_manager
+msgid "0912345678"
+msgstr "0912345678"
+
+#. module: customer_manager
+msgid "not has_group_admin and edit_state != 'draft'"
+msgstr "不是 has_group_admin 和 edit_state != '草稿'"
+
+#. module: customer_manager
+msgid "res.users.form.save.button"
+msgstr "res.user.form.save.button"
+
+#. module: customer_manager
+msgid "Yêu cầu chỉnh sửa đã được gửi. Vui lòng chờ quản lý phê duyệt."
+msgstr "編輯請求已提交。請等待管理層批准。"
+
+#. module: customer_manager
+msgid "not has_group_admin"
+msgstr "沒有_group_admin"
+
+#. module: customer_manager
+msgid "res.partner.form.inherit.graph.report.by.customer"
+msgstr "res.partner.form.inherit.graph.report.by.customer"
+
+#. module: customer_manager
+msgid "product.template.search.inherit"
+msgstr "產品.模板.搜尋.繼承"
+
+#. module: customer_manager
+msgid "Đang chờ phê duyệt"
+msgstr "等待批准"
+
+#. module: customer_manager
+msgid "Chỉnh sửa thông tin"
+msgstr "編輯訊息"
+
+#. module: customer_manager
+msgid "res.partner.list.change.salesperson.button"
+msgstr "res.partner.list.change.salesperson.button"
+
+#. module: customer_manager
+msgid "Thông tin cơ bản"
+msgstr "基本訊息"
+
+#. module: customer_manager
+msgid "456 Đường Nguyễn Huệ"
+msgstr "阮惠街456號"
+
+#. module: customer_manager
+msgid "Res Partner: Chỉ thấy partner của chính mình"
+msgstr "資源合作夥伴：只看到自己的合作夥伴"
+
+#. module: customer_manager
+msgid "nguyenvana@example.com"
+msgstr "nguyenvana@example.com"
+
+#. module: customer_manager
+msgid "product.category.form.save.button"
+msgstr "產品.類別.表單.儲存.按鈕"
+
+#. module: customer_manager
+msgid "account.move"
+msgstr "帳戶.移動"
+
+#. module: customer_manager
+msgid "[(1, '=', 1)]"
+msgstr "[(1, '=', 1)]"
+
+#. module: customer_manager
+msgid "res.config.settings"
+msgstr "res.config.設定"
+
+#. module: customer_manager
+msgid "product.template.import.customer.manager.form.inherit"
+msgstr "產品.範本.導入.客戶.經理.表單.繼承"
+
+#. module: customer_manager
+msgid "view.users.form.customer_manager.inherit"
+msgstr "view.users.form.customer_manager.inherit"
+
+#. module: customer_manager
+msgid "res.partner.search.inherit.customer.manager"
+msgstr "res.partner.search.inherit.customer.manager"
+
+#. module: customer_manager
+msgid "Không tìm thấy khách hàng nào."
+msgstr "沒有找到客戶。"
+
+#. module: customer_manager
+msgid "Lê Văn C"
+msgstr "勒凡C"
+
+#. module: customer_manager
+msgid "[('user_id', '=', user.id)]"
+msgstr "[('user_id', '=', user.id)]"
+
+#. module: customer_manager
+msgid "Nguyễn Văn A"
+msgstr "阮文愛"
+
+#. module: customer_manager
+msgid "res.partner.form.save.button"
+msgstr "res.partner.form.save.button"
+
+#. module: customer_manager
+msgid ""
+"product.template.form.view.procurement.button.customer.manager.form.inherit"
+msgstr ""
+"產品.template.form.view.procurement.button.customer.manager.form.inherit"
+
+#. module: customer_manager
+msgid "Điện thoại:"
+msgstr "電話："
+
+#. module: customer_manager
+msgid "Cập nhật thông tin thành công!"
+msgstr "資訊更新成功！"
+
+#. module: customer_manager
+msgid "Chưa có"
+msgstr "還沒有"
+
+#. module: customer_manager
+msgid "product.category"
+msgstr "產品.類別"
+
+#. module: customer_manager
+msgid "Product Template Kanban customer manager"
+msgstr "產品範本看板客戶經理"
+
+#. module: customer_manager
+msgid "product.template"
+msgstr "產品模板"
+
+#. module: customer_manager
+msgid "res.config.settings.view.analytic.account.inherit"
+msgstr "res.config.settings.view.analytic.account.inherit"
+
+#. module: customer_manager
+msgid "portal.demo@example.com"
+msgstr "Portal.demo@example.com"
+
+#. module: customer_manager
+msgid "0901234567"
+msgstr "0901234567"
+
+#. module: customer_manager
+msgid "Res Partner: Admin thấy tất cả"
+msgstr "資源合作夥伴：管理員查看一切"
+
+#. module: customer_manager
+msgid "account.move.form.qr"
+msgstr "帳戶.移動.表格.qr"
+
+#. module: customer_manager
+msgid "{'default_is_company': False, 'default_user_id': uid}"
+msgstr "{'default_is_company'：False，'default_user_id'：uid}"
+
+#. module: customer_manager
+msgid "Địa chỉ"
+msgstr "地址"
+
+#. module: customer_manager
+msgid "res.partner.form.customer.manager"
+msgstr "res.partner.form.customer.manager"
+
+#. module: customer_manager
+msgid "{}"
+msgstr ""
+
+#. module: customer_manager
+msgid "Trần Thị B"
+msgstr "陳氏乙"
+
+#. module: customer_manager
+msgid "Portal User Demo"
+msgstr "入口網站使用者演示"
+
+#. module: customer_manager
+msgid "CUST001"
+msgstr "客製001"
+
+#. module: customer_manager
+msgid "product.category.search.inherit"
+msgstr "產品.類別.搜尋.繼承"
+
+#. module: customer_manager
+msgid "res.partner"
+msgstr "合作夥伴"
+
+#. module: customer_manager
+msgid "Lưu thay đổi"
+msgstr "儲存變更"
+
+#. module: customer_manager
+msgid "contact"
+msgstr "接觸"
+
+#. module: customer_manager
+msgid "123 Đường Lê Lợi"
+msgstr "黎利街123號"
+
+#. module: customer_manager
+msgid "change.partner.user.wizard"
+msgstr "更改.合作夥伴.用戶.嚮導"
+
+#. module: customer_manager
+msgid "Xem"
+msgstr "看"
+
+#. module: customer_manager
+msgid "Công ty TNHH Phát triển Phú Mỹ Hưng"
+msgstr "富美興發展有限公司"
+
+#. module: customer_manager
+msgid "Ghi chú"
+msgstr "筆記"
+
+#. module: customer_manager
+msgid "res.partner.list"
+msgstr "res.partner.list"
+
+#. module: customer_manager
+msgid "product.template.form.save.button"
+msgstr "產品.範本.表單.儲存.按鈕"
+
+#. module: customer_manager
+msgid "product.template.list.view.a1.inherit"
+msgstr "產品.模板.列表.視圖.a1.繼承"
+
+#. module: customer_manager
+msgid "789 Đường Trần Hưng Đạo"
+msgstr "陳興道街 789 號"

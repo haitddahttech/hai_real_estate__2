@@ -7,6 +7,14 @@
     'use strict';
 
     document.addEventListener('DOMContentLoaded', function () {
+        // Fallback for translation function using siteMapData.translations from QWeb
+        const _t = function(s) {
+            if (typeof siteMapData !== 'undefined' && siteMapData.translations && siteMapData.translations[s]) {
+                return siteMapData.translations[s];
+            }
+            return s;
+        };
+
         if (typeof siteMapData === 'undefined') {
             console.error('Site map data not found');
             return;
@@ -768,7 +776,7 @@
 
             // Ribbon for sold status
             const ribbonColor = product.is_sold ? '#dc3545' : '#28a745';
-            const ribbonText = product.is_sold ? 'ĐÃ BÁN' : 'CÒN TRỐNG';
+            const ribbonText = product.is_sold ? _t('ĐÃ BÁN') : _t('CÒN TRỐNG');
             const ribbonHTML = `
                 <div class="status-ribbon" style="
                     position: absolute;
@@ -868,7 +876,7 @@
                     } else {
                         imageHtml = `
                             <div class="decoration-gallery-label mb-1 text-muted" style="font-size: 0.6rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">
-                                <i class="fa fa-picture-o me-1"></i> Hình ảnh (${product.attachments.length})
+                                <i class="fa fa-picture-o me-1"></i> ${_t('Hình ảnh')} (${product.attachments.length})
                             </div>
                             <div class="decoration-images d-flex overflow-auto gap-2 pb-1" style="scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">
                                 ${product.attachments.map(att => `
@@ -893,7 +901,7 @@
                     <div class="card-header border-0 pb-2" style="cursor: move; background: ${bgColor}; color: ${textColor}; padding: 0.85rem 1rem;">
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="flex-grow-1">
-                                <span class="badge mb-1 d-inline-block" style="background: rgba(255,255,255,0.25); backdrop-filter: blur(4px); color: ${textColor}; border: 1px solid rgba(255,255,255,0.3); font-size: 0.55rem; padding: 0.15rem 0.4rem; letter-spacing: 0.5px; font-weight: 700;">TIỆN ÍCH DỰ ÁN</span>
+                                <span class="badge mb-1 d-inline-block" style="background: rgba(255,255,255,0.25); backdrop-filter: blur(4px); color: ${textColor}; border: 1px solid rgba(255,255,255,0.3); font-size: 0.55rem; padding: 0.15rem 0.4rem; letter-spacing: 0.5px; font-weight: 700;">${_t('TIỆN ÍCH DỰ ÁN')}</span>
                                 <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">${product.name}</h6>
                             </div>
                             <button type="button" class="close-popup-btn" style="cursor: pointer; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); transition: all 0.2s; color: ${textColor};">
@@ -922,12 +930,12 @@
                                     <button type="button" class="btn btn-link p-0 text-info text-decoration-none fw-bold" 
                                             style="font-size: 0.65rem;"
                                             onclick="toggleDecorationNote(this)">
-                                        Xem thêm <i class="fa fa-chevron-down ms-1"></i>
+                                        ${_t('Xem thêm')} <i class="fa fa-chevron-down ms-1"></i>
                                     </button>
                                 </div>
                             </div>
                         ` : ''}
-                        ${imageHtml || '<div class="text-center py-3 bg-light rounded-3 text-muted" style="font-size: 0.65rem;"><i class="fa fa-image d-block fs-4 mb-1 opacity-25"></i>Chưa có ảnh</div>'}
+                        ${imageHtml || `<div class="text-center py-3 bg-light rounded-3 text-muted" style="font-size: 0.65rem;"><i class="fa fa-image d-block fs-4 mb-1 opacity-25"></i>${_t('Chưa có ảnh')}</div>`}
                     </div>
                 `;
             } else {
@@ -937,7 +945,7 @@
                 <div class="card-header border-0 pb-2" style="cursor: move; background: ${bgColor}; color: ${textColor};">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="flex-grow-1">
-                            <div class="text-muted mb-1" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; opacity: 0.8;">Mã căn</div>
+                            <div class="text-muted mb-1" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; opacity: 0.8;">${_t('Mã căn')}</div>
                             <div class="d-flex align-items-center gap-2">
                                 <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">${product.name}</h6>
                                 ${propertyTypeBadge}
@@ -954,33 +962,33 @@
                 <div class="card-body pt-2 pb-3">
                     <div class="px-0">
                         <div class="d-flex justify-content-between mb-1 pb-1 border-bottom border-light">
-                            <span class="text-dark fw-medium" style="font-size: 0.8rem;">Loại hình</span>
+                            <span class="text-dark fw-medium" style="font-size: 0.8rem;">${_t('Loại hình')}</span>
                             <span class="fw-bold text-dark" style="font-size: 0.85rem;">${product.property_type || '---'}</span>
                         </div>
                         <div class="d-flex justify-content-between mb-1 pb-1 border-bottom border-light">
-                            <span class="text-dark fw-medium" style="font-size: 0.8rem;">Hướng</span>
+                            <span class="text-dark fw-medium" style="font-size: 0.8rem;">${_t('Hướng')}</span>
                             <span class="fw-bold text-dark" style="font-size: 0.85rem;">${product.direction || '---'}</span>
                         </div>
                         <div class="d-flex justify-content-between mb-1 pb-1 border-bottom border-light">
-                            <span class="text-dark fw-medium" style="font-size: 0.8rem;">Diện tích đất</span>
+                            <span class="text-dark fw-medium" style="font-size: 0.8rem;">${_t('Diện tích đất')}</span>
                             <span class="fw-bold text-dark" style="font-size: 0.85rem;">${product.area} m²</span>
                         </div>
                         <div class="d-flex justify-content-between mb-1 pb-1 border-bottom border-light">
-                            <span class="text-dark fw-medium" style="font-size: 0.8rem;">DT xây dựng</span>
+                            <span class="text-dark fw-medium" style="font-size: 0.8rem;">${_t('DT xây dựng')}</span>
                             <span class="fw-bold text-dark" style="font-size: 0.85rem;">${product.construction_area || 0} m²</span>
                         </div>
                         <div class="d-flex justify-content-between mb-1 pb-1 border-bottom border-light">
-                            <span class="text-dark fw-medium" style="font-size: 0.8rem;">Giá bán</span>
+                            <span class="text-dark fw-medium" style="font-size: 0.8rem;">${_t('Giá bán')}</span>
                             <span class="fw-bold text-danger" style="font-size: 0.9rem;">${product.currency_symbol}${formatNumber(product.price)}</span>
                         </div>
                         <div class="d-flex justify-content-between mb-0">
-                            <span class="text-dark fw-medium" style="font-size: 0.8rem;">Đơn giá/m²</span>
+                            <span class="text-dark fw-medium" style="font-size: 0.8rem;">${_t('Đơn giá/m²')}</span>
                             <span class="fw-semibold text-muted" style="font-size: 0.8rem;">${product.currency_symbol}${formatNumber(product.price_per_m2)}</span>
                         </div>
                     </div>
                     <div class="mt-3">
                         <a href="/my/property/${product.id}" class="btn btn-success w-100 py-2 fw-bold" style="border-radius: 6px; font-size: 0.8rem; letter-spacing: 0.3px; border: none; background: linear-gradient(135deg, #28a745 0%, #218838 100%); transition: all 0.3s ease;">
-                            CHI TIẾT <i class="fa fa-arrow-right ms-1 small"></i>
+                            ${_t('CHI TIẾT')} <i class="fa fa-arrow-right ms-1 small"></i>
                         </a>
                     </div>
                 </div>

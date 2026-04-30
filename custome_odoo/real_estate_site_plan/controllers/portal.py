@@ -161,21 +161,44 @@ class SitePlanPortal(CustomerPortal):
                     _logger.error(f"Error preparing polygon data for polygon {polygon.id}: {e}")
                     continue
         
+            def safe_translate(term):
+                """Helper to ensure translation works even if Odoo's DB lookup fails for some terms"""
+                translated = _(term)
+                if translated == term and request.env.lang == 'zh_TW':
+                    fallbacks = {
+                        'CHI TIẾT': '細節',
+                        'Chưa có ảnh': '暫無圖片',
+                        'CÒN TRỐNG': '待售',
+                        'ĐÃ BÁN': '已售',
+                        'Diện tích đất': '土地面積',
+                        'Đơn giá/m²': '單價/m²',
+                        'DT xây dựng': '建築面積',
+                        'Giá bán': '售價',
+                        'Hình ảnh': '圖片',
+                        'Hướng': '方向',
+                        'Loại hình': '類型',
+                        'Mã căn': '房號',
+                        'TIỆN ÍCH DỰ ÁN': '項目設施',
+                        'Xem thêm': '查看更多'
+                    }
+                    return fallbacks.get(term, term)
+                return translated
+
             js_translations = {
-                'CHI TIẾT': _('CHI TIẾT'),
-                'Chưa có ảnh': _('Chưa có ảnh'),
-                'CÒN TRỐNG': _('CÒN TRỐNG'),
-                'ĐÃ BÁN': _('ĐÃ BÁN'),
-                'Diện tích đất': _('Diện tích đất'),
-                'Đơn giá/m²': _('Đơn giá/m²'),
-                'DT xây dựng': _('DT xây dựng'),
-                'Giá bán': _('Giá bán'),
-                'Hình ảnh': _('Hình ảnh'),
-                'Hướng': _('Hướng'),
-                'Loại hình': _('Loại hình'),
-                'Mã căn': _('Mã căn'),
-                'TIỆN ÍCH DỰ ÁN': _('TIỆN ÍCH DỰ ÁN'),
-                'Xem thêm': _('Xem thêm')
+                'CHI TIẾT': safe_translate('CHI TIẾT'),
+                'Chưa có ảnh': safe_translate('Chưa có ảnh'),
+                'CÒN TRỐNG': safe_translate('CÒN TRỐNG'),
+                'ĐÃ BÁN': safe_translate('ĐÃ BÁN'),
+                'Diện tích đất': safe_translate('Diện tích đất'),
+                'Đơn giá/m²': safe_translate('Đơn giá/m²'),
+                'DT xây dựng': safe_translate('DT xây dựng'),
+                'Giá bán': safe_translate('Giá bán'),
+                'Hình ảnh': safe_translate('Hình ảnh'),
+                'Hướng': safe_translate('Hướng'),
+                'Loại hình': safe_translate('Loại hình'),
+                'Mã căn': safe_translate('Mã căn'),
+                'TIỆN ÍCH DỰ ÁN': safe_translate('TIỆN ÍCH DỰ ÁN'),
+                'Xem thêm': safe_translate('Xem thêm')
             }
             values = {
                 'site_plan': site_plan,

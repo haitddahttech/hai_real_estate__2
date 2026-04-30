@@ -195,7 +195,6 @@ class ProductTemplate(models.Model):
             ('west_east', 'Tây - Đông'),
             ('southwest_northeast', 'Tây Nam - Đông Bắc'),
         ],
-        translate=True,
         string='Hướng',
         help='Hướng của bất động sản'
     )

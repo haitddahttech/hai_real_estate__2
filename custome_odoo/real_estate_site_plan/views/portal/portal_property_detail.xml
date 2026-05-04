@@ -1193,7 +1193,7 @@
                                                                            t-att-data-computed-amount="discount.compute_discount_for_product(product)"
                                                                            style="width: 1.1rem; height: 1.1rem; cursor: pointer;"/>
                                                                 </div>
-                                                                <label class="form-check-label flex-grow-1 ms-2 fw-semibold text-dark" t-att-for="'discount_bottom_' + str(discount.id)" style="cursor: pointer;">
+                                                                <label class="form-check-label flex-grow-1 ms-2 text-dark" t-att-for="'discount_bottom_' + str(discount.id)" style="cursor: pointer;">
                                                                     <t t-esc="discount.name"/>
                                                                     <span class="text-danger ms-2">
                                                                         <t t-if="discount.discount_type == 'percent'">(-<t t-esc="discount.discount_value"/>%)</t>

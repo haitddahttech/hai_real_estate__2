@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-30 15:53+0000\n"
-"PO-Revision-Date: 2026-04-30 15:53+0000\n"
+"POT-Creation-Date: 2026-05-04 15:03+0000\n"
+"PO-Revision-Date: 2026-05-04 15:03+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -54,8 +54,8 @@ msgstr "<i class=\"fa fa-bank me-1\"/>付款資訊"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
-msgid "<i class=\"fa fa-book me-1\"/> Hong Hac说明书"
-msgstr "<i class=\"fa fa-book me-1\"/> 目錄"
+msgid "<i class=\"fa fa-book me-1\"/> Catalogue"
+msgstr "<i class=\"fa fa-book me-1\"/> Hong Hac说明书"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
@@ -65,7 +65,7 @@ msgstr "<i class=\"fa fa-book me-2\"/>目錄 Dự Án"
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 msgid "<i class=\"fa fa-calendar-check-o me-1\"/> Lịch thanh toán"
-msgstr "<i class=\"fa fa-calendar-check-o me-1\"/> 付款進度"
+msgstr "<i class=\"fa fa-calendar-check-o me-1\"/> 付款進度表"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
@@ -142,7 +142,7 @@ msgstr ""
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 msgid "<i class=\"fa fa-file-text-o me-1\"/> Tài liệu dự án"
-msgstr "<i class=\"fa fa-file-text-o me-1\"/> 專案文檔"
+msgstr "<i class=\"fa fa-file-text-o me-1\"/> 案子资料"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
@@ -305,8 +305,8 @@ msgid ""
 "<span class=\"info-label\" style=\"display: block; text-align: left;\">THUẾ "
 "VAT</span>"
 msgstr ""
-"<span class=\"info-label\" style=\"display: block; text-align: "
-"left;\">稅 VAT</span>"
+"<span class=\"info-label\" style=\"display: block; text-align: left;\">稅 "
+"VAT</span>"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
@@ -353,7 +353,7 @@ msgstr "<span class=\"price-label\">公佈的標價</span>"
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
 msgid "<span class=\"timeline-title\">Lịch thanh toán</span>"
-msgstr "<span class=\"timeline-title\">付款時間表</span>"
+msgstr "<span class=\"timeline-title\">付款進度表</span>"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_site_plan_form
@@ -948,7 +948,7 @@ msgstr "銀行票據"
 #: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__giao_nha
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 msgid "Giao nhà"
-msgstr "送貨上門"
+msgstr "交屋"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
@@ -1089,7 +1089,7 @@ msgstr "影像"
 #. module: real_estate_site_plan
 #: model:ir.model.fields,help:real_estate_site_plan.field_res_company_bank__payment_qr_code
 msgid "Hình ảnh mã QR để khách hàng quét chuyển khoản"
-msgstr "掃描 QR Code 進行轉帳"
+msgstr "二維碼圖片供客戶掃描轉賬"
 
 #. module: real_estate_site_plan
 #. odoo-javascript
@@ -1099,7 +1099,7 @@ msgstr "掃描 QR Code 進行轉帳"
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
 msgid "Hướng"
-msgstr "朝向"
+msgstr "方向"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields,help:real_estate_site_plan.field_product_product__direction
@@ -1272,12 +1272,12 @@ msgstr "最後更新時間"
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
 msgid "Liền kề vườn"
-msgstr "毗鄰花園"
+msgstr "连栋别墅"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 msgid "Loại Hình"
-msgstr "房型"
+msgstr "圖片類型"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__formula_type
@@ -1341,7 +1341,7 @@ msgstr "節省"
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__payment_timeline_ids
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
 msgid "Lịch thanh toán"
-msgstr "付款時間表"
+msgstr "付款進度"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__message_has_error
@@ -1603,27 +1603,27 @@ msgstr "與該產品相關的付款里程碑"
 #. module: real_estate_site_plan
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_1
 msgid "Pháp lý dự án 1"
-msgstr "法律文件1"
+msgstr "項目合法性1"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_2
 msgid "Pháp lý dự án 2"
-msgstr "法律文件2"
+msgstr "項目合法性2"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_3
 msgid "Pháp lý dự án 3"
-msgstr "法律文件3"
+msgstr "項目法律3"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_4
 msgid "Pháp lý dự án 4"
-msgstr "法律文件4"
+msgstr "項目法律4"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_site_plan__project_legal_5
 msgid "Pháp lý dự án 5"
-msgstr "法律文件5"
+msgstr "項目法律5"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_discount_config__formula_type__maintenance_fee
@@ -1641,7 +1641,7 @@ msgstr "物业管理費"
 #. module: real_estate_site_plan
 #: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_discount_config__formula_type__management_fee
 msgid "Phí quản lý × Diện tích × Hệ số"
-msgstr "管理費×面積×係數"
+msgstr "物业管理費×面積×係數"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_discount_config__discount_type__percent
@@ -1692,7 +1692,7 @@ msgstr "QR 圖碼轉帳"
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 msgid "Quét mã QR<br/>để chuyển khoản"
-msgstr "掃描二維碼<br/>轉賬"
+msgstr "掃描 QR Code<br/>進行轉帳"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__maintenance_fee
@@ -1748,7 +1748,7 @@ msgstr "拍賣畫廊"
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
 msgid "Shophouse"
-msgstr "店屋"
+msgstr "透天店面"
 
 #. module: real_estate_site_plan
 #: model:ir.model,name:real_estate_site_plan.model_site_plan
@@ -1883,7 +1883,7 @@ msgstr "合併批次的天數"
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 msgid "Số tiền"
-msgstr "銀行貸款金額"
+msgstr "數量"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields.selection,name:real_estate_site_plan.selection__product_discount_config__discount_type__amount
@@ -1927,7 +1927,7 @@ msgstr "專案配套設施"
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 msgid "Thanh toán căn"
-msgstr "Pay for "
+msgstr "Pay for"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_my_site_plans
@@ -2116,7 +2116,7 @@ msgstr "銀行資金支持"
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__amount
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 msgid "Tiền nhà"
-msgstr "總金額"
+msgstr "房款"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
@@ -2127,7 +2127,7 @@ msgstr "中央設施"
 #: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__trong_3_ngay
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 msgid "Trong 3 ngày"
-msgstr "3日內"
+msgstr "3天內"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
@@ -2390,7 +2390,7 @@ msgstr "全部的"
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 msgid "TỔNG GIÁ"
-msgstr "總價｜"
+msgstr "總價"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail

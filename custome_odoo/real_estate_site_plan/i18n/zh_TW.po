@@ -524,7 +524,7 @@ msgstr "稅費詳情"
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
 msgid "Chi tiết từng đợt thanh toán cho sản phẩm"
-msgstr "產品每期付款的詳細信息"
+msgstr "產品每期付款的詳細資訊"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
@@ -2010,7 +2010,7 @@ msgstr "詳情"
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
 msgid "Thông Tin Cơ Bản"
-msgstr "基本資訊"
+msgstr "基本資料"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
@@ -2058,7 +2058,7 @@ msgstr "銀行資訊"
 #. module: real_estate_site_plan
 #: model:ir.model.fields,help:real_estate_site_plan.field_site_plan__description
 msgid "Thông tin thêm về bản đồ này"
-msgstr "有關此地圖的更多信息"
+msgstr "有關此地圖的更多資訊"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
@@ -2701,6 +2701,8 @@ msgid "Đặt Cọc"
 msgstr "訂金"
 
 #. module: real_estate_site_plan
+#. odoo-python
+#: code:addons/real_estate_site_plan/models/product_template.py:0
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__deposit
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__deposit
 #: model:ir.model.fields.selection,name:real_estate_site_plan.selection__payment_timeline__type__dat_coc
@@ -2801,3 +2803,22 @@ msgstr "影像"
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_site_plan_detail
 msgid "Ẩn/Hiện Lô đất"
 msgstr "隱藏/顯示圖"
+#. module: real_estate_site_plan
+#: code:addons/real_estate_site_plan/models/product_template.py:0
+msgid "5%"
+msgstr "5%"
+
+#. module: real_estate_site_plan
+#: code:addons/real_estate_site_plan/models/product_template.py:0
+msgid "0.5%"
+msgstr "0.5%"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "Ưu đãi & Chiết khấu áp dụng"
+msgstr "適用優惠及折扣"
+
+#. module: real_estate_site_plan
+#: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
+msgid "SĐT:"
+msgstr "電話："

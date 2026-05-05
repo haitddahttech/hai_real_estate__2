@@ -17,6 +17,7 @@ class ResCompany(models.Model):
     customer_greeting = fields.Text(
         string='Câu chúc khách hàng',
         help='Dòng chữ sẽ hiển thị ở cuối PDF và ảnh tải xuống',
+        translate=True,
         default='Cảm ơn Quý khách đã quan tâm đến dự án của chúng tôi!'
     )
 

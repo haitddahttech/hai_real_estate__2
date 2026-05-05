@@ -1115,7 +1115,7 @@ msgstr "房屋方向"
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
 msgid "Hồng Hạc City • Khu đô thị cao cấp"
-msgstr "紅鶴市 • 高級城區"
+msgstr "Hong Hac City • 高級城區"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
@@ -1799,7 +1799,7 @@ msgstr ""
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 msgid "Swift Code"
-msgstr "SWIFT代碼"
+msgstr "SWIFT Code"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document

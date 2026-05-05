@@ -19,7 +19,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/real_estate_site_plan/models/product_template.py:0
 msgid "% +VAT tương ứng"
-msgstr "% + VAT（相應）"
+msgstr "% + 對應VAT"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
@@ -50,7 +50,7 @@ msgstr "<i class=\"fa fa-arrow-left\"/> 返回地圖"
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 msgid "<i class=\"fa fa-bank me-1\"/>Thông Tin Thanh Toán"
-msgstr "<i class=\"fa fa-bank me-1\"/>付款資訊"
+msgstr "<i class=\"fa fa-bank me-1\"/>銀行"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
@@ -1099,7 +1099,7 @@ msgstr "二維碼圖片供客戶掃描轉賬"
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.view_product_template_form_inherit
 msgid "Hướng"
-msgstr "方向"
+msgstr "朝向"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields,help:real_estate_site_plan.field_product_product__direction
@@ -1277,7 +1277,7 @@ msgstr "连栋别墅"
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 msgid "Loại Hình"
-msgstr "圖片類型"
+msgstr "房型"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_product_discount_config__formula_type
@@ -1731,12 +1731,12 @@ msgstr "簡訊發送錯誤"
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
 msgid "SWIFT CODE"
-msgstr "SWIFT代碼"
+msgstr "SWIFT CODE"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_res_company_bank__swift_code
 msgid "SWIFT Code"
-msgstr "SWIFT代碼"
+msgstr "SWIFT CODE"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_landing_page
@@ -2428,7 +2428,7 @@ msgstr "越南盾"
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
 msgid "VNĐ/m²"
-msgstr "越南盾/平方米"
+msgstr "越南盾/m²"
 
 #. module: real_estate_site_plan
 #. odoo-python
@@ -2567,7 +2567,7 @@ msgstr "飛漲："
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
 msgid "m²"
-msgstr "平方米"
+msgstr "m²"
 
 #. module: real_estate_site_plan
 #: model:ir.model,name:real_estate_site_plan.model_payment_timeline

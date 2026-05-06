@@ -18,6 +18,7 @@ class ResCompanyBank(models.Model):
     bank_name = fields.Char(
         string='Ngân hàng',
         required=True,
+        translate=True,
         help='Tên ngân hàng'
     )
     

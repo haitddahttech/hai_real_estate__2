@@ -24,7 +24,7 @@ msgstr "% + 對應VAT"
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 msgid "/m²"
-msgstr ""
+msgstr "/m²"
 
 #. module: real_estate_site_plan
 #. odoo-python
@@ -856,7 +856,7 @@ msgstr "土地面積"
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_product_product__area
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_product_template__area
 msgid "Diện tích đất (m²)"
-msgstr "土地面積（平方公尺）"
+msgstr "土地面積（/m²）"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields,help:real_estate_site_plan.field_product_product__area
@@ -2106,8 +2106,8 @@ msgstr "顯示順序，較小的數字先顯示"
 
 #. module: real_estate_site_plan
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
-msgid "Tiết kiệm tối đa: <span id=\"totalSavings\">0</span>"
-msgstr "最高可節省：<span id=\"totalSavings\">0</span>"
+msgid "Tiết kiệm tối đa: <span id=\"totalSavings\">0</span> <span>₫</span>"
+msgstr "最高可節省: <span id=\"totalSavings\">0</span> <span>₫</span>"
 
 #. module: real_estate_site_plan
 #: model:ir.model.fields,field_description:real_estate_site_plan.field_payment_timeline__bank_amount
@@ -2569,7 +2569,7 @@ msgstr "飛漲："
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.portal_property_detail
 #: model_terms:ir.ui.view,arch_db:real_estate_site_plan.report_property_detail_document
 msgid "m²"
-msgstr ""
+msgstr "m²"
 
 #. module: real_estate_site_plan
 #: model:ir.model,name:real_estate_site_plan.model_payment_timeline

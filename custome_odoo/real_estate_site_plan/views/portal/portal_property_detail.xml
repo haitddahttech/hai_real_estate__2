@@ -443,11 +443,11 @@
                                                     </tr>
                                                     <tr>
                                                         <td class="ps-3 py-2 text-muted border-top-0">DT đất</td>
-                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0"><t t-esc="product.area"/> m²</td>
+                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0"><t t-esc="product.area"/> <span>m²</span></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="ps-3 py-2 text-muted border-top-0">DT xây dựng</td>
-                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0"><t t-esc="product.construction_area or 0"/> m²</td>
+                                                        <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0"><t t-esc="product.construction_area or 0"/> <span>m²</span></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -1211,7 +1211,7 @@
                                                             <i class="fa fa-info-circle me-1"></i> Tích chọn các chương trình để xem giá sau giảm giá.
                                                         </div>
                                                         <div class="fw-bold text-danger fs-5">
-                                                            Tiết kiệm tối đa: <span id="totalSavings">0</span> <t t-esc="product.currency_id.symbol"/>
+                                                            Tiết kiệm tối đa: <span id="totalSavings">0</span> <span>₫</span>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -24,6 +24,7 @@ class ResCompanyBank(models.Model):
     bank_account_holder_name = fields.Char(
         string='Tên chủ tài khoản',
         required=True,
+        translate=True,
         help='Tên chủ tài khoản ngân hàng'
     )
     

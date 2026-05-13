@@ -1445,14 +1445,18 @@
                                         <a t-attf-href="/my/property/#{product.id}/download-pdf" 
                                            id="downloadPdfBtn"
                                            class="btn btn-danger btn-lg px-4 py-3 shadow-sm"
-                                           style="font-weight: 600; border-radius: 8px;">
+                                           style="font-weight: 600; border-radius: 8px;"
+                                           target="_blank"
+                                           download="true">
                                             <i class="fa fa-file-pdf-o me-2"></i>
                                             Tải về PDF
                                         </a>
                                         <a t-attf-href="/my/property/#{product.id}/download-image" 
                                            id="downloadImageBtn"
                                            class="btn btn-primary btn-lg px-4 py-3 shadow-sm"
-                                           style="font-weight: 600; border-radius: 8px; background-color: #0d6efd;">
+                                           style="font-weight: 600; border-radius: 8px; background-color: #0d6efd;"
+                                           target="_blank"
+                                           download="true">
                                             <i class="fa fa-file-image-o me-2"></i>
                                             Tải về Ảnh
                                         </a>

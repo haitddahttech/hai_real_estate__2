@@ -15,13 +15,16 @@ async function downloadScreenshot() {
             return;
         }
 
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const viewScale = isIOS ? 2 : 4;
+
         // Capture the map container directly
         const screenshot = await html2canvas(mapContainer, {
             backgroundColor: '#f8f9fa',
-            scale: 6,
+            scale: viewScale,
             logging: false,
             useCORS: true,
-            allowTaint: true,
+            imageTimeout: 2000,
             scrollY: 0,
             scrollX: 0,
         });

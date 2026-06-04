@@ -1914,7 +1914,11 @@
             const popupToImgX = imgW / displayWidth;
             const popupToImgY = imgH / displayHeight;
 
-            const popupCaptureScale = Math.max(6, Math.ceil(Math.max(popupToImgX, popupToImgY)) * 3);
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            // Limit scale on iOS to prevent memory crashes
+            const popupCaptureScale = isIOS 
+                ? Math.min(3, Math.max(2, Math.ceil(popupToImgX)))
+                : Math.min(6, Math.max(3, Math.ceil(Math.max(popupToImgX, popupToImgY)) * 2));
 
             wrapper.classList.add('taking-screenshot');
 
@@ -1938,19 +1942,25 @@
                 const captureW = elWidth + RIBBON_OVERFLOW_RIGHT;  // expand rightward
                 const captureH = elHeight + RIBBON_OVERFLOW_TOP;   // total height includes top overflow
 
-                const popupCanvas = await html2canvas(popupEl, {
-                    backgroundColor: null,  // transparent so overflow area doesn't cover map
-                    scale: popupCaptureScale,
-                    logging: false,
-                    useCORS: true,
-                    allowTaint: true,
-                    x: captureX,
-                    y: captureY,
-                    width: captureW,
-                    height: captureH,
-                    scrollX: 0,
-                    scrollY: 0,
-                });
+                let popupCanvas;
+                try {
+                    popupCanvas = await html2canvas(popupEl, {
+                        backgroundColor: null,
+                        scale: popupCaptureScale,
+                        logging: false,
+                        useCORS: true,
+                        imageTimeout: 2000,
+                        x: captureX,
+                        y: captureY,
+                        width: captureW,
+                        height: captureH,
+                        scrollX: 0,
+                        scrollY: 0,
+                    });
+                } catch (e) {
+                    console.error('Failed to capture popup:', e);
+                    continue; // Skip this popup instead of hanging
+                }
 
                 const popupLeft = popupEl.offsetLeft;
                 const popupTop = popupEl.offsetTop;
@@ -2084,13 +2094,15 @@
 
             canvasWrapper.classList.add('taking-screenshot');
 
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const viewScale = isIOS ? 2 : 4;
+
             const screenshot = await html2canvas(canvasWrapper, {
                 backgroundColor: '#f8f9fa',
-                scale: 6,
+                scale: viewScale,
                 logging: false,
                 useCORS: true,
-                allowTaint: true,
-                imageTimeout: 0,
+                imageTimeout: 2000,
             });
 
             canvasWrapper.classList.remove('taking-screenshot');

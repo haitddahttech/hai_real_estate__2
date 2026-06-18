@@ -111,11 +111,10 @@ class SitePlanPortal(CustomerPortal):
                     })
             
             # 3. Cache selection fields to avoid repeated introspection
-            # Create a dummy instance to access fields once
+            # property_type is still a Selection; direction was migrated to Many2one (real.estate.direction).
             ProductTemplate = request.env['product.template']
-            pt_fields = ProductTemplate.fields_get(['property_type', 'direction'])
+            pt_fields = ProductTemplate.fields_get(['property_type'])
             property_type_selection = dict(pt_fields.get('property_type', {}).get('selection', []))
-            direction_selection = dict(pt_fields.get('direction', {}).get('selection', []))
             
             # --- OPTIMIZATION END ---
 
@@ -125,9 +124,9 @@ class SitePlanPortal(CustomerPortal):
                 if not product:
                     continue  # Skip polygons without products
                 
-                # Safely get selection field labels using cached dicts
+                # Safely get labels (Selection for property_type, Many2one for direction)
                 property_type_label = property_type_selection.get(product.property_type, '')
-                direction_label = direction_selection.get(product.direction, '')
+                direction_label = product.direction_id.name or ''
                 
                 try:
                     product_data = {

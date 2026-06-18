@@ -287,7 +287,7 @@
                                             <span t-field="product.property_type"/>
                                         </td></tr>
                                         <tr><td class="info-label">Hướng nhà</td><td class="info-value">
-                                            <span t-field="product.direction"/>
+                                            <span t-field="product.direction_id"/>
                                         </td></tr>
                                         <tr><td class="info-label">Diện tích đất</td><td class="info-value"><t t-esc="product.area"/> m²</td></tr>
                                         <tr><td class="info-label">D.Tích xây dựng</td><td class="info-value"><t t-esc="product.construction_area or 0"/> m²</td></tr>

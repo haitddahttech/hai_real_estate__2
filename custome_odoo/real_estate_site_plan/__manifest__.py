@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Real Estate Site Plan',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Real Estate',
     'summary': 'Draw polygons on site plan images and link to products',
     'description': """
@@ -29,9 +29,10 @@ This module allows you to:
         'security/ir_rules.xml',
         'security/ir.model.access.csv',
         'data/website_menu.xml',
+        'data/real_estate_direction_data.xml',
+        'views/product_product_views.xml',
         'views/discount_config_views.xml',
         'views/site_plan_views.xml',
-        'views/product_product_views.xml',
         'views/res_company_views.xml',
         'views/portal/portal_landing_page.xml',
         'views/portal/portal_templates.xml',
@@ -40,6 +41,7 @@ This module allows you to:
         'reports/property_detail_report.xml',
         'reports/property_detail_template.xml',
         'views/menu.xml',
+        'views/real_estate_direction_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

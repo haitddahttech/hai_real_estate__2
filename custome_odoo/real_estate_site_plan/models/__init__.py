@@ -11,3 +11,4 @@ from . import res_company
 from . import res_company_bank
 from . import site_plan_menu
 from . import discount_config
+from . import real_estate_direction

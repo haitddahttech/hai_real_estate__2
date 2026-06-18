@@ -18,3 +18,6 @@ access_site_plan_folder_portal,site.plan.folder.portal,model_site_plan_folder,ba
 access_site_plan_image_user,site.plan.image.user,model_site_plan_image,base.group_user,1,1,1,1
 access_site_plan_image_portal,site.plan.image.portal,model_site_plan_image,base.group_portal,1,0,0,0
 access_site_plan_image_upload_user,site.plan.image.upload.user,model_site_plan_image_upload,base.group_user,1,1,1,1
+access_real_estate_direction_portal,real.estate.direction.portal,model_real_estate_direction,base.group_portal,1,0,0,0
+access_real_estate_direction_user,real.estate.direction.user,model_real_estate_direction,base.group_user,1,0,0,0
+access_real_estate_direction_system,real.estate.direction.system,model_real_estate_direction,base.group_system,1,1,1,1

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- 8 hướng la bàn -->
+    <record id="direction_north" model="real.estate.direction">
+        <field name="code">north</field>
+        <field name="name">Bắc</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="direction_northeast" model="real.estate.direction">
+        <field name="code">northeast</field>
+        <field name="name">Đông Bắc</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="direction_east" model="real.estate.direction">
+        <field name="code">east</field>
+        <field name="name">Đông</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="direction_southeast" model="real.estate.direction">
+        <field name="code">southeast</field>
+        <field name="name">Đông Nam</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="direction_south" model="real.estate.direction">
+        <field name="code">south</field>
+        <field name="name">Nam</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="direction_southwest" model="real.estate.direction">
+        <field name="code">southwest</field>
+        <field name="name">Tây Nam</field>
+        <field name="sequence">60</field>
+    </record>
+    <record id="direction_west" model="real.estate.direction">
+        <field name="code">west</field>
+        <field name="name">Tây</field>
+        <field name="sequence">70</field>
+    </record>
+    <record id="direction_northwest" model="real.estate.direction">
+        <field name="code">northwest</field>
+        <field name="name">Tây Bắc</field>
+        <field name="sequence">80</field>
+    </record>
+
+    <!-- 6 hướng kép (nhà 2 mặt thoáng) - giữ nguyên 14 key cũ để migrate -->
+    <record id="direction_north_east" model="real.estate.direction">
+        <field name="code">north_east</field>
+        <field name="name">Bắc - Đông</field>
+        <field name="sequence">110</field>
+    </record>
+    <record id="direction_east_west" model="real.estate.direction">
+        <field name="code">east_west</field>
+        <field name="name">Đông - Tây</field>
+        <field name="sequence">120</field>
+    </record>
+    <record id="direction_south_north" model="real.estate.direction">
+        <field name="code">south_north</field>
+        <field name="name">Nam - Bắc</field>
+        <field name="sequence">130</field>
+    </record>
+    <record id="direction_south_east" model="real.estate.direction">
+        <field name="code">south_east</field>
+        <field name="name">Nam - Đông</field>
+        <field name="sequence">140</field>
+    </record>
+    <record id="direction_west_east" model="real.estate.direction">
+        <field name="code">west_east</field>
+        <field name="name">Tây - Đông</field>
+        <field name="sequence">150</field>
+    </record>
+    <record id="direction_southwest_northeast" model="real.estate.direction">
+        <field name="code">southwest_northeast</field>
+        <field name="name">Tây Nam - Đông Bắc</field>
+        <field name="sequence">160</field>
+    </record>
+
+</odoo>

@@ -55,7 +55,7 @@
                             <field name="is_real_estate" invisible="1"/>
 <!--                            <field name="is_decoration" widget="boolean_toggle"/>-->
                             <field name="property_type" string="Loại hình"/>
-                            <field name="direction" string="Hướng"/>
+                            <field name="direction_id" string="Hướng" options="{'no_create': True, 'no_open': True}"/>
                             <field name="real_estate_color" widget="color" string="Màu sắc"/>
                         </group>
                         <group string="Diện tích và Giá">

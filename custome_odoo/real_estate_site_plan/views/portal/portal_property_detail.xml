@@ -480,21 +480,7 @@
                                                     <tr>
                                                         <td class="ps-3 py-2 text-muted border-top-0">Hướng</td>
                                                         <td class="pe-3 py-2 text-end fw-semibold text-dark border-top-0">
-                                                            <t t-if="product.direction == 'north'">Bắc</t>
-                                                            <t t-elif="product.direction == 'northeast'">Đông Bắc</t>
-                                                            <t t-elif="product.direction == 'east'">Đông</t>
-                                                            <t t-elif="product.direction == 'southeast'">Đông Nam</t>
-                                                            <t t-elif="product.direction == 'south'">Nam</t>
-                                                            <t t-elif="product.direction == 'southwest'">Tây Nam</t>
-                                                            <t t-elif="product.direction == 'west'">Tây</t>
-                                                            <t t-elif="product.direction == 'northwest'">Tây Bắc</t>
-                                                            <t t-elif="product.direction == 'north_east'">Bắc - Đông</t>
-                                                            <t t-elif="product.direction == 'east_west'">Đông - Tây</t>
-                                                            <t t-elif="product.direction == 'south_north'">Nam - Bắc</t>
-                                                            <t t-elif="product.direction == 'south_east'">Nam - Đông</t>
-                                                            <t t-elif="product.direction == 'west_east'">Tây - Đông</t>
-                                                            <t t-elif="product.direction == 'southwest_northeast'">Tây Nam - Đông Bắc</t>
-                                                            <t t-else="">---</t>
+                                                            <t t-esc="product.direction_id.name or '---'"/>
                                                         </td>
                                                     </tr>
                                                     <tr>

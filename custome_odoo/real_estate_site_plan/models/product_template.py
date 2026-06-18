@@ -178,25 +178,11 @@ class ProductTemplate(models.Model):
         help='Loại hình bất động sản'
     )
     
-    direction = fields.Selection(
-        selection=[
-            ('north', 'Bắc'),
-            ('northeast', 'Đông Bắc'),
-            ('east', 'Đông'),
-            ('southeast', 'Đông Nam'),
-            ('south', 'Nam'),
-            ('southwest', 'Tây Nam'),
-            ('west', 'Tây'),
-            ('northwest', 'Tây Bắc'),
-            ('north_east', 'Bắc - Đông'),
-            ('east_west', 'Đông - Tây'),
-            ('south_north', 'Nam - Bắc'),
-            ('south_east', 'Nam - Đông'),
-            ('west_east', 'Tây - Đông'),
-            ('southwest_northeast', 'Tây Nam - Đông Bắc'),
-        ],
+    direction_id = fields.Many2one(
+        comodel_name='real.estate.direction',
         string='Hướng',
-        help='Hướng của bất động sản'
+        ondelete='restrict',
+        help='Hướng của bất động sản (cấu hình tại Bất động sản > Cấu hình > Hướng).'
     )
     deposit_date = fields.Date(
         string='Ngày đặt cọc',

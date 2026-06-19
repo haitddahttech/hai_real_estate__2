@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from dateutil.relativedelta import relativedelta
+
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError, ValidationError
 
 
 class PaymentScheduleTemplate(models.Model):
@@ -22,7 +25,7 @@ class PaymentScheduleTemplate(models.Model):
         column2='category_id',
         string='Danh mục sản phẩm áp dụng',
         help='Mẫu lịch này sẽ áp cho các sản phẩm thuộc các danh mục được chọn. '
-             'Bỏ trống nghĩa là áp cho mọi danh mục.',
+             'Để trống nghĩa là KHÔNG áp cho danh mục nào.',
     )
     line_ids = fields.One2many(
         comodel_name='payment.schedule.template.line',
@@ -55,6 +58,206 @@ class PaymentScheduleTemplate(models.Model):
             tpl.total_percentage = sum(
                 l.percentage for l in tpl.line_ids if l.amount_type == 'percentage'
             )
+
+    # ------------------------------------------------------------------
+    # Constraints
+    # ------------------------------------------------------------------
+    @api.constrains('product_category_ids')
+    def _check_category_uniqueness(self):
+        """Mỗi product.category chỉ được nằm trong 1 lịch thanh toán duy nhất."""
+        for tpl in self:
+            if not tpl.product_category_ids:
+                continue
+            others = self.search([
+                ('id', '!=', tpl.id),
+                ('product_category_ids', 'in', tpl.product_category_ids.ids),
+            ])
+            for other in others:
+                conflicts = tpl.product_category_ids & other.product_category_ids
+                if conflicts:
+                    raise ValidationError(_(
+                        "Danh mục \"%(cat)s\" đã được dùng trong lịch thanh toán \"%(tpl)s\". "
+                        "Mỗi danh mục chỉ được nằm trong 1 lịch thanh toán."
+                    ) % {
+                        'cat': conflicts[0].display_name,
+                        'tpl': other.display_name,
+                    })
+
+    # ------------------------------------------------------------------
+    # Action button: regenerate timelines for all products in categories
+    # ------------------------------------------------------------------
+    def action_regenerate_timelines(self):
+        """Cập nhật lịch thanh toán mới cho tất cả product.template thuộc
+        các product.category đã chọn của template này."""
+        self.ensure_one()
+        if not self.product_category_ids:
+            raise UserError(_(
+                "Template chưa chọn danh mục sản phẩm nào. "
+                "Vui lòng chọn danh mục trước khi cập nhật."
+            ))
+        if not self.line_ids:
+            raise UserError(_("Template chưa có dòng đợt thanh toán nào."))
+
+        products = self.env['product.template'].search([
+            ('categ_id', 'child_of', self.product_category_ids.ids),
+        ])
+        if not products:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _("Không có sản phẩm"),
+                    'message': _("Không tìm thấy sản phẩm nào trong danh mục đã chọn."),
+                    'type': 'warning',
+                    'sticky': False,
+                },
+            }
+
+        for product in products:
+            self._generate_timelines_for_product(product)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _("Cập nhật thành công"),
+                'message': _("Đã cập nhật lịch thanh toán cho %s sản phẩm.") % len(products),
+                'type': 'success',
+                'sticky': False,
+            },
+        }
+
+    def _generate_timelines_for_product(self, product):
+        """Sinh lại payment_timeline_ids cho 1 product.template dựa trên line_ids
+        của template hiện tại. Áp dụng logic gộp (is_mergeable) tương tự
+        compute_payment_timeline cũ, nhưng đọc cấu hình từ template.
+
+        Special-case theo `code` để giữ tương thích nghiệp vụ cũ:
+        - dat_coc + fixed_amount=0    -> dùng product.deposit
+        - trong_3_ngay (%)            -> trừ tiền product.deposit (5% trừ cọc)
+        - ky_hop_dong (%)             -> trừ paid_amount tích lũy (bù cho đủ %)
+        - quy_bao_tri + fixed=0       -> dùng product.maintenance_fee
+        - quy_bao_tri                 -> bank cộng thêm maintenance_fee
+        """
+        self.ensure_one()
+        currency = self.env.company.currency_id
+        company = self.env.company
+
+        deposit_date = product.deposit_date or fields.Date.today()
+        if product.site_plan_polygon_ids:
+            fixed_anchor = (
+                product.site_plan_polygon_ids[0].site_plan_id.deposit_date
+                or deposit_date
+            )
+        else:
+            fixed_anchor = deposit_date
+
+        # Marker = NGÀY HIỆN TẠI (không phải ngày ký HĐ giả tạo như logic cũ).
+        # Một đợt bị gộp khi line_date < today, hoặc khoảng cách < nearby_day.
+        today_marker = fields.Date.today()
+        nearby_day = company.nearby_day or 0
+
+        early_codes = ('dat_coc', 'trong_3_ngay', 'ky_hop_dong')
+
+        paid_amount = 0.0
+        acc_amount = acc_vat = acc_bank = 0.0
+        acc_share = 0.0  # % tích lũy cho mô tả "X% +VAT tương ứng"
+        vals_list = []
+
+        for line in self.line_ids.sorted('sequence'):
+            line_share = (line.percentage or 0.0) if line.amount_type == 'percentage' else 0.0
+            # ---- DATE ----
+            if line.date_type == 'fixed':
+                line_date = line.fixed_date
+            elif line.date_type == 'no_date':
+                line_date = False
+            else:
+                base = deposit_date if line.code in early_codes else fixed_anchor
+                line_date = base + relativedelta(
+                    months=line.offset_months or 0,
+                    days=line.offset_days or 0,
+                )
+
+            # ---- AMOUNT (giá nhà) ----
+            if line.amount_type == 'fixed':
+                amount = line.fixed_amount or 0.0
+                if not amount and line.code == 'dat_coc':
+                    amount = product.deposit or 0.0
+                elif not amount and line.code == 'quy_bao_tri':
+                    amount = product.maintenance_fee or 0.0
+            else:
+                amount = currency.round(
+                    product.price_include_land_tax * (line.percentage or 0.0) / 100.0
+                )
+                if line.code == 'trong_3_ngay':
+                    amount = amount - (product.deposit or 0.0)
+                elif line.code == 'ky_hop_dong':
+                    amount = amount - paid_amount
+
+            paid_amount += amount
+
+            # ---- VAT ----
+            vat_amount = currency.round(
+                product.vat_tax * (line.vat_share or 0.0) / 100.0
+            ) if line.vat_share else 0.0
+
+            # ---- BANK ----
+            bank_amount = currency.round(
+                product.price_include_land_tax * (line.bank_share or 0.0) / 100.0
+                + product.vat_tax * (line.bank_vat_share or 0.0) / 100.0
+            )
+            if line.code == 'quy_bao_tri':
+                bank_amount += product.maintenance_fee or 0.0
+
+            # ---- MERGE ----
+            if line.is_mergeable and line_date:
+                days_gap = (line_date - today_marker).days
+                if line_date < today_marker or (nearby_day > 0 and days_gap < nearby_day):
+                    acc_amount += amount
+                    acc_vat += vat_amount
+                    acc_bank += bank_amount
+                    acc_share += line_share
+                    continue  # khong tao record cho dot nay, gop vao dot ke
+
+            # ---- NAME (mô tả "Số tiền thanh toán") ----
+            # Cột này hiển thị HOW MUCH ("5%", "Đủ 20% +VAT"...), KHÔNG phải tên đợt.
+            if line.amount_type == 'fixed':
+                name_str = line.name  # Fixed amount: dùng tên đợt làm mô tả
+            elif line.code == 'ky_hop_dong':
+                name_str = "Đủ %g%% +VAT" % (line.percentage or 0)
+            elif line.code == 'giao_nha':
+                name_str = "%g%% +VAT còn lại" % (line.percentage or 0)
+            elif line.is_mergeable:
+                # Đợt mergeable: hiển thị cumulative % (gồm tích lũy nếu vừa drain merge)
+                name_str = "%.2f%% +VAT tương ứng" % (acc_share + line_share)
+            else:
+                name_str = "%g%%" % (line.percentage or 0)
+
+            # ---- CREATE record (cộng dồn tích lũy nếu có) ----
+            vals_list.append((0, 0, {
+                'product_tmpl_id': product.id,
+                'type': line.code or '',
+                'date': line_date,
+                'name': name_str,
+                'amount': amount + acc_amount,
+                'vat_amount': vat_amount + acc_vat,
+                'bank_amount': bank_amount + acc_bank,
+                'bank_note': line.note or '',
+            }))
+            acc_amount = acc_vat = acc_bank = 0.0
+            acc_share = 0.0
+
+        # Nếu vẫn còn tích lũy (toàn bộ trailing lines đều mergeable + quá hạn)
+        # thì dồn vào dòng cuối cùng đã tạo
+        if vals_list and (acc_amount or acc_vat or acc_bank):
+            last_vals = vals_list[-1][2]
+            last_vals['amount'] += acc_amount
+            last_vals['vat_amount'] += acc_vat
+            last_vals['bank_amount'] += acc_bank
+
+        # Wipe & recreate
+        product.payment_timeline_ids.unlink()
+        product.write({'payment_timeline_ids': vals_list})
 
 
 class PaymentScheduleTemplateLine(models.Model):

@@ -22,6 +22,14 @@
         <field name="model">payment.schedule.template</field>
         <field name="arch" type="xml">
             <form string="Lịch thanh toán">
+                <header>
+                    <button name="action_regenerate_timelines"
+                            string="Cập nhật lịch thanh toán cho sản phẩm"
+                            type="object"
+                            class="btn-primary"
+                            invisible="not product_category_ids or not line_ids"
+                            confirm="Hành động này sẽ XOÁ và TẠO LẠI toàn bộ lịch thanh toán của các sản phẩm thuộc danh mục đã chọn. Tiếp tục?"/>
+                </header>
                 <sheet>
                     <widget name="web_ribbon" title="Đã lưu trữ" bg_color="bg-danger"
                             invisible="active"/>
@@ -33,7 +41,7 @@
                         <group>
                             <field name="product_category_ids" widget="many2many_tags"
                                    options="{'no_create': True}"
-                                   placeholder="Để trống nếu áp cho mọi danh mục"/>
+                                   placeholder="Để trống = không áp cho danh mục nào"/>
                             <field name="sequence"/>
                         </group>
                         <group>

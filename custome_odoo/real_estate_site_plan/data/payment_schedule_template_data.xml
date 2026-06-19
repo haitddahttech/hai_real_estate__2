@@ -2,8 +2,8 @@
 <odoo noupdate="1">
 
     <!-- Mẫu mặc định: phản ánh logic hard-code hiện tại trong compute_payment_timeline.
-         Áp cho mọi danh mục (product_category_ids để trống). User có thể clone
-         và gắn vào danh mục cụ thể nếu cần lịch khác cho biệt thự, shophouse... -->
+         product_category_ids để trống = KHÔNG áp cho danh mục nào (cần user gán cụ thể).
+         User có thể clone và gắn vào danh mục cần dùng (biệt thự, shophouse...). -->
     <record id="payment_schedule_default" model="payment.schedule.template">
         <field name="name">Lịch thanh toán mặc định (12 đợt)</field>
         <field name="sequence">10</field>

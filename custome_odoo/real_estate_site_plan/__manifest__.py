@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Real Estate Site Plan',
-    'version': '19.0.1.8.0',
+    'version': '19.0.1.9.0',
     'category': 'Real Estate',
     'summary': 'Draw polygons on site plan images and link to products',
     'description': """
@@ -45,6 +45,7 @@ This module allows you to:
         'views/menu.xml',
         'views/real_estate_direction_views.xml',
         'views/payment_schedule_template_views.xml',
+        'wizards/product_price_import_wizard_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

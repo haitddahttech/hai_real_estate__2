@@ -27,3 +27,4 @@ access_payment_schedule_template_system,payment.schedule.template.system,model_p
 access_payment_schedule_template_line_portal,payment.schedule.template.line.portal,model_payment_schedule_template_line,base.group_portal,1,0,0,0
 access_payment_schedule_template_line_user,payment.schedule.template.line.user,model_payment_schedule_template_line,base.group_user,1,0,0,0
 access_payment_schedule_template_line_system,payment.schedule.template.line.system,model_payment_schedule_template_line,base.group_system,1,1,1,1
+access_product_price_import_wizard_user,product.price.import.wizard.user,model_product_price_import_wizard,base.group_user,1,1,1,1

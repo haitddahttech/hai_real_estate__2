@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _
-from datetime import timedelta
-from dateutil.relativedelta import relativedelta
+from odoo import models, fields, api
 
 
 class ProductTemplate(models.Model):
@@ -188,175 +186,37 @@ class ProductTemplate(models.Model):
         string='Ngày đặt cọc',
         help='Ngày thực hiện đặt cọc'
     )
-    payment_timeline_ids = fields.Many2many(
+    payment_timeline_ids = fields.One2many(
         comodel_name='payment.timeline',
-        compute='compute_payment_timeline',
-        # inverse_name='product_tmpl_id',
+        inverse_name='product_tmpl_id',
         string='Lịch thanh toán',
-        help='Payment milestones associated with this product'
+        help='Lịch thanh toán của sản phẩm — sinh tự động qua compute_payment_timeline '
+             'theo bảng cấu hình payment.schedule.template (gán theo product.categ_id).',
     )
 
-    @api.onchange('deposit_date', 'price_include_land_tax', 'vat_tax')
+    def _find_payment_schedule_template(self):
+        """Tìm template lịch thanh toán áp dụng cho sản phẩm này.
+        Khớp qua product.categ_id <-> payment.schedule.template.product_category_ids.
+        Trả về recordset rỗng nếu không tìm thấy (có nghĩa là sản phẩm thuộc
+        category chưa được gán template — không sinh lịch tự động)."""
+        self.ensure_one()
+        if not self.categ_id:
+            return self.env['payment.schedule.template']
+        return self.env['payment.schedule.template'].search([
+            ('product_category_ids', 'in', self.categ_id.ids),
+            ('active', '=', True),
+        ], limit=1)
+
+    @api.onchange('deposit_date', 'price_include_land_tax', 'vat_tax', 'categ_id')
     def compute_payment_timeline(self):
-        """Auto-fill payment timeline based on deposit date and total price"""
-        currency = self.env.company.currency_id
+        """Sinh lại lịch thanh toán dựa trên payment.schedule.template tương ứng
+        với category của sản phẩm. Nếu không có template nào áp cho category này,
+        giữ nguyên lịch hiện tại (không xoá, không sinh mới)."""
         for product in self:
-            deposit_date = product.deposit_date or fields.Date.today()
-            if not product.site_plan_polygon_ids:
-                fixed_deposit_date = product.deposit_date or fields.Date.today()
-            else:
-                fixed_deposit_date = product.site_plan_polygon_ids[0].site_plan_id.deposit_date or fields.Date.today()
-            paid_amount = 0.0
-            total_price_incl_vat = product.price_include_land_tax + product.vat_tax + product.maintenance_fee
-            
-            vals_1 = {
-                'product_tmpl_id': product.id,
-                'type': 'dat_coc',
-                'date': deposit_date,#12/12
-                'name': _('Đặt cọc'),
-                'amount': product.deposit,
-                'vat_amount': 0.0,
-                'bank_amount': 0.0,
-                'bank_note': _('KH 20%'),
-            }
-            paid_amount += product.deposit
-            vals_2 = {
-                'product_tmpl_id': product.id,
-                'type': 'trong_3_ngay',
-                'date': deposit_date + relativedelta(days=2),#15/12
-                'name': _('5%'),
-                'amount': currency.round(product.price_include_land_tax * 0.05) - product.deposit,
-                'vat_amount': 0.0,
-                'bank_amount': 0,
-                'bank_note': _('KH 20%'),
-            }
-            paid_amount += vals_2['amount']
-            vals_3 = {
-                'product_tmpl_id': product.id,
-                'type': 'ky_hop_dong',
-                'date': deposit_date + relativedelta(months=1),#12/01
-                'name': _('Đủ 20% +VAT'),
-                'amount': currency.round(product.price_include_land_tax * 0.20) - paid_amount,
-                'vat_amount': currency.round(product.vat_tax * 0.20),
-                'bank_amount': 0.0,
-                'bank_note': _('KH 20%'),
-            }
-            vals_1_2_3_total = currency.round(product.price_include_land_tax * 0.20) + currency.round(product.vat_tax * 0.20)
-            vals_1['bank_amount'] = vals_1_2_3_total
-
-            # Logic gộp tiền cho các đợt từ 4 đến 9
-            today = deposit_date + relativedelta(months=1)
-            accumulated_amount = 0.0
-            accumulated_share = 0.0
-            accumulated_vat = 0.0
-            accumulated_bank = 0.0
-            
-            # Danh sách cấu hình các đợt 4-9
-            milestone_configs = [
-                {'type': 'dot_4', 'months': 2, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0.3, 'bank_vat_share': 0.3, 'bank_note': _('NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI')},
-                {'type': 'dot_5', 'months': 4, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': _('NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI')},
-                {'type': 'dot_6', 'months': 6, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': _('NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI')},
-                {'type': 'dot_7', 'months': 9, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': _('NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI')},
-                {'type': 'dot_8', 'months': 12, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': _('NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI')},
-                {'type': 'dot_9', 'months': 15, 'share': 0.05, 'vat_share': 0.05, 'bank_share': 0, 'bank_vat_share': 0, 'bank_note': _('NGÂN HÀN 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI')},
-            ]
-            
-            timeline_vals_list = [
-                (0, 0, vals_1),
-                (0, 0, vals_2),
-                (0, 0, vals_3),
-            ]
-            
-            # Danh sách label "Kỳ thanh toán" có sẵn từ Đợt 4 đến Đợt 9
-            available_types = ['dot_4', 'dot_5', 'dot_6', 'dot_7', 'dot_8', 'dot_9']
-            
-            # Lấy cấu hình nearby_day từ Company
-            nearby_day = product.env.company.nearby_day or 0
-            
-            accumulated_amount = 0.0
-            accumulated_share = 0.0
-            accumulated_vat = 0.0
-            accumulated_bank = 0.0
-            
-            for config in milestone_configs:
-                m_date = fixed_deposit_date + relativedelta(months=config['months'])
-                m_share = config['share']
-                m_amount = currency.round(product.price_include_land_tax * config['share'])
-                m_vat = currency.round(product.vat_tax * config['vat_share'])
-                m_bank = currency.round(product.price_include_land_tax * config['bank_share'] + product.vat_tax * config['bank_vat_share'])
-                
-                # Gộp đợt nếu: đã quá hạn HOẶC khoảng cách đến ngày ký HĐ < nearby_day
-                days_gap = (m_date - today).days
-                if m_date < today or (nearby_day > 0 and days_gap < nearby_day):
-                    # Gom tiền vào biến tích lũy
-                    accumulated_amount += m_amount
-                    accumulated_share += m_share
-                    accumulated_vat += m_vat
-                    accumulated_bank += m_bank
-                else:
-                    # Nếu đợt này ở tương lai, cộng dồn tiền tích lũy vào đây
-                    # Lấy label (type) liên tiếp từ danh sách có sẵn (bắt đầu từ dot_4)
-                    current_type = available_types.pop(0) if available_types else config['type']
-                    
-                    vals_m = {
-                        'product_tmpl_id': product.id,
-                        'type': current_type,
-                        'date': m_date,
-                        'name': f"{((accumulated_share + m_share) * 100):.2f}" + _('% +VAT tương ứng'),
-                        'amount': m_amount + accumulated_amount,
-                        'vat_amount': m_vat + accumulated_vat,
-                        'bank_amount': m_bank + accumulated_bank,
-                        'bank_note': config['bank_note'],
-                    }
-                    timeline_vals_list.append((0, 0, vals_m))
-                    # Reset biến tích lũy sau khi đã gộp
-                    accumulated_amount = 0.0
-                    accumulated_share = 0.0
-                    accumulated_vat = 0.0
-                    accumulated_bank = 0.0
-
-            # Xử lý Đợt 10 (Giao nhà) - Nhận phần tiền tích lũy còn lại nếu tất cả 4-9 đều quá hạn
-            vals_10 = {
-                'product_tmpl_id': product.id,
-                'type': 'giao_nha',
-                'date': fixed_deposit_date + relativedelta(months=18),
-                'name': _('45% +VAT còn lại'),
-                'amount': currency.round(product.price_include_land_tax * 0.45) + accumulated_amount,
-                'vat_amount': currency.round(product.vat_tax * 0.50) + accumulated_vat,
-                'bank_amount': currency.round(product.price_include_land_tax * 0.35 + product.vat_tax * 0.40) + accumulated_bank,
-                'bank_note': _('NGÂN HÀNG 35%'),
-            }
-            timeline_vals_list.append((0, 0, vals_10))
-
-            vals_11 = {
-                'product_tmpl_id': product.id,
-                'type': 'quy_bao_tri',
-                'date': fixed_deposit_date + relativedelta(months=18),
-                'name': _('0.5%'),
-                'amount': currency.round(product.maintenance_fee),
-                'vat_amount': 0.0,
-                'bank_amount': currency.round(product.price_include_land_tax * 0.10 + product.vat_tax * 0.10 + product.maintenance_fee),
-                'bank_note': _('KH 10% + QBT'),
-            }
-            timeline_vals_list.append((0, 0, vals_11))
-
-            vals_12 = {
-                'product_tmpl_id': product.id,
-                'type': 'thong_bao_so_hong',
-                'date': False,
-                'name': _('5%'),
-                'amount': currency.round(product.price_include_land_tax * 0.05),
-                'vat_amount': 0.0,
-                'bank_amount': currency.round(product.price_include_land_tax * 0.05),
-                'bank_note': _('NGÂN HÀNG 5%'),
-            }
-            timeline_vals_list.append((0, 0, vals_12))
-            # Clear existing timelines
-            product.payment_timeline_ids.unlink()
-            # Create new timelines
-            product.write({
-                'payment_timeline_ids': timeline_vals_list
-            })
+            template = product._find_payment_schedule_template()
+            if not template:
+                continue
+            template._generate_timelines_for_product(product)
 
 
     @api.depends('site_plan_polygon_ids')

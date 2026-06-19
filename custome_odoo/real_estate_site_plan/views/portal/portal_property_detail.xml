@@ -751,6 +751,9 @@
                                                                                 <t t-elif="timeline.type == 'dot_7'">Đợt 7</t>
                                                                                 <t t-elif="timeline.type == 'dot_8'">Đợt 8</t>
                                                                                 <t t-elif="timeline.type == 'dot_9'">Đợt 9</t>
+                                                                                <t t-elif="timeline.type == 'dot_10'">Đợt 10</t>
+                                                                                <t t-elif="timeline.type == 'dot_11'">Đợt 11</t>
+                                                                                <t t-elif="timeline.type == 'dot_12'">Đợt 12</t>
                                                                                 <t t-elif="timeline.type == 'giao_nha'">Giao nhà</t>
                                                                                 <t t-elif="timeline.type == 'quy_bao_tri'">Quỹ bảo trì</t>
                                                                                 <t t-elif="timeline.type == 'thong_bao_so_hong'">Thông báo sổ hồng</t>

@@ -229,8 +229,10 @@ class ProductTemplate(models.Model):
         for product in self:
             product.is_real_estate = bool(product.site_plan_polygon_ids)
     
-    @api.depends('list_price', 'selected_discount_ids', 'selected_discount_ids.discount_type', 
+    @api.depends('list_price', 'selected_discount_ids', 'selected_discount_ids.discount_type',
                  'selected_discount_ids.discount_value', 'selected_discount_ids.formula_type',
+                 'selected_discount_ids.qty',
+                 'price_exclude_land_tax', 'land_tax',
                  'management_fee', 'maintenance_fee', 'area')
     def _compute_final_price(self):
         for product in self:

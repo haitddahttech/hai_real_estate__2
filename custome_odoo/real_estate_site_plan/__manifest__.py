@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Real Estate Site Plan',
-    'version': '19.0.1.6.0',
+    'version': '19.0.1.8.0',
     'category': 'Real Estate',
     'summary': 'Draw polygons on site plan images and link to products',
     'description': """

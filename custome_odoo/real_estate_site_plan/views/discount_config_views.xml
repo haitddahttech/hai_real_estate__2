@@ -18,7 +18,8 @@
                         <group>
                             <field name="discount_type" widget="radio"/>
                             <field name="formula_type" invisible="discount_type != 'formula'"/>
-                            <field name="discount_value"/>
+                            <field name="discount_value" invisible="discount_type == 'percent_recalc'"/>
+                            <field name="qty" invisible="discount_type != 'percent_recalc'"/>
                         </group>
                         <group>
                             <field name="sequence"/>
@@ -42,6 +43,7 @@
                 <field name="discount_type"/>
                 <field name="formula_type" optional="hide"/>
                 <field name="discount_value"/>
+                <field name="qty" string="% (Recalc)" optional="hide"/>
                 <field name="product_categ_ids" widget="many2many_tags" optional="show"/>
                 <field name="active" widget="boolean_toggle"/>
             </list>

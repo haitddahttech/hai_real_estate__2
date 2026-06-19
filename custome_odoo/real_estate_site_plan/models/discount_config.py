@@ -9,14 +9,18 @@ class ProductDiscountConfig(models.Model):
 
     name = fields.Char(string='Tên chương trình', translate=True, required=True)
     sequence = fields.Integer(string='Thứ tự', default=10, help="Thứ tự hiển thị, số nhỏ hơn sẽ hiển thị trước")
-    qty = fields.Integer(string='Số lượng', default=1, help="Số lượng mua tối thiểu để áp dụng")
+    qty = fields.Float(string='% giảm trên giá bán', default=0,
+        help="Chỉ dùng cho loại 'Công thức % tính lại tổng giá'. "
+             "Nhập 1 nghĩa là 1% giảm trên giá bán chưa TSDĐ, kéo theo VAT và Quỹ bảo trì tính lại.")
     discount_type = fields.Selection([
-        ('percent', 'Phần trăm (%)'),
-        ('amount', 'Số tiền cố định'),
-        ('formula', 'Công thức theo sản phẩm')
+        ('percent',        'Phần trăm (%)'),
+        ('amount',         'Số tiền cố định'),
+        ('formula',        'Công thức theo sản phẩm'),
+        ('percent_recalc', 'Công thức % tính lại tổng giá'),
     ], string='Loại giảm giá', required=True, default='percent')
-    discount_value = fields.Float(string='Giá trị giảm', required=True,
-        help="Với loại 'Công thức': đây là hệ số nhân (ví dụ: 24 cho 24 tháng)")
+    discount_value = fields.Float(string='Giá trị giảm', default=0,
+        help="Phần trăm/số tiền/hệ số nhân tuỳ theo loại giảm giá. "
+             "Không dùng cho loại 'Công thức % tính lại tổng giá' (dùng % giảm trên giá bán).")
     formula_type = fields.Selection([
         ('management_fee', 'Phí quản lý × Diện tích × Hệ số'),
         ('maintenance_fee', 'Phí bảo trì × Diện tích × Hệ số'),
@@ -36,7 +40,7 @@ class ProductDiscountConfig(models.Model):
         return True
 
     def compute_discount_for_product(self, product):
-        """Tính giá trị chiết khấu cho một sản phẩm cụ thể"""
+        """Tính giá trị chiết khấu cho một sản phẩm cụ thể."""
         self.ensure_one()
         if self.discount_type == 'percent':
             return product.list_price * self.discount_value / 100.0
@@ -56,4 +60,28 @@ class ProductDiscountConfig(models.Model):
             else:
                 # Custom - trả về giá trị mặc định
                 return self.discount_value
+        elif self.discount_type == 'percent_recalc':
+            return self._compute_percent_recalc(product)
         return 0
+
+    def _compute_percent_recalc(self, product):
+        """Công thức % tính lại tổng giá:
+            Giá bán sau   = round(price_exclude_land_tax × (100-qty)/100, 4)
+            VAT sau       = 10% × Giá bán sau
+            Quỹ BT sau    = round((Giá bán sau + land_tax) × 0.5%, -3)
+            Tổng giá sau  = Giá bán sau + land_tax + VAT sau + Quỹ BT sau
+
+        Trả về số tiền giảm = list_price (tổng gốc) − Tổng giá sau.
+        """
+        self.ensure_one()
+        q = self.qty or 0.0
+        if q <= 0 or q >= 100:
+            return 0.0
+        sale = product.price_exclude_land_tax or 0.0
+        land = product.land_tax or 0.0
+        list_price = product.list_price or 0.0
+        new_sale  = round(sale * (100.0 - q) / 100.0, 4)
+        new_vat   = 0.10 * new_sale
+        new_maint = round((new_sale + land) * 0.005, -3)        # làm tròn về bội 1000 VND
+        new_total = new_sale + land + new_vat + new_maint
+        return list_price - new_total

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===== Template (header) ===== -->
+    <record id="payment_schedule_template_view_list" model="ir.ui.view">
+        <field name="name">payment.schedule.template.list</field>
+        <field name="model">payment.schedule.template</field>
+        <field name="arch" type="xml">
+            <list string="Lịch thanh toán">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="line_count" string="Số đợt"/>
+                <field name="total_percentage" string="Tổng %" widget="percentage"/>
+                <field name="product_category_ids" widget="many2many_tags" optional="show"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="payment_schedule_template_view_form" model="ir.ui.view">
+        <field name="name">payment.schedule.template.form</field>
+        <field name="model">payment.schedule.template</field>
+        <field name="arch" type="xml">
+            <form string="Lịch thanh toán">
+                <sheet>
+                    <widget name="web_ribbon" title="Đã lưu trữ" bg_color="bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Vd: Lịch thanh toán Biệt thự song lập..."/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="product_category_ids" widget="many2many_tags"
+                                   options="{'no_create': True}"
+                                   placeholder="Để trống nếu áp cho mọi danh mục"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                            <field name="line_count" readonly="1"/>
+                            <field name="total_percentage" widget="percentage" readonly="1"
+                                   decoration-success="total_percentage == 100"
+                                   decoration-warning="total_percentage != 100"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Các đợt thanh toán" name="lines">
+                            <field name="line_ids">
+                                <list string="Đợt" editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="code" optional="hide"/>
+                                    <field name="date_type"/>
+                                    <field name="offset_months"
+                                           column_invisible="parent.id == False"
+                                           invisible="date_type != 'offset'"/>
+                                    <field name="offset_days"
+                                           invisible="date_type != 'offset'"
+                                           optional="hide"/>
+                                    <field name="fixed_date"
+                                           invisible="date_type != 'fixed'"/>
+                                    <field name="amount_type"/>
+                                    <field name="percentage"
+                                           invisible="amount_type != 'percentage'"
+                                           sum="Tổng %"/>
+                                    <field name="fixed_amount"
+                                           invisible="amount_type != 'fixed'"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="vat_share" optional="show" sum="Tổng VAT %"/>
+                                    <field name="bank_share" optional="hide"/>
+                                    <field name="bank_vat_share" optional="hide"/>
+                                    <field name="is_mergeable" widget="boolean_toggle"/>
+                                    <field name="note" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="payment_schedule_template_view_search" model="ir.ui.view">
+        <field name="name">payment.schedule.template.search</field>
+        <field name="model">payment.schedule.template</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="product_category_ids"/>
+                <filter string="Đang dùng" name="active" domain="[('active','=',True)]"/>
+                <filter string="Đã lưu trữ" name="inactive" domain="[('active','=',False)]"/>
+                <separator/>
+                <filter string="Danh mục" name="group_category"
+                        context="{'group_by': 'product_category_ids'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_payment_schedule_template" model="ir.actions.act_window">
+        <field name="name">Lịch thanh toán</field>
+        <field name="res_model">payment.schedule.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="payment_schedule_template_view_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo mẫu lịch thanh toán đầu tiên
+            </p>
+            <p>
+                Cấu hình các đợt thanh toán: tên kỳ, ngày (số tháng/ngày kể từ đặt cọc
+                hoặc ngày cố định), số tiền (% giá BĐS hoặc số cố định), gắn vào
+                danh mục sản phẩm áp dụng.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu under "Cấu hình" (sequence 25 — giữa "Hướng"=15 và "Chương trình chiết khấu"=10) -->
+    <menuitem id="menu_payment_schedule_template"
+              name="Lịch thanh toán"
+              parent="menu_configuration"
+              action="action_payment_schedule_template"
+              sequence="25"/>
+
+</odoo>

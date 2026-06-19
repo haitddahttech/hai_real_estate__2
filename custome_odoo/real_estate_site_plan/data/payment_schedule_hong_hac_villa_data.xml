@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!--
+        Lịch thanh toán Hồng Hạc City — Biệt thự đơn lập
+        =================================================
+        Số liệu nguồn: căn F2.3.A.2.11 (345m² đất, 354.92m² xây dựng,
+        giá nhà 49,364,181,000 / VAT 4,829,138,000 / quỹ bảo trì 246,821,000).
+
+        Khác với mẫu mặc định:
+        - 11 đợt thường thay vì 6 (dot_4..dot_11 = 8 đợt mergeable, kéo dài đến tháng 22).
+        - Đợt 4-8 mỗi đợt 3% (5 đợt) thay vì 5%.
+        - Đợt 9-11 mỗi đợt 5% (3 đợt).
+        - Tổng đợt 4-11 = 5×3% + 3×5% = 30% giá nhà (đúng như mẫu cũ),
+          chia ra nhiều đợt nhỏ hơn cho khách dễ thanh toán.
+        - Mốc tháng: 3, 5, 7, 10, 13, 16, 19, 22 (kế thừa pattern +2/+2/+2/+3/+3/+3/+3/+3
+          từ dot_4 lệch 1 tháng so với mẫu cũ).
+
+        Bank distribution giống mẫu mặc định (KH 20% / NGÂN HÀNG 30% / 35% / KH 10%+QBT / 5%).
+    -->
+
+    <record id="payment_schedule_hong_hac_villa" model="payment.schedule.template">
+        <field name="name">Hồng Hạc City - Biệt thự đơn lập (14 đợt)</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- ===== Pha đặt cọc + ký HĐ (KH 20%) ===== -->
+    <record id="psl_hhv_dat_coc" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_hong_hac_villa"/>
+        <field name="sequence">10</field>
+        <field name="code">dat_coc</field>
+        <field name="name">Đặt cọc</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">0</field>
+        <field name="offset_days">0</field>
+        <field name="amount_type">fixed</field>
+        <field name="fixed_amount">100000000</field>
+        <field name="vat_share">0</field>
+        <field name="bank_share">20.0</field>
+        <field name="bank_vat_share">20.0</field>
+        <field name="is_mergeable" eval="False"/>
+        <field name="note">KH 20% — 100 triệu VND tiền đặt cọc (cố định)</field>
+    </record>
+
+    <record id="psl_hhv_trong_3_ngay" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_hong_hac_villa"/>
+        <field name="sequence">20</field>
+        <field name="code">trong_3_ngay</field>
+        <field name="name">Trong 3 ngày</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">0</field>
+        <field name="offset_days">3</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">5.0</field>
+        <field name="vat_share">0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="False"/>
+        <field name="note">KH 20% — 5% giá nhà trừ tiền đặt cọc</field>
+    </record>
+
+    <record id="psl_hhv_ky_hop_dong" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_hong_hac_villa"/>
+        <field name="sequence">30</field>
+        <field name="code">ky_hop_dong</field>
+        <field name="name">Ký Hợp Đồng</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">1</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">20.0</field>
+        <field name="vat_share">20.0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="False"/>
+        <field name="note">KH 20% — bù cho đủ 20% giá nhà + 20% VAT</field>
+    </record>
+
+    <!-- ===== Pha 8 đợt mergeable (dot_4 → dot_11) — NGÂN HÀNG 30% ===== -->
+    <!-- Đợt 4-8: mỗi đợt 3% / 3% VAT — 5 đợt = 15% / 15% VAT -->
+    <record id="psl_hhv_dot_4" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_hong_hac_villa"/>
+        <field name="sequence">40</field>
+        <field name="code">dot_4</field>
+        <field name="name">Đợt 4</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">3</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">3.0</field>
+        <field name="vat_share">3.0</field>
+        <field name="bank_share">30.0</field>
+        <field name="bank_vat_share">30.0</field>
+        <field name="is_mergeable" eval="True"/>
+        <field name="note">NGÂN HÀNG 30%, KHÔNG LÃI, ÂN HẠN GỐC</field>
+    </record>
+    <record id="psl_hhv_dot_5" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_hong_hac_villa"/>
+        <field name="sequence">50</field>
+        <field name="code">dot_5</field>
+        <field name="name">Đợt 5</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">5</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">3.0</field>
+        <field name="vat_share">3.0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="True"/>
+    </record>
+    <record id="psl_hhv_dot_6" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_hong_hac_villa"/>
+        <field name="sequence">60</field>
+        <field name="code">dot_6</field>
+        <field name="name">Đợt 6</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">7</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">3.0</field>
+        <field name="vat_share">3.0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="True"/>
+    </record>
+    <record id="psl_hhv_dot_7" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_hong_hac_villa"/>
+        <field name="sequence">70</field>
+        <field name="code">dot_7</field>
+        <field name="name">Đợt 7</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">10</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">3.0</field>
+        <field name="vat_share">3.0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="True"/>
+    </record>
+    <record id="psl_hhv_dot_8" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_hong_hac_villa"/>
+        <field name="sequence">80</field>
+        <field name="code">dot_8</field>
+        <field name="name">Đợt 8</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">13</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">3.0</field>
+        <field name="vat_share">3.0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="True"/>
+    </record>
+    <!-- Đợt 9-11: mỗi đợt 5% / 5% VAT — 3 đợt = 15% / 15% VAT -->
+    <record id="psl_hhv_dot_9" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_hong_hac_villa"/>
+        <field name="sequence">90</field>
+        <field name="code">dot_9</field>
+        <field name="name">Đợt 9</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">16</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">5.0</field>
+        <field name="vat_share">5.0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="True"/>
+    </record>
+    <record id="psl_hhv_dot_10" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_hong_hac_villa"/>
+        <field name="sequence">100</field>
+        <field name="code">dot_10</field>
+        <field name="name">Đợt 10</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">19</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">5.0</field>
+        <field name="vat_share">5.0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="True"/>
+    </record>
+    <record id="psl_hhv_dot_11" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_hong_hac_villa"/>
+        <field name="sequence">110</field>
+        <field name="code">dot_11</field>
+        <field name="name">Đợt 11</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">22</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">5.0</field>
+        <field name="vat_share">5.0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="True"/>
+    </record>
+
+    <!-- ===== Pha giao nhà + sau ===== -->
+    <record id="psl_hhv_giao_nha" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_hong_hac_villa"/>
+        <field name="sequence">120</field>
+        <field name="code">giao_nha</field>
+        <field name="name">Giao nhà</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">24</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">45.0</field>
+        <field name="vat_share">50.0</field>
+        <field name="bank_share">35.0</field>
+        <field name="bank_vat_share">40.0</field>
+        <field name="is_mergeable" eval="False"/>
+        <field name="note">NGÂN HÀNG 35% — 45% giá nhà + VAT còn lại 50%</field>
+    </record>
+
+    <record id="psl_hhv_quy_bao_tri" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_hong_hac_villa"/>
+        <field name="sequence">130</field>
+        <field name="code">quy_bao_tri</field>
+        <field name="name">Quỹ bảo trì</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">24</field>
+        <field name="amount_type">fixed</field>
+        <field name="fixed_amount">0</field>
+        <field name="vat_share">0</field>
+        <field name="bank_share">10.0</field>
+        <field name="bank_vat_share">10.0</field>
+        <field name="is_mergeable" eval="False"/>
+        <field name="note">KH 10% + QBT — số tiền lấy từ trường "maintenance_fee" của sản phẩm</field>
+    </record>
+
+    <record id="psl_hhv_thong_bao_so_hong" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_hong_hac_villa"/>
+        <field name="sequence">140</field>
+        <field name="code">thong_bao_so_hong</field>
+        <field name="name">Thông báo sổ hồng</field>
+        <field name="date_type">no_date</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">5.0</field>
+        <field name="vat_share">0</field>
+        <field name="bank_share">5.0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="False"/>
+        <field name="note">NGÂN HÀNG 5%</field>
+    </record>
+
+</odoo>

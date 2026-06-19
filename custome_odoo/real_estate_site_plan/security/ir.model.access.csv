@@ -21,3 +21,9 @@ access_site_plan_image_upload_user,site.plan.image.upload.user,model_site_plan_i
 access_real_estate_direction_portal,real.estate.direction.portal,model_real_estate_direction,base.group_portal,1,0,0,0
 access_real_estate_direction_user,real.estate.direction.user,model_real_estate_direction,base.group_user,1,0,0,0
 access_real_estate_direction_system,real.estate.direction.system,model_real_estate_direction,base.group_system,1,1,1,1
+access_payment_schedule_template_portal,payment.schedule.template.portal,model_payment_schedule_template,base.group_portal,1,0,0,0
+access_payment_schedule_template_user,payment.schedule.template.user,model_payment_schedule_template,base.group_user,1,0,0,0
+access_payment_schedule_template_system,payment.schedule.template.system,model_payment_schedule_template,base.group_system,1,1,1,1
+access_payment_schedule_template_line_portal,payment.schedule.template.line.portal,model_payment_schedule_template_line,base.group_portal,1,0,0,0
+access_payment_schedule_template_line_user,payment.schedule.template.line.user,model_payment_schedule_template_line,base.group_user,1,0,0,0
+access_payment_schedule_template_line_system,payment.schedule.template.line.system,model_payment_schedule_template_line,base.group_system,1,1,1,1

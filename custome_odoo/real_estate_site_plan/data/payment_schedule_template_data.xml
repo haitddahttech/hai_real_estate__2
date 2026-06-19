@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Mẫu mặc định: phản ánh logic hard-code hiện tại trong compute_payment_timeline.
+         Áp cho mọi danh mục (product_category_ids để trống). User có thể clone
+         và gắn vào danh mục cụ thể nếu cần lịch khác cho biệt thự, shophouse... -->
+    <record id="payment_schedule_default" model="payment.schedule.template">
+        <field name="name">Lịch thanh toán mặc định (12 đợt)</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- 1. Đặt cọc -->
+    <record id="psl_dat_coc" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_default"/>
+        <field name="sequence">10</field>
+        <field name="code">dat_coc</field>
+        <field name="name">Đặt cọc</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">0</field>
+        <field name="offset_days">0</field>
+        <field name="amount_type">fixed</field>
+        <field name="fixed_amount">0</field>
+        <field name="vat_share">0</field>
+        <field name="bank_share">20.0</field>
+        <field name="bank_vat_share">20.0</field>
+        <field name="is_mergeable" eval="False"/>
+        <field name="note">KH 20% — số tiền lấy từ trường "Đặt cọc" của sản phẩm</field>
+    </record>
+
+    <!-- 2. Trong 3 ngày -->
+    <record id="psl_trong_3_ngay" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_default"/>
+        <field name="sequence">20</field>
+        <field name="code">trong_3_ngay</field>
+        <field name="name">Trong 3 ngày</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">0</field>
+        <field name="offset_days">2</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">5.0</field>
+        <field name="vat_share">0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="False"/>
+        <field name="note">KH 20% — 5% giá nhà trừ tiền đặt cọc</field>
+    </record>
+
+    <!-- 3. Ký Hợp Đồng -->
+    <record id="psl_ky_hop_dong" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_default"/>
+        <field name="sequence">30</field>
+        <field name="code">ky_hop_dong</field>
+        <field name="name">Ký Hợp Đồng</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">1</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">20.0</field>
+        <field name="vat_share">20.0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="False"/>
+        <field name="note">KH 20% — bù cho đủ 20% + VAT 20%</field>
+    </record>
+
+    <!-- 4-9. Các đợt được gộp -->
+    <record id="psl_dot_4" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_default"/>
+        <field name="sequence">40</field>
+        <field name="code">dot_4</field>
+        <field name="name">Đợt 4</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">2</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">5.0</field>
+        <field name="vat_share">5.0</field>
+        <field name="bank_share">30.0</field>
+        <field name="bank_vat_share">30.0</field>
+        <field name="is_mergeable" eval="True"/>
+        <field name="note">NGÂN HÀNG 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI</field>
+    </record>
+    <record id="psl_dot_5" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_default"/>
+        <field name="sequence">50</field>
+        <field name="code">dot_5</field>
+        <field name="name">Đợt 5</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">4</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">5.0</field>
+        <field name="vat_share">5.0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="True"/>
+    </record>
+    <record id="psl_dot_6" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_default"/>
+        <field name="sequence">60</field>
+        <field name="code">dot_6</field>
+        <field name="name">Đợt 6</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">6</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">5.0</field>
+        <field name="vat_share">5.0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="True"/>
+    </record>
+    <record id="psl_dot_7" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_default"/>
+        <field name="sequence">70</field>
+        <field name="code">dot_7</field>
+        <field name="name">Đợt 7</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">9</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">5.0</field>
+        <field name="vat_share">5.0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="True"/>
+    </record>
+    <record id="psl_dot_8" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_default"/>
+        <field name="sequence">80</field>
+        <field name="code">dot_8</field>
+        <field name="name">Đợt 8</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">12</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">5.0</field>
+        <field name="vat_share">5.0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="True"/>
+    </record>
+    <record id="psl_dot_9" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_default"/>
+        <field name="sequence">90</field>
+        <field name="code">dot_9</field>
+        <field name="name">Đợt 9</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">15</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">5.0</field>
+        <field name="vat_share">5.0</field>
+        <field name="bank_share">0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="True"/>
+    </record>
+
+    <!-- 10. Giao nhà -->
+    <record id="psl_giao_nha" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_default"/>
+        <field name="sequence">100</field>
+        <field name="code">giao_nha</field>
+        <field name="name">Giao nhà</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">18</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">45.0</field>
+        <field name="vat_share">50.0</field>
+        <field name="bank_share">35.0</field>
+        <field name="bank_vat_share">40.0</field>
+        <field name="is_mergeable" eval="False"/>
+        <field name="note">NGÂN HÀNG 35%</field>
+    </record>
+
+    <!-- 11. Quỹ bảo trì -->
+    <record id="psl_quy_bao_tri" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_default"/>
+        <field name="sequence">110</field>
+        <field name="code">quy_bao_tri</field>
+        <field name="name">Quỹ bảo trì</field>
+        <field name="date_type">offset</field>
+        <field name="offset_months">18</field>
+        <field name="amount_type">fixed</field>
+        <field name="fixed_amount">0</field>
+        <field name="vat_share">0</field>
+        <field name="bank_share">10.0</field>
+        <field name="bank_vat_share">10.0</field>
+        <field name="is_mergeable" eval="False"/>
+        <field name="note">KH 10% + QBT — số tiền lấy từ trường "maintenance_fee" của sản phẩm</field>
+    </record>
+
+    <!-- 12. Thông báo sổ hồng -->
+    <record id="psl_thong_bao_so_hong" model="payment.schedule.template.line">
+        <field name="template_id" ref="payment_schedule_default"/>
+        <field name="sequence">120</field>
+        <field name="code">thong_bao_so_hong</field>
+        <field name="name">Thông báo sổ hồng</field>
+        <field name="date_type">no_date</field>
+        <field name="amount_type">percentage</field>
+        <field name="percentage">5.0</field>
+        <field name="vat_share">0</field>
+        <field name="bank_share">5.0</field>
+        <field name="bank_vat_share">0</field>
+        <field name="is_mergeable" eval="False"/>
+        <field name="note">NGÂN HÀNG 5%</field>
+    </record>
+
+</odoo>

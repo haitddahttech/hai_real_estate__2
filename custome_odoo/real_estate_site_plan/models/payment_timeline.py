@@ -37,6 +37,11 @@ class PaymentTimeline(models.Model):
         string='Kỳ thanh toán',
         required=True,
     )
+    type_name = fields.Char(
+        string='Tên kỳ thanh toán',
+        translate=True,
+        help='Tên hiển thị của kỳ thanh toán, lấy từ mẫu lịch thanh toán.',
+    )
     date = fields.Date(
         string='Ngày thanh toán',
         help='The date for this payment milestone'

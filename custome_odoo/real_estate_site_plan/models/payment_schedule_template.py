@@ -239,6 +239,7 @@ class PaymentScheduleTemplate(models.Model):
             vals_list.append((0, 0, {
                 'product_tmpl_id': product.id,
                 'type': line.code or '',
+                'type_name': line.name or '',
                 'date': line_date,
                 'name': name_str,
                 'amount': amount + acc_amount,

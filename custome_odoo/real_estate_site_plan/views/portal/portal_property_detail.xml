@@ -765,7 +765,7 @@
                                                                                 <td t-att-rowspan="grp_len" class="fw-bold align-middle">
                                                                                     <t t-foreach="grp" t-as="gl">
                                                                                         <t t-if="not gl_first"><br/></t>
-                                                                                        <t t-esc="dict(gl._fields['type'].selection).get(gl.type, gl.type)"/>
+                                                                                        <t t-esc="gl.type_name or dict(gl._fields['type'].selection).get(gl.type, gl.type)"/>
                                                                                     </t>
                                                                                 </td>
                                                                                 <td t-att-rowspan="grp_len" class="align-middle">
@@ -793,24 +793,7 @@
                                                                             <t t-else="">
                                                                                 <!-- NORMAL MODE: individual row -->
                                                                                 <td t-att-class="'fw-bold' if timeline.type in ['ky_hop_dong', 'giao_nha'] else ''">
-                                                                                    <t t-if="timeline.type == 'dat_coc'">Đặt cọc</t>
-                                                                                    <t t-elif="timeline.type == 'trong_3_ngay'">Trong 3 ngày</t>
-                                                                                    <t t-elif="timeline.type == 'ky_hop_dong'">Ký Hợp Đồng</t>
-                                                                                    <t t-elif="timeline.type == 'dot_4'">Đợt 4</t>
-                                                                                    <t t-elif="timeline.type == 'dot_5'">Đợt 5</t>
-                                                                                    <t t-elif="timeline.type == 'dot_6'">Đợt 6</t>
-                                                                                    <t t-elif="timeline.type == 'dot_7'">Đợt 7</t>
-                                                                                    <t t-elif="timeline.type == 'dot_8'">Đợt 8</t>
-                                                                                    <t t-elif="timeline.type == 'dot_9'">Đợt 9</t>
-                                                                                    <t t-elif="timeline.type == 'dot_10'">Đợt 10</t>
-                                                                                    <t t-elif="timeline.type == 'dot_11'">Đợt 11</t>
-                                                                                    <t t-elif="timeline.type == 'dot_12'">Đợt 12</t>
-                                                                                    <t t-elif="timeline.type == 'dot_13'">Đợt 13</t>
-                                                                                    <t t-elif="timeline.type == 'dot_14'">Đợt 14</t>
-                                                                                    <t t-elif="timeline.type == 'giao_nha'">Giao nhà</t>
-                                                                                    <t t-elif="timeline.type == 'quy_bao_tri'">Quỹ bảo trì</t>
-                                                                                    <t t-elif="timeline.type == 'thong_bao_so_hong'">Thông báo sổ hồng</t>
-                                                                                    <t t-else=""><t t-esc="timeline.type"/></t>
+                                                                                    <t t-esc="timeline.type_name or dict(timeline._fields['type'].selection).get(timeline.type, timeline.type)"/>
                                                                                 </td>
                                                                                 <td>
                                                                                     <t t-if="timeline.date">

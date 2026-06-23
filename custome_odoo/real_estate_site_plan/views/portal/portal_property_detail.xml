@@ -1302,7 +1302,7 @@
                                                                     <t t-esc="discount.name"/>
                                                                     <span class="text-danger ms-2">
                                                                         <t t-if="discount.discount_type == 'percent'">(-<t t-esc="discount.discount_value"/>%)</t>
-                                                                        <t t-elif="discount.discount_type == 'percent_recalc'">(-<t t-esc="'{:g}'.format(discount.qty)"/>% tính lại)</t>
+                                                                        <t t-elif="discount.discount_type == 'percent_recalc'">(-<t t-esc="'{:g}'.format(discount.qty)"/>%)</t>
                                                                         <t t-elif="discount.discount_type == 'formula'">(<t t-esc="int(discount.discount_value)"/> tháng)</t>
                                                                         <t t-else="">(-<t t-esc="'{:,.0f}'.format(discount.discount_value)"/>)</t>
                                                                     </span>

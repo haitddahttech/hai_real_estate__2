@@ -81,6 +81,9 @@
                                     <field name="bank_share" optional="hide"/>
                                     <field name="bank_vat_share" optional="hide"/>
                                     <field name="is_mergeable" widget="boolean_toggle"/>
+                                    <field name="group_merge" invisible="not is_mergeable"/>
+                                    <field name="is_merge_by_date" widget="boolean_toggle" invisible="not is_mergeable"/>
+                                    <field name="is_merge_title" widget="boolean_toggle" invisible="not is_mergeable"/>
                                     <field name="note" optional="show"/>
                                 </list>
                             </field>

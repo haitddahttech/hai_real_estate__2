@@ -76,6 +76,7 @@
         <field name="bank_share">30.0</field>
         <field name="bank_vat_share">30.0</field>
         <field name="is_mergeable" eval="True"/>
+        <field name="group_merge">1</field>
         <field name="note">NGÂN HÀNG 30% ÂN HẠN GỐC, LÃI XUẤT ƯU ĐÃI</field>
     </record>
     <record id="psl_dot_5" model="payment.schedule.template.line">
@@ -91,6 +92,7 @@
         <field name="bank_share">0</field>
         <field name="bank_vat_share">0</field>
         <field name="is_mergeable" eval="True"/>
+        <field name="group_merge">1</field>
     </record>
     <record id="psl_dot_6" model="payment.schedule.template.line">
         <field name="template_id" ref="payment_schedule_default"/>
@@ -105,6 +107,7 @@
         <field name="bank_share">0</field>
         <field name="bank_vat_share">0</field>
         <field name="is_mergeable" eval="True"/>
+        <field name="group_merge">1</field>
     </record>
     <record id="psl_dot_7" model="payment.schedule.template.line">
         <field name="template_id" ref="payment_schedule_default"/>
@@ -119,6 +122,7 @@
         <field name="bank_share">0</field>
         <field name="bank_vat_share">0</field>
         <field name="is_mergeable" eval="True"/>
+        <field name="group_merge">1</field>
     </record>
     <record id="psl_dot_8" model="payment.schedule.template.line">
         <field name="template_id" ref="payment_schedule_default"/>
@@ -133,6 +137,7 @@
         <field name="bank_share">0</field>
         <field name="bank_vat_share">0</field>
         <field name="is_mergeable" eval="True"/>
+        <field name="group_merge">1</field>
     </record>
     <record id="psl_dot_9" model="payment.schedule.template.line">
         <field name="template_id" ref="payment_schedule_default"/>
@@ -147,6 +152,7 @@
         <field name="bank_share">0</field>
         <field name="bank_vat_share">0</field>
         <field name="is_mergeable" eval="True"/>
+        <field name="group_merge">1</field>
     </record>
 
     <!-- 10. Giao nhà -->

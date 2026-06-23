@@ -378,47 +378,105 @@
                                     <t t-foreach="rows" t-as="timeline">
                                         <t t-set="current_idx" t-value="rows.ids.index(timeline.id)"/>
                                         <t t-set="is_first_in_group" t-value="False"/>
-                                        <t t-set="group_size" t-value="0"/>
+                                        <t t-set="group_size" t-value="1"/>
+                                        <t t-set="grp_mt" t-value="False"/>
                                         
-                                        <t t-if="current_idx == 0 or rows[current_idx-1].bank_note != timeline.bank_note">
-                                            <t t-set="is_first_in_group" t-value="True"/>
-                                            <!-- Group size calculation without t-break -->
-                                            <t t-set="temp_rows" t-value="rows[current_idx:]"/>
-                                            <t t-set="stop_counting" t-value="False"/>
-                                            <t t-foreach="temp_rows" t-as="next_row">
-                                                <t t-if="not stop_counting and next_row.bank_note == timeline.bank_note">
-                                                    <t t-set="group_size" t-value="group_size + 1"/>
+                                        <!-- Group detection -->
+                                        <t t-if="timeline.bank_group">
+                                            <t t-if="current_idx == 0 or rows[current_idx-1].bank_group != timeline.bank_group">
+                                                <t t-set="is_first_in_group" t-value="True"/>
+                                                <t t-set="group_size" t-value="0"/>
+                                                <t t-set="temp_rows" t-value="rows[current_idx:]"/>
+                                                <t t-set="stop_counting" t-value="False"/>
+                                                <t t-foreach="temp_rows" t-as="next_row">
+                                                    <t t-if="not stop_counting and next_row.bank_group == timeline.bank_group">
+                                                        <t t-set="group_size" t-value="group_size + 1"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <t t-set="stop_counting" t-value="True"/>
+                                                    </t>
                                                 </t>
-                                                <t t-else="">
-                                                    <t t-set="stop_counting" t-value="True"/>
-                                                </t>
+                                                <t t-set="grp_mt" t-value="timeline.is_merge_title"/>
                                             </t>
                                         </t>
+                                        <t t-else="">
+                                            <t t-set="is_first_in_group" t-value="True"/>
+                                            <t t-set="group_size" t-value="1"/>
+                                        </t>
 
+                                        <!-- Skip subsequent rows ONLY when is_merge_title=True -->
+                                        <t t-set="is_sub" t-value="timeline.bank_group and not is_first_in_group"/>
+                                        <t t-if="not (is_sub and grp_mt)">
                                         <tr>
-                                            <td style="border-bottom: 1px solid #F9ECC7 !important;">
-                                                <span style="font-weight: 600;">
-                                                    <span t-field="timeline.type"/>
-                                                </span>
-                                            </td>
-                                            <td style="color: #666; border-bottom: 1px solid #F9ECC7 !important;"><t t-if="timeline.date" t-esc="timeline.date.strftime('%d/%m/%Y')"/><t t-else="">---</t></td>
-                                            <td style="color: #888; border-bottom: 1px solid #F9ECC7 !important;"><t t-esc="timeline.name"/></td>
-                                            <td class="text-right" style="color: #555; border-bottom: 1px solid #F9ECC7 !important;"><t t-esc="'{:,.0f}'.format(timeline.amount)"/></td>
-                                            <td class="text-right" style="color: #999; border-bottom: 1px solid #F9ECC7 !important;"><t t-if="timeline.vat_amount > 0" t-esc="'{:,.0f}'.format(timeline.vat_amount)"/><t t-else="">-</t></td>
-                                            <td class="text-right" style="font-weight: 600; border-bottom: 1px solid #F9ECC7 !important;"><t t-esc="'{:,.0f}'.format(timeline.total_amount)"/></td>
+                                            <!-- LEFT COLUMNS -->
+                                            <t t-if="is_first_in_group and grp_mt">
+                                                <!-- MERGED TITLE MODE -->
+                                                <t t-set="grp_rows" t-value="rows[current_idx:current_idx+group_size]"/>
+                                                <td t-att-rowspan="group_size" style="border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
+                                                    <span style="font-weight: 600;">
+                                                        <t t-foreach="grp_rows" t-as="gr">
+                                                            <t t-if="not gr_first"><br/></t>
+                                                            <span t-field="gr.type"/>
+                                                        </t>
+                                                    </span>
+                                                </td>
+                                                <td t-att-rowspan="group_size" style="color: #666; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
+                                                    <t t-if="grp_rows[0].date" t-esc="grp_rows[0].date.strftime('%d/%m/%Y')"/>
+                                                    <t t-if="len(grp_rows) &gt; 1 and grp_rows[-1].date">~<br/><t t-esc="grp_rows[-1].date.strftime('%d/%m/%Y')"/></t>
+                                                </td>
+                                                <td t-att-rowspan="group_size" style="color: #888; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
+                                                    <t t-esc="grp_rows[0].name"/>
+                                                </td>
+                                                <td t-att-rowspan="group_size" class="text-right" style="color: #555; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
+                                                    <t t-esc="'{:,.0f}'.format(sum(grp_rows.mapped('amount')))"/>
+                                                </td>
+                                                <td t-att-rowspan="group_size" class="text-right" style="color: #999; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
+                                                    <t t-set="sv" t-value="sum(grp_rows.mapped('vat_amount'))"/>
+                                                    <t t-if="sv > 0" t-esc="'{:,.0f}'.format(sv)"/><t t-else="">-</t>
+                                                </td>
+                                                <td t-att-rowspan="group_size" class="text-right" style="font-weight: 600; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
+                                                    <t t-esc="'{:,.0f}'.format(sum(grp_rows.mapped('total_amount')))"/>
+                                                </td>
+                                            </t>
+                                            <t t-else="">
+                                                <!-- NORMAL MODE -->
+                                                <td style="border-bottom: 1px solid #F9ECC7 !important;">
+                                                    <span style="font-weight: 600;">
+                                                        <span t-field="timeline.type"/>
+                                                    </span>
+                                                </td>
+                                                <td style="color: #666; border-bottom: 1px solid #F9ECC7 !important;"><t t-if="timeline.date" t-esc="timeline.date.strftime('%d/%m/%Y')"/><t t-else="">---</t></td>
+                                                <td style="color: #888; border-bottom: 1px solid #F9ECC7 !important;"><t t-esc="timeline.name"/></td>
+                                                <td class="text-right" style="color: #555; border-bottom: 1px solid #F9ECC7 !important;"><t t-esc="'{:,.0f}'.format(timeline.amount)"/></td>
+                                                <td class="text-right" style="color: #999; border-bottom: 1px solid #F9ECC7 !important;"><t t-if="timeline.vat_amount > 0" t-esc="'{:,.0f}'.format(timeline.vat_amount)"/><t t-else="">-</t></td>
+                                                <td class="text-right" style="font-weight: 600; border-bottom: 1px solid #F9ECC7 !important;"><t t-esc="'{:,.0f}'.format(timeline.total_amount)"/></td>
+                                            </t>
                                             
-                                            <!-- Grouped Bank Data -->
-                                            <t t-if="is_first_in_group">
+                                            <!-- BANK COLUMN — always merge when grouped -->
+                                            <t t-if="is_first_in_group and timeline.bank_group">
                                                 <td t-att-rowspan="group_size" style="vertical-align: middle; border-bottom: 1px solid #F9ECC7 !important;">
                                                     <t t-set="sum_bank" t-value="sum(rows[current_idx:current_idx+group_size].mapped('bank_amount'))"/>
                                                     <t t-if="sum_bank > 0">
                                                         <span class="bank-amount"><t t-esc="'{:,.0f}'.format(sum_bank)"/></span>
+                                                        <t t-set="group_note" t-value="', '.join([n for n in rows[current_idx:current_idx+group_size].mapped('bank_note') if n][:1])"/>
+                                                        <span class="bank-note"><t t-esc="group_note"/></span>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                            </t>
+                                            <t t-elif="not is_sub">
+                                                <!-- Standalone bank cell -->
+                                                <td style="vertical-align: middle; border-bottom: 1px solid #F9ECC7 !important;">
+                                                    <t t-if="timeline.bank_amount and timeline.bank_amount > 0">
+                                                        <span class="bank-amount"><t t-esc="'{:,.0f}'.format(timeline.bank_amount)"/></span>
                                                         <span class="bank-note"><t t-esc="timeline.bank_note"/></span>
                                                     </t>
                                                     <t t-else="">-</t>
                                                 </td>
                                             </t>
+                                            <!-- is_sub rows: bank cell covered by rowspan -->
                                         </tr>
+                                        </t>
                                     </t>
                                 </tbody>
                             </table>

@@ -209,8 +209,8 @@ class PaymentScheduleTemplate(models.Model):
             if line.code == 'quy_bao_tri':
                 bank_amount += product.maintenance_fee or 0.0
 
-            # ---- MERGE ----
-            if line.is_mergeable and line_date:
+            # ---- MERGE (gộp dữ liệu theo ngày) ----
+            if line.is_mergeable and line.is_merge_by_date and line_date:
                 days_gap = (line_date - today_marker).days
                 if line_date < today_marker or (nearby_day > 0 and days_gap < nearby_day):
                     acc_amount += amount
@@ -227,6 +227,8 @@ class PaymentScheduleTemplate(models.Model):
                 name_str = "Đủ %g%% +VAT" % (line.percentage or 0)
             elif line.code == 'giao_nha':
                 name_str = "%g%% +VAT còn lại" % (line.percentage or 0)
+            elif line.code == 'quy_bao_tri':
+                name_str = "%g%%" % (line.percentage or 0.5)
             elif line.is_mergeable:
                 # Đợt mergeable: hiển thị cumulative % (gồm tích lũy nếu vừa drain merge)
                 name_str = "%.2f%% +VAT tương ứng" % (acc_share + line_share)
@@ -243,6 +245,8 @@ class PaymentScheduleTemplate(models.Model):
                 'vat_amount': vat_amount + acc_vat,
                 'bank_amount': bank_amount + acc_bank,
                 'bank_note': line.note or '',
+                'bank_group': line.group_merge or '' if line.is_mergeable else '',
+                'is_merge_title': line.is_merge_title if line.is_mergeable else False,
             }))
             acc_amount = acc_vat = acc_bank = 0.0
             acc_share = 0.0
@@ -346,6 +350,31 @@ class PaymentScheduleTemplateLine(models.Model):
         default=True,
         help='Khi đến lúc sinh lịch, nếu đợt này đã quá hạn hoặc gần ngày ký HĐ '
              '(theo cấu hình "nearby_day" của công ty) thì gộp tiền vào đợt kế tiếp.',
+    )
+    group_merge = fields.Selection(
+        selection=[
+            ('1', 'Nhóm 1'),
+            ('2', 'Nhóm 2'),
+            ('3', 'Nhóm 3'),
+            ('4', 'Nhóm 4'),
+            ('5', 'Nhóm 5'),
+        ],
+        string='Nhóm gộp NH',
+        help='Các đợt cùng nhóm sẽ được gộp cột "Hỗ trợ ngân hàng" trên bảng lịch thanh toán. '
+             'Chỉ áp dụng khi "Cho phép gộp đợt" được bật.',
+    )
+    is_merge_by_date = fields.Boolean(
+        string='Gộp theo ngày TT',
+        default=True,
+        help='Khi bật, nếu ngày thanh toán đã quá hạn hoặc gần ngày ký HĐ '
+             '(theo cấu hình "nearby_day") thì gộp tiền vào đợt kế tiếp.\n'
+             'Tắt để giữ nguyên từng dòng (chỉ gộp cột ngân hàng nếu cùng nhóm).',
+    )
+    is_merge_title = fields.Boolean(
+        string='Gộp tiêu đề',
+        default=False,
+        help='Mặc định chỉ gộp 2 cột con của "Hỗ trợ ngân hàng". '
+             'Bật để gộp toàn bộ dòng thành 1 hàng.',
     )
     note = fields.Char(
         string='Ghi chú',

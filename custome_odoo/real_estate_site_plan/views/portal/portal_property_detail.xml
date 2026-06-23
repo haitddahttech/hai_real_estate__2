@@ -738,71 +738,139 @@
                                                                     </t>
                                                                 </thead>
                                                                 <tbody>
-                                                                    <t t-set="processed_notes" t-value="[]"/>
+                                                                    <t t-set="processed_groups" t-value="[]"/>
                                                                     <t t-foreach="product.payment_timeline_ids" t-as="timeline">
+                                                                        <!-- Pre-compute group info once per group -->
+                                                                        <t t-set="has_group" t-value="bool(timeline.bank_group)"/>
+                                                                        <t t-set="is_first" t-value="has_group and timeline.bank_group not in processed_groups"/>
+                                                                        <t t-set="is_later" t-value="has_group and timeline.bank_group in processed_groups"/>
+
+                                                                        <t t-if="is_first">
+                                                                            <t t-set="grp" t-value="product.payment_timeline_ids.filtered(lambda l: l.bank_group == timeline.bank_group)"/>
+                                                                            <t t-set="dummy" t-value="processed_groups.append(timeline.bank_group)"/>
+                                                                            <t t-set="grp_len" t-value="len(grp)"/>
+                                                                            <t t-set="grp_mt" t-value="grp[0].is_merge_title"/>
+                                                                        </t>
+
+                                                                        <!-- 
+                                                                            SKIP subsequent rows ONLY when is_merge_title=True 
+                                                                            (all columns absorbed by rowspan)
+                                                                        -->
+                                                                        <t t-if="not (is_later and grp_mt)">
                                                                         <tr t-att-class="'bg-light' if timeline.type in ['ky_hop_dong', 'giao_nha'] else ''">
-                                                                            <td t-att-class="'fw-bold' if timeline.type in ['ky_hop_dong', 'giao_nha'] else ''">
-                                                                                <t t-if="timeline.type == 'dat_coc'">Đặt cọc</t>
-                                                                                <t t-elif="timeline.type == 'trong_3_ngay'">Trong 3 ngày</t>
-                                                                                <t t-elif="timeline.type == 'ky_hop_dong'">Ký Hợp Đồng</t>
-                                                                                <t t-elif="timeline.type == 'dot_4'">Đợt 4</t>
-                                                                                <t t-elif="timeline.type == 'dot_5'">Đợt 5</t>
-                                                                                <t t-elif="timeline.type == 'dot_6'">Đợt 6</t>
-                                                                                <t t-elif="timeline.type == 'dot_7'">Đợt 7</t>
-                                                                                <t t-elif="timeline.type == 'dot_8'">Đợt 8</t>
-                                                                                <t t-elif="timeline.type == 'dot_9'">Đợt 9</t>
-                                                                                <t t-elif="timeline.type == 'dot_10'">Đợt 10</t>
-                                                                                <t t-elif="timeline.type == 'dot_11'">Đợt 11</t>
-                                                                                <t t-elif="timeline.type == 'dot_12'">Đợt 12</t>
-                                                                                <t t-elif="timeline.type == 'giao_nha'">Giao nhà</t>
-                                                                                <t t-elif="timeline.type == 'quy_bao_tri'">Quỹ bảo trì</t>
-                                                                                <t t-elif="timeline.type == 'thong_bao_so_hong'">Thông báo sổ hồng</t>
-                                                                                <t t-else=""><t t-esc="timeline.type"/></t>
-                                                                            </td>
-                                                                            <td>
-                                                                                <t t-if="timeline.date">
-                                                                                    <t t-esc="timeline.date.strftime('%d/%m/%Y')"/>
-                                                                                </t>
-                                                                            </td>
-                                                                            <td t-att-class="'fw-bold' if timeline.type in ['ky_hop_dong'] else ''">
-                                                                                <t t-esc="timeline.name"/>
-                                                                            </td>
-                                                                            <td class="text-end">
-                                                                                <t t-if="timeline.amount and timeline.amount > 0">
-                                                                                    <t t-esc="'{:,.0f}'.format(timeline.amount)"/>
-                                                                                </t>
-                                                                            </td>
-                                                                            <td class="text-end">
-                                                                                <t t-if="timeline.vat_amount and timeline.vat_amount > 0">
-                                                                                    <t t-esc="'{:,.0f}'.format(timeline.vat_amount)"/>
-                                                                                </t>
-                                                                            </td>
-                                                                            <td class="text-end fw-bold">
-                                                                                <t t-if="timeline.total_amount and timeline.total_amount > 0">
-                                                                                    <t t-esc="'{:,.0f}'.format(timeline.total_amount)"/>
-                                                                                </t>
-                                                                            </td>
-                                                                            
-                                                                            <!-- Bank Support Column with Rowspan -->
+
+                                                                            <!-- === LEFT COLUMNS (6 cols) === -->
+                                                                            <t t-if="is_first and grp_mt">
+                                                                                <!-- MERGE TITLE MODE: all 6 left columns get rowspan -->
+                                                                                <td t-att-rowspan="grp_len" class="fw-bold align-middle">
+                                                                                    <t t-foreach="grp" t-as="gl">
+                                                                                        <t t-if="not gl_first"><br/></t>
+                                                                                        <t t-esc="dict(gl._fields['type'].selection).get(gl.type, gl.type)"/>
+                                                                                    </t>
+                                                                                </td>
+                                                                                <td t-att-rowspan="grp_len" class="align-middle">
+                                                                                    <t t-if="grp[0].date" t-esc="grp[0].date.strftime('%d/%m/%Y')"/>
+                                                                                    <t t-if="len(grp) &gt; 1 and grp[-1].date">
+                                                                                        ~<br/><t t-esc="grp[-1].date.strftime('%d/%m/%Y')"/>
+                                                                                    </t>
+                                                                                </td>
+                                                                                <td t-att-rowspan="grp_len" class="align-middle">
+                                                                                    <t t-esc="grp[0].name"/>
+                                                                                </td>
+                                                                                <td t-att-rowspan="grp_len" class="text-end align-middle">
+                                                                                    <t t-set="s_amt" t-value="sum(grp.mapped('amount'))"/>
+                                                                                    <t t-if="s_amt &gt; 0" t-esc="'{:,.0f}'.format(s_amt)"/>
+                                                                                </td>
+                                                                                <td t-att-rowspan="grp_len" class="text-end align-middle">
+                                                                                    <t t-set="s_vat" t-value="sum(grp.mapped('vat_amount'))"/>
+                                                                                    <t t-if="s_vat &gt; 0" t-esc="'{:,.0f}'.format(s_vat)"/>
+                                                                                </td>
+                                                                                <td t-att-rowspan="grp_len" class="text-end fw-bold align-middle">
+                                                                                    <t t-set="s_tot" t-value="sum(grp.mapped('total_amount'))"/>
+                                                                                    <t t-if="s_tot &gt; 0" t-esc="'{:,.0f}'.format(s_tot)"/>
+                                                                                </td>
+                                                                            </t>
+                                                                            <t t-else="">
+                                                                                <!-- NORMAL MODE: individual row -->
+                                                                                <td t-att-class="'fw-bold' if timeline.type in ['ky_hop_dong', 'giao_nha'] else ''">
+                                                                                    <t t-if="timeline.type == 'dat_coc'">Đặt cọc</t>
+                                                                                    <t t-elif="timeline.type == 'trong_3_ngay'">Trong 3 ngày</t>
+                                                                                    <t t-elif="timeline.type == 'ky_hop_dong'">Ký Hợp Đồng</t>
+                                                                                    <t t-elif="timeline.type == 'dot_4'">Đợt 4</t>
+                                                                                    <t t-elif="timeline.type == 'dot_5'">Đợt 5</t>
+                                                                                    <t t-elif="timeline.type == 'dot_6'">Đợt 6</t>
+                                                                                    <t t-elif="timeline.type == 'dot_7'">Đợt 7</t>
+                                                                                    <t t-elif="timeline.type == 'dot_8'">Đợt 8</t>
+                                                                                    <t t-elif="timeline.type == 'dot_9'">Đợt 9</t>
+                                                                                    <t t-elif="timeline.type == 'dot_10'">Đợt 10</t>
+                                                                                    <t t-elif="timeline.type == 'dot_11'">Đợt 11</t>
+                                                                                    <t t-elif="timeline.type == 'dot_12'">Đợt 12</t>
+                                                                                    <t t-elif="timeline.type == 'dot_13'">Đợt 13</t>
+                                                                                    <t t-elif="timeline.type == 'dot_14'">Đợt 14</t>
+                                                                                    <t t-elif="timeline.type == 'giao_nha'">Giao nhà</t>
+                                                                                    <t t-elif="timeline.type == 'quy_bao_tri'">Quỹ bảo trì</t>
+                                                                                    <t t-elif="timeline.type == 'thong_bao_so_hong'">Thông báo sổ hồng</t>
+                                                                                    <t t-else=""><t t-esc="timeline.type"/></t>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <t t-if="timeline.date">
+                                                                                        <t t-esc="timeline.date.strftime('%d/%m/%Y')"/>
+                                                                                    </t>
+                                                                                </td>
+                                                                                <td t-att-class="'fw-bold' if timeline.type in ['ky_hop_dong'] else ''">
+                                                                                    <t t-esc="timeline.name"/>
+                                                                                </td>
+                                                                                <td class="text-end">
+                                                                                    <t t-if="timeline.amount and timeline.amount &gt; 0">
+                                                                                        <t t-esc="'{:,.0f}'.format(timeline.amount)"/>
+                                                                                    </t>
+                                                                                </td>
+                                                                                <td class="text-end">
+                                                                                    <t t-if="timeline.vat_amount and timeline.vat_amount &gt; 0">
+                                                                                        <t t-esc="'{:,.0f}'.format(timeline.vat_amount)"/>
+                                                                                    </t>
+                                                                                </td>
+                                                                                <td class="text-end fw-bold">
+                                                                                    <t t-if="timeline.total_amount and timeline.total_amount &gt; 0">
+                                                                                        <t t-esc="'{:,.0f}'.format(timeline.total_amount)"/>
+                                                                                    </t>
+                                                                                </td>
+                                                                            </t>
+
+                                                                            <!-- === BANK COLUMNS (2 cols) — always merge when grouped === -->
                                                                             <t t-if="is_vn">
-                                                                                <t t-if="timeline.bank_note not in processed_notes">
-                                                                                    <t t-set="group_lines" t-value="product.payment_timeline_ids.filtered(lambda l: l.bank_note == timeline.bank_note)"/>
-                                                                                    <t t-set="dummy" t-value="processed_notes.append(timeline.bank_note)"/>
-                                                                                    
-                                                                                    <td t-att-rowspan="len(group_lines)" 
+                                                                                <t t-if="is_first">
+                                                                                    <!-- First in group: bank cells with rowspan -->
+                                                                                    <td t-att-rowspan="grp_len"
                                                                                         t-att-class="'bg-cyan-bank' if timeline.type in ['dat_coc', 'quy_bao_tri'] else ''"
                                                                                         class="text-end fw-bold align-middle">
-                                                                                        <t t-set="note_total" t-value="sum(group_lines.mapped('bank_amount'))"/>
-                                                                                        <t t-if="note_total &gt; 0">
-                                                                                            <t t-esc="'{:,.0f}'.format(note_total)"/>
+                                                                                        <t t-set="bank_total" t-value="sum(grp.mapped('bank_amount'))"/>
+                                                                                        <t t-if="bank_total &gt; 0">
+                                                                                            <t t-esc="'{:,.0f}'.format(bank_total)"/>
                                                                                         </t>
                                                                                     </td>
-                                                                                    <td t-att-rowspan="len(group_lines)" class="align-middle fw-semibold text-danger">
+                                                                                    <td t-att-rowspan="grp_len" class="align-middle fw-semibold text-danger">
+                                                                                        <t t-set="bank_note_val" t-value="', '.join([n for n in grp.mapped('bank_note') if n][:1])"/>
+                                                                                        <t t-esc="bank_note_val"/>
+                                                                                    </td>
+                                                                                </t>
+                                                                                <t t-elif="not has_group">
+                                                                                    <!-- No group: standalone bank cells -->
+                                                                                    <td t-att-class="'bg-cyan-bank' if timeline.type in ['dat_coc', 'quy_bao_tri'] else ''"
+                                                                                        class="text-end fw-bold align-middle">
+                                                                                        <t t-if="timeline.bank_amount and timeline.bank_amount &gt; 0">
+                                                                                            <t t-esc="'{:,.0f}'.format(timeline.bank_amount)"/>
+                                                                                        </t>
+                                                                                    </td>
+                                                                                    <td class="align-middle fw-semibold text-danger">
                                                                                         <t t-esc="timeline.bank_note"/>
                                                                                     </td>
                                                                                 </t>
+                                                                                <!-- is_later rows: bank cells covered by rowspan, no output -->
                                                                             </t>
+
                                                                         </tr>
+                                                                        </t>
                                                                     </t>
                                                                 </tbody>
                                                                 <t t-set="total_house" t-value="sum(product.payment_timeline_ids.mapped('amount'))"/>

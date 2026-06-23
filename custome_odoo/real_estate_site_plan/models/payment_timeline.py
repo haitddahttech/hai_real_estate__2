@@ -75,6 +75,14 @@ class PaymentTimeline(models.Model):
     bank_note = fields.Char(
         string='Ghi chú ngân hàng',
     )
+    bank_group = fields.Char(
+        string='Nhóm ngân hàng',
+        help='Dùng để gộp rowspan cột "Hỗ trợ ngân hàng" trên bảng lịch thanh toán.',
+    )
+    is_merge_title = fields.Boolean(
+        string='Gộp tiêu đề',
+        default=False,
+    )
 
     @api.depends('amount', 'vat_amount')
     @api.onchange('amount', 'vat_amount')

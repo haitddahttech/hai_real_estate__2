@@ -416,7 +416,7 @@
                                                     <span style="font-weight: 600;">
                                                         <t t-foreach="grp_rows" t-as="gr">
                                                             <t t-if="not gr_first"><br/></t>
-                                                            <span t-field="gr.type"/>
+                                                            <t t-esc="gr.type_name or dict(gr._fields['type'].selection).get(gr.type, gr.type)"/>
                                                         </t>
                                                     </span>
                                                 </td>
@@ -442,7 +442,7 @@
                                                 <!-- NORMAL MODE -->
                                                 <td style="border-bottom: 1px solid #F9ECC7 !important;">
                                                     <span style="font-weight: 600;">
-                                                        <span t-field="timeline.type"/>
+                                                        <t t-esc="timeline.type_name or dict(timeline._fields['type'].selection).get(timeline.type, timeline.type)"/>
                                                     </span>
                                                 </td>
                                                 <td style="color: #666; border-bottom: 1px solid #F9ECC7 !important;"><t t-if="timeline.date" t-esc="timeline.date.strftime('%d/%m/%Y')"/><t t-else="">---</t></td>

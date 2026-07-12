@@ -55,6 +55,7 @@
             touchMoved: false,
             touchStartedOnPolygonIndex: -1,
             touchStartedOnPolygonIndex: -1,
+            cartFilter: 'all',
             polygonsVisible: true,
             forceAllGray: false,
             interactiveGrayMode: false,
@@ -140,6 +141,15 @@
                 toggleZoomLockBtn.addEventListener('click', toggleZoomLock);
                 updateZoomLockButtonUI();
             }
+
+            const cartFilterAllBtn = document.getElementById('cartFilterAll');
+            const cartFilterInhouseBtn = document.getElementById('cartFilterInhouse');
+            const cartFilterAgencyBtn = document.getElementById('cartFilterAgency');
+
+            if (cartFilterAllBtn) cartFilterAllBtn.addEventListener('click', () => setCartFilter('all'));
+            if (cartFilterInhouseBtn) cartFilterInhouseBtn.addEventListener('click', () => setCartFilter('inhouse'));
+            if (cartFilterAgencyBtn) cartFilterAgencyBtn.addEventListener('click', () => setCartFilter('agency'));
+            updateCartFilterUI();
 
             // Download screenshot button
             const downloadBtn = document.getElementById('downloadScreenshot');
@@ -359,13 +369,7 @@
                     // Skip if selected (will be drawn later)
                     if (state.selectedPolygons.includes(index)) return;
 
-                    let isEffectivelySold;
-                    if (state.forceAllGray) {
-                        isEffectivelySold = !state.manuallyUngrayIndices.includes(index);
-                    } else {
-                        isEffectivelySold = state.manuallyGrayIndices.includes(index);
-                    }
-                    drawPolygonScaled(polygon, false, isEffectivelySold);
+                    drawPolygonScaled(polygon, false, isPolygonGrayByState(index, polygon));
                 });
             }
 
@@ -374,13 +378,7 @@
                 const polygon = state.polygons[index];
                 if (!polygon) return;
 
-                let isEffectivelySold;
-                if (state.forceAllGray) {
-                    isEffectivelySold = !state.manuallyUngrayIndices.includes(index);
-                } else {
-                    isEffectivelySold = state.manuallyGrayIndices.includes(index);
-                }
-                drawPolygonScaled(polygon, true, isEffectivelySold);
+                drawPolygonScaled(polygon, true, isPolygonGrayByState(index, polygon));
             });
 
             ctx.restore();
@@ -456,6 +454,33 @@
 
             ctx.setLineDash([]);
             ctx.stroke();
+        }
+
+        function matchesCartFilter(polygon) {
+            if (!polygon || !polygon.product) {
+                return true;
+            }
+
+            if (state.cartFilter === 'inhouse') {
+                return Boolean(polygon.product.is_inhouse_cart);
+            }
+
+            if (state.cartFilter === 'agency') {
+                return Boolean(polygon.product.is_agency_cart);
+            }
+
+            return true;
+        }
+
+        function isPolygonGrayByState(index, polygon) {
+            let isEffectivelySold;
+            if (state.forceAllGray) {
+                isEffectivelySold = !state.manuallyUngrayIndices.includes(index);
+            } else {
+                isEffectivelySold = state.manuallyGrayIndices.includes(index);
+            }
+
+            return isEffectivelySold || !matchesCartFilter(polygon);
         }
 
         function drawArrows() {
@@ -1747,6 +1772,31 @@
             updateZoomLockButtonUI();
         }
 
+        function setCartFilter(filter) {
+            state.cartFilter = filter;
+            updateCartFilterUI();
+            draw();
+        }
+
+        function updateCartFilterUI() {
+            const filterButtons = [
+                { id: 'cartFilterAll', value: 'all' },
+                { id: 'cartFilterInhouse', value: 'inhouse' },
+                { id: 'cartFilterAgency', value: 'agency' },
+            ];
+
+            filterButtons.forEach(({ id, value }) => {
+                const btn = document.getElementById(id);
+                if (!btn) return;
+
+                const isActive = state.cartFilter === value;
+                btn.classList.toggle('active-tool-btn', isActive);
+                btn.style.background = isActive ? '#2d3748' : 'white';
+                btn.style.color = isActive ? 'white' : '#495057';
+                btn.style.borderColor = isActive ? '#2d3748' : '#dee2e6';
+            });
+        }
+
         function updateZoomLockButtonUI() {
             const btn = document.getElementById('toggleZoomLock');
             const zoomInBtn = document.getElementById('zoomIn');
@@ -1881,26 +1931,14 @@
             if (state.polygonsVisible) {
                 state.polygons.forEach((polygon, index) => {
                     if (state.selectedPolygons.includes(index)) return;
-                    let isEffectivelySold;
-                    if (state.forceAllGray) {
-                        isEffectivelySold = !state.manuallyUngrayIndices.includes(index);
-                    } else {
-                        isEffectivelySold = state.manuallyGrayIndices.includes(index);
-                    }
-                    drawPolygonOnOff(polygon, false, isEffectivelySold);
+                    drawPolygonOnOff(polygon, false, isPolygonGrayByState(index, polygon));
                 });
             }
 
             state.selectedPolygons.forEach(index => {
                 const polygon = state.polygons[index];
                 if (!polygon) return;
-                let isEffectivelySold;
-                if (state.forceAllGray) {
-                    isEffectivelySold = !state.manuallyUngrayIndices.includes(index);
-                } else {
-                    isEffectivelySold = state.manuallyGrayIndices.includes(index);
-                }
-                drawPolygonOnOff(polygon, true, isEffectivelySold);
+                drawPolygonOnOff(polygon, true, isPolygonGrayByState(index, polygon));
             });
 
             // Capture and composite popups

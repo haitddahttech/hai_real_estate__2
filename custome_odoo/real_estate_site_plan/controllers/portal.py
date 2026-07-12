@@ -142,6 +142,8 @@ class SitePlanPortal(CustomerPortal):
                         'price_per_m2': float(product.price_per_m2) if product.price_per_m2 else 0.0,
                         'vat_tax': float(product.vat_tax) if hasattr(product, 'vat_tax') and product.vat_tax else 0.0,
                         'is_sold': bool(product.is_sold),
+                        'is_inhouse_cart': bool(product.is_inhouse_cart),
+                        'is_agency_cart': bool(product.is_agency_cart),
                         'is_decoration': bool(product.is_decoration),
                         'decoration_note': product.decoration_note or '',
                         'buyer_name': product.buyer_id.name if product.buyer_id else '',
@@ -425,4 +427,3 @@ class SitePlanPortal(CustomerPortal):
             response.set_cookie('frontend_lang', lang, max_age=365*24*60*60, httponly=False, samesite='Lax')
             return response
         return request.redirect(request.httprequest.referrer or '/')
-

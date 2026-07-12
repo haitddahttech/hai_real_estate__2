@@ -27,6 +27,18 @@
                             <field name="is_decoration" widget="boolean_toggle"/>
                         </span>
                     </span>
+                    <span name="is_inhouse_cart_option" class="d-inline-flex ms-3">
+                        <span class="d-inline-block">
+                            <label for="is_inhouse_cart">Giỏ hàng Inhouse</label>
+                            <field name="is_inhouse_cart" widget="boolean_toggle"/>
+                        </span>
+                    </span>
+                    <span name="is_agency_cart_option" class="d-inline-flex ms-3">
+                        <span class="d-inline-block">
+                            <label for="is_agency_cart">Giỏ hàng Đại lý</label>
+                            <field name="is_agency_cart" widget="boolean_toggle"/>
+                        </span>
+                    </span>
                 </div>
             </xpath>
             <xpath expr="//group[@name='group_general']" position="inside">

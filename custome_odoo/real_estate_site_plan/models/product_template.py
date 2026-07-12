@@ -35,6 +35,22 @@ class ProductTemplate(models.Model):
              'để có thể gán cho nhiều polygon và hiển thị thông tin rút gọn.'
     )
 
+    is_inhouse_cart = fields.Boolean(
+        string='Thuộc giỏ hàng Inhouse',
+        related='product_variant_id.is_inhouse_cart',
+        readonly=False,
+        store=True,
+        help='Đánh dấu sản phẩm này thuộc giỏ hàng Inhouse trên portal.'
+    )
+
+    is_agency_cart = fields.Boolean(
+        string='Thuộc giỏ hàng Đại lý',
+        related='product_variant_id.is_agency_cart',
+        readonly=False,
+        store=True,
+        help='Đánh dấu sản phẩm này thuộc giỏ hàng Đại lý trên portal.'
+    )
+
     decoration_note = fields.Text(
         string='Mô tả về vật trang trí',
         translate=True,
@@ -228,6 +244,18 @@ class ProductTemplate(models.Model):
     def _compute_is_real_estate(self):
         for product in self:
             product.is_real_estate = bool(product.site_plan_polygon_ids)
+
+    @api.onchange('is_inhouse_cart')
+    def _onchange_is_inhouse_cart(self):
+        for product in self:
+            if product.is_inhouse_cart:
+                product.is_agency_cart = False
+
+    @api.onchange('is_agency_cart')
+    def _onchange_is_agency_cart(self):
+        for product in self:
+            if product.is_agency_cart:
+                product.is_inhouse_cart = False
     
     @api.depends('list_price', 'selected_discount_ids', 'selected_discount_ids.discount_type',
                  'selected_discount_ids.discount_value', 'selected_discount_ids.formula_type',

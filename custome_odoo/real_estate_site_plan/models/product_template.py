@@ -37,18 +37,12 @@ class ProductTemplate(models.Model):
 
     is_inhouse_cart = fields.Boolean(
         string='Thuộc giỏ hàng Inhouse',
-        related='product_variant_id.is_inhouse_cart',
-        readonly=False,
-        store=True,
-        help='Đánh dấu sản phẩm này thuộc giỏ hàng Inhouse trên portal.'
+        help='Đánh dấu biến thể này thuộc giỏ hàng Inhouse trên portal.'
     )
 
     is_agency_cart = fields.Boolean(
         string='Thuộc giỏ hàng Đại lý',
-        related='product_variant_id.is_agency_cart',
-        readonly=False,
-        store=True,
-        help='Đánh dấu sản phẩm này thuộc giỏ hàng Đại lý trên portal.'
+        help='Đánh dấu biến thể này thuộc giỏ hàng Đại lý trên portal.'
     )
 
     decoration_note = fields.Text(

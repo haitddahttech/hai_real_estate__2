@@ -9,12 +9,18 @@ class ProductProduct(models.Model):
 
     is_inhouse_cart = fields.Boolean(
         string='Thuộc giỏ hàng Inhouse',
-        help='Đánh dấu biến thể này thuộc giỏ hàng Inhouse trên portal.'
+        related='product_tmpl_id.is_inhouse_cart',
+        readonly=False,
+        store=True,
+        help='Đánh dấu sản phẩm này thuộc giỏ hàng Inhouse trên portal.'
     )
 
     is_agency_cart = fields.Boolean(
         string='Thuộc giỏ hàng Đại lý',
-        help='Đánh dấu biến thể này thuộc giỏ hàng Đại lý trên portal.'
+        related='product_tmpl_id.is_agency_cart',
+        readonly=False,
+        store=True,
+        help='Đánh dấu sản phẩm này thuộc giỏ hàng Đại lý trên portal.'
     )
 
     def _auto_init(self):

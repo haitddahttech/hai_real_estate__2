@@ -40,6 +40,7 @@ export class SitePlanCanvasWidget extends Component {
             isDraggingPriceLabel: false,
             priceLabelDragStart: null,
             priceDisplayNumber: 0,
+            isRotatingPriceLabel: false,
         });
 
         onMounted(() => {
@@ -243,7 +244,7 @@ export class SitePlanCanvasWidget extends Component {
             const polygons = await this.orm.searchRead(
                 'site.plan.polygon',
                 [['site_plan_id', '=', recordId]],
-                ['name', 'coordinates', 'color', 'polygon_type', 'product_template_id', 'price_label_x', 'price_label_y']
+                ['name', 'coordinates', 'color', 'polygon_type', 'product_template_id', 'price_label_x', 'price_label_y', 'price_label_rotation']
             );
             this.state.priceDisplayNumber = parseInt(sitePlanData?.[0]?.price_display_number || 0, 10);
 
@@ -267,6 +268,7 @@ export class SitePlanCanvasWidget extends Component {
                 productPrice: productsById[p.product_template_id[0]]?.list_price,
                 priceLabelX: p.price_label_x,
                 priceLabelY: p.price_label_y,
+                priceLabelRotation: p.price_label_rotation || 0,
             }));
 
             this.draw();
@@ -338,6 +340,15 @@ export class SitePlanCanvasWidget extends Component {
             } else if (this.state.mode === 'edit') {
                 this.selectPoint(pos);
             } else if (this.state.mode === 'select') {
+                if (this.state.selectedPolygon !== null) {
+                    const selectedPolygon = this.state.polygons[this.state.selectedPolygon];
+                    if (this.isPointOnPriceLabelRotateHandle(pos, selectedPolygon)) {
+                        this.state.isRotatingPriceLabel = true;
+                        this.canvas.style.cursor = 'grabbing';
+                        return;
+                    }
+                }
+
                 if (this.state.selectedPolygon !== null && this.isPointOnPriceLabelHandle(pos, this.state.polygons[this.state.selectedPolygon])) {
                     this.state.isDraggingPriceLabel = true;
                     this.state.priceLabelDragStart = pos;
@@ -400,8 +411,20 @@ export class SitePlanCanvasWidget extends Component {
         if (this.state.isDraggingPriceLabel && this.state.selectedPolygon !== null) {
             const pos = this.getMousePos(e);
             const polygon = this.state.polygons[this.state.selectedPolygon];
-            polygon.priceLabelX = pos.x;
-            polygon.priceLabelY = pos.y;
+            const dx = pos.x - this.state.priceLabelDragStart.x;
+            const dy = pos.y - this.state.priceLabelDragStart.y;
+            polygon.priceLabelX = (polygon.priceLabelX || 0) + dx;
+            polygon.priceLabelY = (polygon.priceLabelY || 0) + dy;
+            this.state.priceLabelDragStart = pos;
+            this.draw();
+            return;
+        }
+
+        if (this.state.isRotatingPriceLabel && this.state.selectedPolygon !== null) {
+            const pos = this.getMousePos(e);
+            const polygon = this.state.polygons[this.state.selectedPolygon];
+            const labelPosition = this.getPriceLabelPosition(polygon);
+            polygon.priceLabelRotation = this.getRotationAngleFromPosition(labelPosition, pos);
             this.draw();
             return;
         }
@@ -463,6 +486,16 @@ export class SitePlanCanvasWidget extends Component {
         if (this.state.isDraggingPriceLabel) {
             this.state.isDraggingPriceLabel = false;
             this.state.priceLabelDragStart = null;
+            this.canvas.style.cursor = 'crosshair';
+
+            if (this.state.selectedPolygon !== null) {
+                this.savePriceLabelPosition(this.state.selectedPolygon);
+            }
+            return;
+        }
+
+        if (this.state.isRotatingPriceLabel) {
+            this.state.isRotatingPriceLabel = false;
             this.canvas.style.cursor = 'crosshair';
 
             if (this.state.selectedPolygon !== null) {
@@ -880,6 +913,9 @@ export class SitePlanCanvasWidget extends Component {
             boxY: position.y - (fontSize + verticalPadding * 2) / 2,
             textX: position.x,
             textY: position.y,
+            rotation: polygon.priceLabelRotation || 0,
+            centerX: position.x - horizontalPadding + (textWidth + horizontalPadding * 2) / 2,
+            centerY: position.y,
         };
     }
 
@@ -890,23 +926,29 @@ export class SitePlanCanvasWidget extends Component {
         }
 
         this.ctx.save();
+        this.ctx.translate(labelBox.centerX, labelBox.centerY);
+        this.ctx.rotate((labelBox.rotation * Math.PI) / 180);
         this.ctx.font = `bold ${labelBox.fontSize}px Arial`;
         this.ctx.textAlign = 'left';
         this.ctx.textBaseline = 'middle';
 
         this.ctx.fillStyle = '#dc3545';
-        this.ctx.fillRect(labelBox.boxX, labelBox.boxY, labelBox.boxWidth, labelBox.boxHeight);
+        this.ctx.fillRect(labelBox.boxX - labelBox.centerX, labelBox.boxY - labelBox.centerY, labelBox.boxWidth, labelBox.boxHeight);
 
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.fillText(labelBox.priceText, labelBox.textX, labelBox.textY);
+        this.ctx.fillText(labelBox.priceText, labelBox.textX - labelBox.centerX, labelBox.textY - labelBox.centerY);
 
         if (isSelected) {
             this.ctx.strokeStyle = '#ffffff';
             this.ctx.lineWidth = 0.5;
-            this.ctx.strokeRect(labelBox.boxX, labelBox.boxY, labelBox.boxWidth, labelBox.boxHeight);
+            this.ctx.strokeRect(labelBox.boxX - labelBox.centerX, labelBox.boxY - labelBox.centerY, labelBox.boxWidth, labelBox.boxHeight);
         }
 
         this.ctx.restore();
+
+        if (isSelected) {
+            this.drawPriceLabelRotateHandle(labelBox);
+        }
     }
 
     isPointOnPriceLabelHandle(pos, polygon) {
@@ -919,12 +961,68 @@ export class SitePlanCanvasWidget extends Component {
             return false;
         }
 
+        const angle = (-labelBox.rotation * Math.PI) / 180;
+        const dx = pos.x - labelBox.centerX;
+        const dy = pos.y - labelBox.centerY;
+        const localX = dx * Math.cos(angle) - dy * Math.sin(angle) + labelBox.centerX;
+        const localY = dx * Math.sin(angle) + dy * Math.cos(angle) + labelBox.centerY;
+
         return (
-            pos.x >= labelBox.boxX
-            && pos.x <= labelBox.boxX + labelBox.boxWidth
-            && pos.y >= labelBox.boxY
-            && pos.y <= labelBox.boxY + labelBox.boxHeight
+            localX >= labelBox.boxX
+            && localX <= labelBox.boxX + labelBox.boxWidth
+            && localY >= labelBox.boxY
+            && localY <= labelBox.boxY + labelBox.boxHeight
         );
+    }
+
+    getPriceLabelRotateHandle(labelBox) {
+        const radius = 2.8;
+        const gap = 2.5;
+        const angle = (labelBox.rotation * Math.PI) / 180;
+        const localX = 0;
+        const localY = -labelBox.boxHeight / 2 - gap - radius;
+        return {
+            x: labelBox.centerX + localX * Math.cos(angle) - localY * Math.sin(angle),
+            y: labelBox.centerY + localX * Math.sin(angle) + localY * Math.cos(angle),
+            radius,
+        };
+    }
+
+    drawPriceLabelRotateHandle(labelBox) {
+        const handle = this.getPriceLabelRotateHandle(labelBox);
+        this.ctx.save();
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.beginPath();
+        this.ctx.arc(handle.x, handle.y, handle.radius, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.strokeStyle = '#0d6efd';
+        this.ctx.lineWidth = 0.4;
+        this.ctx.stroke();
+        this.ctx.fillStyle = '#0d6efd';
+        this.ctx.font = 'bold 3px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText('↻', handle.x, handle.y + 0.1);
+        this.ctx.restore();
+    }
+
+    isPointOnPriceLabelRotateHandle(pos, polygon) {
+        if (!polygon || this.getPriceDisplayNumber() <= 0) {
+            return false;
+        }
+        const labelBox = this.getPriceLabelBox(polygon);
+        if (!labelBox) {
+            return false;
+        }
+        const handle = this.getPriceLabelRotateHandle(labelBox);
+        const dx = pos.x - handle.x;
+        const dy = pos.y - handle.y;
+        return Math.sqrt(dx * dx + dy * dy) <= handle.radius + 1.2;
+    }
+
+    getRotationAngleFromPosition(center, pos) {
+        const angle = Math.atan2(pos.y - center.y, pos.x - center.x);
+        return (angle * 180) / Math.PI + 90;
     }
 
     async savePolygonDialog(type) {
@@ -982,6 +1080,7 @@ export class SitePlanCanvasWidget extends Component {
                 polygon_type: type,
                 price_label_x: defaultPriceLabelPosition.x,
                 price_label_y: defaultPriceLabelPosition.y,
+                price_label_rotation: 0,
             }]);
 
             this.notification.add(`Đã lưu "${name}" thành công!`, { type: 'success' });
@@ -1018,6 +1117,7 @@ export class SitePlanCanvasWidget extends Component {
                 coordinates: JSON.stringify(polygon.points),
                 price_label_x: polygon.priceLabelX,
                 price_label_y: polygon.priceLabelY,
+                price_label_rotation: polygon.priceLabelRotation || 0,
             });
             // Silent save - no notification
         } catch (error) {
@@ -1033,9 +1133,30 @@ export class SitePlanCanvasWidget extends Component {
             await this.orm.write('site.plan.polygon', [polygon.id], {
                 price_label_x: polygon.priceLabelX,
                 price_label_y: polygon.priceLabelY,
+                price_label_rotation: polygon.priceLabelRotation || 0,
             });
         } catch (error) {
             this.notification.add(`Lỗi khi cập nhật vị trí giá: ${error.message}`, { type: 'danger' });
+            await this.loadPolygons();
+        }
+    }
+
+    async rotateSelectedPriceLabel(deltaDegrees) {
+        if (this.state.selectedPolygon === null || this.getPriceDisplayNumber() <= 0) {
+            return;
+        }
+
+        const polygon = this.state.polygons[this.state.selectedPolygon];
+        const current = polygon.priceLabelRotation || 0;
+        polygon.priceLabelRotation = current + deltaDegrees;
+        this.draw();
+
+        try {
+            await this.orm.write('site.plan.polygon', [polygon.id], {
+                price_label_rotation: polygon.priceLabelRotation,
+            });
+        } catch (error) {
+            this.notification.add(`Lỗi khi xoay giá: ${error.message}`, { type: 'danger' });
             await this.loadPolygons();
         }
     }

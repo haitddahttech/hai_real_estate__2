@@ -479,9 +479,10 @@
             const labelPosition = getPolygonPriceLabelPosition(points, scaleX, scaleY, polygon);
             const labelX = labelPosition.x;
             const labelY = labelPosition.y;
-            const fontSize = Math.max(8, 12 / state.scale);
-            const horizontalPadding = 4 / state.scale;
-            const verticalPadding = 3 / state.scale;
+            const fontSize = 4.5 * scaleX;
+            const horizontalPadding = 1.75 * scaleX;
+            const verticalPadding = 1.5 * scaleY;
+            const rotation = ((polygon && polygon.price_label_rotation) || 0) * Math.PI / 180;
 
             ctx.save();
             ctx.font = `bold ${fontSize}px Arial`;
@@ -493,12 +494,17 @@
             const boxHeight = fontSize + verticalPadding * 2;
             const boxX = labelX - horizontalPadding;
             const boxY = labelY - boxHeight / 2;
+            const centerX = boxX + boxWidth / 2;
+            const centerY = labelY;
 
+            ctx.translate(centerX, centerY);
+            ctx.rotate(rotation);
             ctx.fillStyle = '#dc3545';
-            ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+            ctx.fillRect(boxX - centerX, boxY - centerY, boxWidth, boxHeight);
 
             ctx.fillStyle = '#ffffff';
-            ctx.fillText(priceLabel, labelX, labelY);
+            ctx.textAlign = 'left';
+            ctx.fillText(priceLabel, labelX - centerX, labelY - centerY);
             ctx.restore();
         }
 

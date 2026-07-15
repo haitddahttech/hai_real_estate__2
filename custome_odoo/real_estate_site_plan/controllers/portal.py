@@ -158,6 +158,7 @@ class SitePlanPortal(CustomerPortal):
                         'color': polygon.color,
                         'price_label_x': polygon.price_label_x,
                         'price_label_y': polygon.price_label_y,
+                        'price_label_rotation': polygon.price_label_rotation,
                         'product': product_data
                     })
                 except Exception as e:

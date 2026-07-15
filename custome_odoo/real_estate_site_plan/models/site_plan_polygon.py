@@ -81,6 +81,12 @@ class SitePlanPolygon(models.Model):
         help='Tọa độ Y neo hiển thị giá trên canvas tham chiếu 1200x800.'
     )
 
+    price_label_rotation = fields.Float(
+        string='Góc xoay giá hiển thị',
+        default=0.0,
+        help='Góc xoay của nhãn giá theo độ.'
+    )
+
     def _get_default_price_label_position(self, coordinates):
         try:
             points = json.loads(coordinates)

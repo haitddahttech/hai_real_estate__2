@@ -404,6 +404,9 @@
                                         <button type="button" class="toolbar-btn" id="togglePolygons" title="Ẩn/Hiện Lô đất">
                                             <i class="fa fa-eye-slash"/> Ẩn lô đất
                                         </button>
+                                        <button type="button" class="toolbar-btn" id="togglePriceLabels" title="Ẩn/Hiện giá bán trên lô đất">
+                                            <i class="fa fa-tag"/> Ẩn giá
+                                        </button>
                                         <button type="button" class="toolbar-btn" id="toggleAllGray" title="Tô xám tất cả">
                                             <i class="fa fa-paint-brush"/> Ẩn sản phẩm
                                         </button>
@@ -493,7 +496,8 @@
                 var siteMapData = {
                     imageUrl: '<t t-if="site_plan.image_path" t-esc="site_plan.image_path"/><t t-else="">/web/content/site.plan/<t t-esc="site_plan.id"/>/image</t>',
                     polygons: <t t-raw="polygon_data_json"/>,
-                    translations: <t t-raw="js_translations_json"/>
+                    translations: <t t-raw="js_translations_json"/>,
+                    priceDisplayNumber: <t t-esc="price_display_number"/>
                 };
             </script>
 

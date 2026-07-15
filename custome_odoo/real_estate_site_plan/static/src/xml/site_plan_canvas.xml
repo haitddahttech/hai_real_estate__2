@@ -159,6 +159,9 @@
                             <div style="font-size: 0.7rem; color: #666;" t-if="state.selectedPolygon !== null">
                                 <i class="fa fa-check-circle" style="color: #4caf50;"/> <strong>Đã chọn:</strong> <span t-esc="state.polygons[state.selectedPolygon].name" style="color: #333;"/>
                             </div>
+                            <div style="font-size: 0.7rem; color: #666; margin-top: 4px;" t-if="state.selectedPolygon !== null and props.record.data.price_display_number &gt; 0">
+                                <i class="fa fa-arrows" style="color: #dc3545;"/> Kéo ô giá đỏ để đổi vị trí hiển thị giá
+                            </div>
                         </div>
                     </div>
                 </div>

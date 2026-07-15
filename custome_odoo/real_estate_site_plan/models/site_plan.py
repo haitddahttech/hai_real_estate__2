@@ -61,6 +61,13 @@ class SitePlan(models.Model):
         help='Ngày thực hiện đặt cọc',
         default=fields.Date.today
     )
+
+    price_display_number = fields.Integer(
+        string='Số chữ số giá hiển thị',
+        default=0,
+        help='Nếu lớn hơn 0, portal sẽ hiển thị thêm giá bán rút gọn trên canvas '
+             'bằng cách lấy N chữ số đầu của giá bán.'
+    )
     
     image_path = fields.Char(string='Đường dẫn ảnh local')
     

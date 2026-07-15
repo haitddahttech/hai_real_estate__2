@@ -45,6 +45,7 @@
                             <field name="name" placeholder="Ví dụ: Vinhomes Grand Park - Giai đoạn 1"/>
                             <field name="active" widget="boolean_toggle"/>
                             <field name="deposit_date"/>
+                            <field name="price_display_number"/>
                         </group>
                         <group>
                             <field name="image" widget="binary" filename="image_filename"/>

@@ -57,6 +57,7 @@
             touchStartedOnPolygonIndex: -1,
             cartFilter: 'all',
             polygonsVisible: true,
+            priceLabelsVisible: false,
             forceAllGray: false,
             interactiveGrayMode: false,
             manuallyGrayIndices: [], // Array of indices set to gray manually (added to gray list)
@@ -126,6 +127,12 @@
             // Toggle Polygons button
             const togglePolygonsBtn = document.getElementById('togglePolygons');
             if (togglePolygonsBtn) togglePolygonsBtn.addEventListener('click', togglePolygons);
+
+            const togglePriceLabelsBtn = document.getElementById('togglePriceLabels');
+            if (togglePriceLabelsBtn) {
+                togglePriceLabelsBtn.addEventListener('click', togglePriceLabels);
+                updateTogglePriceLabelsUI();
+            }
 
             // Toggle All Gray button
             const toggleAllGrayBtn = document.getElementById('toggleAllGray');
@@ -406,6 +413,95 @@
             return '#' + (r.length < 2 ? '0' + r : r) + (g.length < 2 ? '0' + g : g) + (b.length < 2 ? '0' + b : b);
         }
 
+        function getPolygonPriceLabel(polygon) {
+            const displayNumber = parseInt(siteMapData.priceDisplayNumber || 0, 10);
+            if (!state.priceLabelsVisible || !displayNumber || displayNumber <= 0 || !polygon || !polygon.product) {
+                return '';
+            }
+
+            const priceValue = polygon.product.price;
+            if (priceValue === null || priceValue === undefined || priceValue === '') {
+                return '';
+            }
+
+            const digitsOnly = String(priceValue).replace(/\D/g, '');
+            if (!digitsOnly || digitsOnly.length < displayNumber) {
+                return '';
+            }
+
+            const formattedPrice = Number(priceValue).toLocaleString('en-US', {
+                maximumFractionDigits: 0,
+                useGrouping: true,
+            });
+
+            let digitCount = 0;
+            let label = '';
+
+            for (const char of formattedPrice) {
+                if (/\d/.test(char)) {
+                    digitCount += 1;
+                }
+                label += char;
+                if (digitCount >= displayNumber) {
+                    break;
+                }
+            }
+
+            return label.replace(/[^\d]+$/, '');
+        }
+
+        function getPolygonPriceLabelPosition(points, scaleX, scaleY, polygon) {
+            if (
+                polygon
+                && Number.isFinite(polygon.price_label_x)
+                && Number.isFinite(polygon.price_label_y)
+                && !(polygon.price_label_x === 0 && polygon.price_label_y === 0)
+            ) {
+                return {
+                    x: polygon.price_label_x * scaleX,
+                    y: polygon.price_label_y * scaleY,
+                };
+            }
+
+            const minX = Math.min(...points.map(point => point.x));
+            const minY = Math.min(...points.map(point => point.y));
+            return {
+                x: minX * scaleX + (8 / state.scale),
+                y: minY * scaleY + (16 / state.scale),
+            };
+        }
+
+        function drawPolygonPriceLabel(points, scaleX, scaleY, priceLabel, polygon) {
+            if (!priceLabel) {
+                return;
+            }
+
+            const labelPosition = getPolygonPriceLabelPosition(points, scaleX, scaleY, polygon);
+            const labelX = labelPosition.x;
+            const labelY = labelPosition.y;
+            const fontSize = Math.max(8, 12 / state.scale);
+            const horizontalPadding = 4 / state.scale;
+            const verticalPadding = 3 / state.scale;
+
+            ctx.save();
+            ctx.font = `bold ${fontSize}px Arial`;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+
+            const textWidth = ctx.measureText(priceLabel).width;
+            const boxWidth = textWidth + horizontalPadding * 2;
+            const boxHeight = fontSize + verticalPadding * 2;
+            const boxX = labelX - horizontalPadding;
+            const boxY = labelY - boxHeight / 2;
+
+            ctx.fillStyle = '#dc3545';
+            ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(priceLabel, labelX, labelY);
+            ctx.restore();
+        }
+
         function drawPolygonScaled(polygon, isSelected, isEffectivelySold = false) {
             const points = polygon.points;
             if (!points || points.length < 3) return;
@@ -454,6 +550,8 @@
 
             ctx.setLineDash([]);
             ctx.stroke();
+
+            drawPolygonPriceLabel(points, scaleX, scaleY, getPolygonPriceLabel(polygon), polygon);
         }
 
         function matchesCartFilter(polygon) {
@@ -1702,6 +1800,36 @@
             } else {
                 btn.innerHTML = '<i class="fa fa-eye"></i> Tổng';
                 btn.title = 'Hiện các lô đất trên bản đồ';
+            }
+        }
+
+        function togglePriceLabels() {
+            state.priceLabelsVisible = !state.priceLabelsVisible;
+            updateTogglePriceLabelsUI();
+            draw();
+        }
+
+        function updateTogglePriceLabelsUI() {
+            const btn = document.getElementById('togglePriceLabels');
+            if (!btn) return;
+
+            const canDisplayPrices = parseInt(siteMapData.priceDisplayNumber || 0, 10) > 0;
+            btn.disabled = !canDisplayPrices;
+            btn.style.opacity = canDisplayPrices ? '1' : '0.5';
+            btn.style.cursor = canDisplayPrices ? 'pointer' : 'not-allowed';
+
+            if (!canDisplayPrices) {
+                btn.innerHTML = '<i class="fa fa-tag"></i> Không có giá';
+                btn.title = 'Dự án này chưa cấu hình số chữ số giá hiển thị';
+                return;
+            }
+
+            if (state.priceLabelsVisible) {
+                btn.innerHTML = '<i class="fa fa-tag"></i> Ẩn giá';
+                btn.title = 'Ẩn giá bán trên các lô đất';
+            } else {
+                btn.innerHTML = '<i class="fa fa-tags"></i> Hiện giá';
+                btn.title = 'Hiện giá bán trên các lô đất';
             }
         }
 

@@ -37,6 +37,9 @@ export class SitePlanCanvasWidget extends Component {
             isDraggingPolygon: false,
             polygonDragStart: null,
             polygonDragOffset: null,
+            isDraggingPriceLabel: false,
+            priceLabelDragStart: null,
+            priceDisplayNumber: 0,
         });
 
         onMounted(() => {
@@ -236,11 +239,22 @@ export class SitePlanCanvasWidget extends Component {
         if (!recordId) return;
 
         try {
+            const sitePlanData = await this.orm.read('site.plan', [recordId], ['price_display_number']);
             const polygons = await this.orm.searchRead(
                 'site.plan.polygon',
                 [['site_plan_id', '=', recordId]],
-                ['name', 'coordinates', 'color', 'polygon_type', 'product_template_id']
+                ['name', 'coordinates', 'color', 'polygon_type', 'product_template_id', 'price_label_x', 'price_label_y']
             );
+            this.state.priceDisplayNumber = parseInt(sitePlanData?.[0]?.price_display_number || 0, 10);
+
+            const productIds = polygons
+                .map((polygon) => polygon.product_template_id && polygon.product_template_id[0])
+                .filter(Boolean);
+            let productsById = {};
+            if (productIds.length) {
+                const products = await this.orm.read('product.template', productIds, ['list_price']);
+                productsById = Object.fromEntries(products.map((product) => [product.id, product]));
+            }
 
             this.state.polygons = polygons.map(p => ({
                 id: p.id,
@@ -250,6 +264,9 @@ export class SitePlanCanvasWidget extends Component {
                 type: p.polygon_type,
                 productId: p.product_template_id[0],
                 productName: p.product_template_id[1],
+                productPrice: productsById[p.product_template_id[0]]?.list_price,
+                priceLabelX: p.price_label_x,
+                priceLabelY: p.price_label_y,
             }));
 
             this.draw();
@@ -321,6 +338,13 @@ export class SitePlanCanvasWidget extends Component {
             } else if (this.state.mode === 'edit') {
                 this.selectPoint(pos);
             } else if (this.state.mode === 'select') {
+                if (this.state.selectedPolygon !== null && this.isPointOnPriceLabelHandle(pos, this.state.polygons[this.state.selectedPolygon])) {
+                    this.state.isDraggingPriceLabel = true;
+                    this.state.priceLabelDragStart = pos;
+                    this.canvas.style.cursor = 'move';
+                    return;
+                }
+
                 // Check if clicking on a polygon to drag
                 const polygonIndex = this.findPolygonAtPosition(pos);
                 if (polygonIndex !== -1) {
@@ -363,8 +387,21 @@ export class SitePlanCanvasWidget extends Component {
                 x: point.x + dx,
                 y: point.y + dy
             }));
+            if (Number.isFinite(polygon.priceLabelX) && Number.isFinite(polygon.priceLabelY)) {
+                polygon.priceLabelX += dx;
+                polygon.priceLabelY += dy;
+            }
 
             this.state.polygonDragStart = pos;
+            this.draw();
+            return;
+        }
+
+        if (this.state.isDraggingPriceLabel && this.state.selectedPolygon !== null) {
+            const pos = this.getMousePos(e);
+            const polygon = this.state.polygons[this.state.selectedPolygon];
+            polygon.priceLabelX = pos.x;
+            polygon.priceLabelY = pos.y;
             this.draw();
             return;
         }
@@ -419,6 +456,17 @@ export class SitePlanCanvasWidget extends Component {
             // Save updated polygon position
             if (this.state.selectedPolygon !== null) {
                 this.savePolygonPosition(this.state.selectedPolygon);
+            }
+            return;
+        }
+
+        if (this.state.isDraggingPriceLabel) {
+            this.state.isDraggingPriceLabel = false;
+            this.state.priceLabelDragStart = null;
+            this.canvas.style.cursor = 'crosshair';
+
+            if (this.state.selectedPolygon !== null) {
+                this.savePriceLabelPosition(this.state.selectedPolygon);
             }
             return;
         }
@@ -589,10 +637,12 @@ export class SitePlanCanvasWidget extends Component {
         // Get display dimensions (CSS pixels)
         const displayWidth = parseFloat(this.canvas.style.width) || (this.canvas.width / resScale);
         const displayHeight = parseFloat(this.canvas.style.height) || (this.canvas.height / resScale);
+        this.displayScaleX = displayWidth / 1200;
+        this.displayScaleY = displayHeight / 800;
 
         // Scale coordinates from reference size (1200x800) to current display size
-        const scaleX = displayWidth / 1200;
-        const scaleY = displayHeight / 800;
+        const scaleX = this.displayScaleX;
+        const scaleY = this.displayScaleY;
         this.ctx.scale(scaleX, scaleY);
 
         // Apply user zoom and pan
@@ -664,20 +714,22 @@ export class SitePlanCanvasWidget extends Component {
                 polygon.points,
                 polygon.color,
                 index === this.state.selectedPolygon,
-                polygon.name
+                polygon.name,
+                false,
+                polygon
             );
         });
 
         // Draw current polygon being drawn
         if (this.state.currentPolygon.length > 0) {
-            this.drawPolygon(this.state.currentPolygon, this.state.color, false, null, true);
+            this.drawPolygon(this.state.currentPolygon, this.state.color, false, null, true, null);
         }
 
         // Restore context
         this.ctx.restore();
     }
 
-    drawPolygon(points, color, isSelected, label, isDrawing = false) {
+    drawPolygon(points, color, isSelected, label, isDrawing = false, polygon = null) {
         if (points.length === 0) return;
 
         this.ctx.beginPath();
@@ -739,6 +791,140 @@ export class SitePlanCanvasWidget extends Component {
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(label, centerX, centerY);
         }
+
+        if (!isDrawing && polygon && isSelected && this.getPriceDisplayNumber() > 0) {
+            this.drawPriceLabel(polygon, isSelected);
+        }
+    }
+
+    getPriceDisplayNumber() {
+        return parseInt(this.state.priceDisplayNumber || this.props.record.data.price_display_number || 0, 10);
+    }
+
+    getPriceLabelDisplayText(polygon) {
+        const displayNumber = this.getPriceDisplayNumber();
+        if (!displayNumber || displayNumber <= 0) {
+            return '';
+        }
+
+        const price = polygon.productPrice;
+        if (price === null || price === undefined || price === '') {
+            return '';
+        }
+
+        const digitsOnly = String(price).replace(/\D/g, '');
+        if (!digitsOnly || digitsOnly.length < displayNumber) {
+            return '';
+        }
+
+        const formattedPrice = Number(price).toLocaleString('en-US', {
+            maximumFractionDigits: 0,
+            useGrouping: true,
+        });
+
+        let digitCount = 0;
+        let label = '';
+        for (const char of formattedPrice) {
+            if (/\d/.test(char)) {
+                digitCount += 1;
+            }
+            label += char;
+            if (digitCount >= displayNumber) {
+                break;
+            }
+        }
+        return label.replace(/[^\d]+$/, '');
+    }
+
+    getDefaultPriceLabelPosition(points) {
+        const minX = Math.min(...points.map(point => point.x));
+        const minY = Math.min(...points.map(point => point.y));
+        return { x: minX + 8, y: minY + 16 };
+    }
+
+    getPriceLabelPosition(polygon) {
+        if (
+            Number.isFinite(polygon.priceLabelX)
+            && Number.isFinite(polygon.priceLabelY)
+            && !(polygon.priceLabelX === 0 && polygon.priceLabelY === 0)
+        ) {
+            return { x: polygon.priceLabelX, y: polygon.priceLabelY };
+        }
+        return this.getDefaultPriceLabelPosition(polygon.points);
+    }
+
+    getPriceLabelBox(polygon) {
+        const priceText = this.getPriceLabelDisplayText(polygon);
+        if (!priceText || !this.ctx) {
+            return null;
+        }
+
+        const position = this.getPriceLabelPosition(polygon);
+        const fontSize = 4.5;
+        const horizontalPadding = 1.75;
+        const verticalPadding = 1.5;
+
+        this.ctx.save();
+        this.ctx.font = `bold ${fontSize}px Arial`;
+        const textWidth = this.ctx.measureText(priceText).width;
+        this.ctx.restore();
+
+        return {
+            priceText,
+            fontSize,
+            horizontalPadding,
+            verticalPadding,
+            boxWidth: textWidth + horizontalPadding * 2,
+            boxHeight: fontSize + verticalPadding * 2,
+            boxX: position.x - horizontalPadding,
+            boxY: position.y - (fontSize + verticalPadding * 2) / 2,
+            textX: position.x,
+            textY: position.y,
+        };
+    }
+
+    drawPriceLabel(polygon, isSelected) {
+        const labelBox = this.getPriceLabelBox(polygon);
+        if (!labelBox) {
+            return;
+        }
+
+        this.ctx.save();
+        this.ctx.font = `bold ${labelBox.fontSize}px Arial`;
+        this.ctx.textAlign = 'left';
+        this.ctx.textBaseline = 'middle';
+
+        this.ctx.fillStyle = '#dc3545';
+        this.ctx.fillRect(labelBox.boxX, labelBox.boxY, labelBox.boxWidth, labelBox.boxHeight);
+
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillText(labelBox.priceText, labelBox.textX, labelBox.textY);
+
+        if (isSelected) {
+            this.ctx.strokeStyle = '#ffffff';
+            this.ctx.lineWidth = 0.5;
+            this.ctx.strokeRect(labelBox.boxX, labelBox.boxY, labelBox.boxWidth, labelBox.boxHeight);
+        }
+
+        this.ctx.restore();
+    }
+
+    isPointOnPriceLabelHandle(pos, polygon) {
+        if (!polygon || this.getPriceDisplayNumber() <= 0) {
+            return false;
+        }
+
+        const labelBox = this.getPriceLabelBox(polygon);
+        if (!labelBox) {
+            return false;
+        }
+
+        return (
+            pos.x >= labelBox.boxX
+            && pos.x <= labelBox.boxX + labelBox.boxWidth
+            && pos.y >= labelBox.boxY
+            && pos.y <= labelBox.boxY + labelBox.boxHeight
+        );
     }
 
     async savePolygonDialog(type) {
@@ -785,6 +971,7 @@ export class SitePlanCanvasWidget extends Component {
 
         try {
             const coordinates = JSON.stringify(this.state.currentPolygon);
+            const defaultPriceLabelPosition = this.getDefaultPriceLabelPosition(this.state.currentPolygon);
 
             await this.orm.create('site.plan.polygon', [{
                 name: name,
@@ -793,6 +980,8 @@ export class SitePlanCanvasWidget extends Component {
                 coordinates: coordinates,
                 color: this.state.color,
                 polygon_type: type,
+                price_label_x: defaultPriceLabelPosition.x,
+                price_label_y: defaultPriceLabelPosition.y,
             }]);
 
             this.notification.add(`Đã lưu "${name}" thành công!`, { type: 'success' });
@@ -827,11 +1016,26 @@ export class SitePlanCanvasWidget extends Component {
         try {
             await this.orm.write('site.plan.polygon', [polygon.id], {
                 coordinates: JSON.stringify(polygon.points),
+                price_label_x: polygon.priceLabelX,
+                price_label_y: polygon.priceLabelY,
             });
             // Silent save - no notification
         } catch (error) {
             this.notification.add(`Lỗi khi di chuyển: ${error.message}`, { type: 'danger' });
             // Reload to revert changes
+            await this.loadPolygons();
+        }
+    }
+
+    async savePriceLabelPosition(polygonIndex) {
+        const polygon = this.state.polygons[polygonIndex];
+        try {
+            await this.orm.write('site.plan.polygon', [polygon.id], {
+                price_label_x: polygon.priceLabelX,
+                price_label_y: polygon.priceLabelY,
+            });
+        } catch (error) {
+            this.notification.add(`Lỗi khi cập nhật vị trí giá: ${error.message}`, { type: 'danger' });
             await this.loadPolygons();
         }
     }

@@ -156,6 +156,8 @@ class SitePlanPortal(CustomerPortal):
                         'name': polygon.name,
                         'coordinates': polygon.coordinates,
                         'color': polygon.color,
+                        'price_label_x': polygon.price_label_x,
+                        'price_label_y': polygon.price_label_y,
                         'product': product_data
                     })
                 except Exception as e:
@@ -205,6 +207,7 @@ class SitePlanPortal(CustomerPortal):
                 'site_plan': site_plan,
                 'polygon_data_json': json.dumps(polygon_data),
                 'js_translations_json': json.dumps(js_translations),
+                'price_display_number': site_plan.price_display_number or 0,
                 'page_name': 'site_plan_detail',
             }
             return request.render('real_estate_site_plan.portal_site_plan_detail', values)

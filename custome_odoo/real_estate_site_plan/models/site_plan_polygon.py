@@ -70,6 +70,29 @@ class SitePlanPolygon(models.Model):
         string='Đang hoạt động',
         default=True
     )
+
+    price_label_x = fields.Float(
+        string='Vị trí X giá hiển thị',
+        help='Tọa độ X neo hiển thị giá trên canvas tham chiếu 1200x800.'
+    )
+
+    price_label_y = fields.Float(
+        string='Vị trí Y giá hiển thị',
+        help='Tọa độ Y neo hiển thị giá trên canvas tham chiếu 1200x800.'
+    )
+
+    def _get_default_price_label_position(self, coordinates):
+        try:
+            points = json.loads(coordinates)
+        except (json.JSONDecodeError, TypeError):
+            return (0.0, 0.0)
+
+        if not points:
+            return (0.0, 0.0)
+
+        min_x = min(point.get('x', 0.0) for point in points)
+        min_y = min(point.get('y', 0.0) for point in points)
+        return (min_x + 8.0, min_y + 16.0)
     
     @api.depends('site_plan_id')
     def _compute_unavailable_products(self):
@@ -161,6 +184,14 @@ class SitePlanPolygon(models.Model):
                     vals['color'] = product.real_estate_color
                 else:
                     vals['color'] = '#3498db'  # Default blue color
+
+            if (
+                vals.get('coordinates')
+                and ('price_label_x' not in vals or 'price_label_y' not in vals)
+            ):
+                label_x, label_y = self._get_default_price_label_position(vals['coordinates'])
+                vals.setdefault('price_label_x', label_x)
+                vals.setdefault('price_label_y', label_y)
         
         return super().create(vals_list)
     

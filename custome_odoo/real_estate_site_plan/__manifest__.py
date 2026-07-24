@@ -37,6 +37,7 @@ This module allows you to:
         'views/site_plan_views.xml',
         'views/res_company_views.xml',
         'views/portal/portal_landing_page.xml',
+        'views/portal/fab_360.xml',
         'views/portal/portal_templates.xml',
         'views/portal/portal_site_plan_detail.xml',
         'views/portal/portal_property_detail.xml',
@@ -59,7 +60,9 @@ This module allows you to:
             'real_estate_site_plan/static/src/scss/brand_tokens.scss',
             'real_estate_site_plan/static/src/scss/custom_theme.scss',
             'real_estate_site_plan/static/src/scss/home.scss',
+            'real_estate_site_plan/static/src/scss/fab_360.scss',
             'real_estate_site_plan/static/src/js/home_animations.js',
+            'real_estate_site_plan/static/src/js/fab_360.js',
             # 'real_estate_site_plan/static/src/js/portal_site_map.js',  # Loaded manually in template for cache busting
         ],
         # Font brand cho report PDF/ảnh (bổ trợ; wkhtmltopdf/image ưu tiên font hệ thống

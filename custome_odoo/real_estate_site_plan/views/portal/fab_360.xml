@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- FAB 360° + popup iframe — hiển thị trên mọi trang frontend -->
+    <template id="fab_360_tour" inherit_id="website.layout" name="Hong Hac 360 FAB" priority="60">
+        <xpath expr="//div[@id='wrapwrap']" position="inside">
+
+            <!-- Floating Action Button -->
+            <button type="button" class="hh-fab-360" id="hhFab360" aria-label="Tham quan 360 độ">
+                <span class="hh-fab-360__icon"><i class="fa fa-street-view"/></span>
+                <span class="hh-fab-360__label">Xem 360°</span>
+            </button>
+
+            <!-- Popup -->
+            <div class="hh-fab-360-modal" id="hhFab360Modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Tham quan 360 độ">
+                <div class="hh-fab-360-modal__backdrop" data-hh-close="1"/>
+                <div class="hh-fab-360-modal__dialog">
+                    <div class="hh-fab-360-modal__header">
+                        <span class="hh-fab-360-modal__title">
+                            <i class="fa fa-street-view me-2"/>Tham quan 360° — Phân khu Hồng Phát
+                        </span>
+                        <div class="hh-fab-360-modal__actions">
+                            <a class="hh-fab-360-modal__ext"
+                               href="https://honghacphumyhung.vn/phankhuhongphat/360/"
+                               target="_blank" rel="noopener"
+                               title="Mở trong tab mới">
+                                <i class="fa fa-external-link"/>
+                            </a>
+                            <button type="button" class="hh-fab-360-modal__close" data-hh-close="1" aria-label="Đóng">
+                                <i class="fa fa-times"/>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hh-fab-360-modal__body">
+                        <div class="hh-fab-360-modal__loader">Đang tải tour 360°…</div>
+                        <iframe class="hh-fab-360-modal__iframe"
+                                data-src="https://honghacphumyhung.vn/phankhuhongphat/360/"
+                                title="Tham quan 360 độ Phân khu Hồng Phát"
+                                allow="fullscreen; accelerometer; gyroscope; magnetometer; xr-spatial-tracking"
+                                allowfullscreen="allowfullscreen"
+                                loading="lazy"/>
+                    </div>
+                </div>
+            </div>
+
+        </xpath>
+    </template>
+
+</odoo>

@@ -138,10 +138,6 @@
             const toggleAllGrayBtn = document.getElementById('toggleAllGray');
             if (toggleAllGrayBtn) toggleAllGrayBtn.addEventListener('click', toggleAllGray);
 
-            // Toggle Interactive Gray Mode button
-            const toggleInteractiveGrayBtn = document.getElementById('toggleInteractiveGray');
-            if (toggleInteractiveGrayBtn) toggleInteractiveGrayBtn.addEventListener('click', toggleInteractiveGrayMode);
-
             // Zoom Lock button
             const toggleZoomLockBtn = document.getElementById('toggleZoomLock');
             if (toggleZoomLockBtn) {
@@ -377,6 +373,22 @@
                     if (state.selectedPolygons.includes(index)) return;
 
                     drawPolygonScaled(polygon, false, isPolygonGrayByState(index, polygon));
+                });
+            } else if (state.priceLabelsVisible) {
+                // Price labels are an independent display layer: keep them visible
+                // even when polygon fills and borders are hidden.
+                const scaleX = displayWidth / 1200;
+                const scaleY = displayHeight / 800;
+                state.polygons.forEach((polygon, index) => {
+                    // Selected polygons are drawn below and already render their label.
+                    if (state.selectedPolygons.includes(index)) return;
+                    drawPolygonPriceLabel(
+                        polygon.points,
+                        scaleX,
+                        scaleY,
+                        getPolygonPriceLabel(polygon),
+                        polygon
+                    );
                 });
             }
 
@@ -813,6 +825,13 @@
 
 
                 const polygon = state.polygons[clickedIndex];
+
+                // Không cho tương tác với các căn đã bán (hiển thị màu xám):
+                // bỏ qua, không mở popup thông tin.
+                if (polygon.product && polygon.product.is_sold) {
+                    return;
+                }
+
                 const productId = polygon.product.id;
 
                 const selectedIdx = state.selectedPolygons.indexOf(clickedIndex);
@@ -902,41 +921,6 @@
             popup.style.overflow = 'visible';
             popup.style.setProperty('border', `1.5px solid ${polygon.color || '#3498db'}`, 'important');
 
-
-            // Ribbon for sold status
-            const ribbonColor = product.is_sold ? '#dc3545' : '#28a745';
-            const ribbonText = product.is_sold ? _t('ĐÃ BÁN') : _t('CÒN TRỐNG');
-            const ribbonHTML = `
-                <div class="status-ribbon" style="
-                    position: absolute;
-                    top: -8px;
-                    right: -5px;
-                    background: ${ribbonColor};
-                    color: white;
-                    padding: 5px 15px;
-                    font-size: 0.7rem;
-                    font-weight: 700;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-                    z-index: 10;
-                    transform: rotate(0deg);
-                    border-radius: 3px 0 0 3px;
-                ">
-                    ${ribbonText}
-                    <div style="
-                        position: absolute;
-                        right: 0;
-                        bottom: -5px;
-                        width: 0;
-                        height: 0;
-                        border-left: 5px solid transparent;
-                        border-right: 0px solid transparent;
-                        border-top: 5px solid ${ribbonColor};
-                        filter: brightness(0.7);
-                    "></div>
-                </div>
-            `;
 
             const propertyTypeBadge = product.property_type
                 ? `<span class="badge badge-outline-info badge-outline ms-1" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">${product.property_type}</span>`
@@ -1070,7 +1054,6 @@
             } else {
                 // Full Popup for Real Estate
                 popupContent = `
-                ${ribbonHTML}
                 <div class="card-header border-0 pb-2" style="cursor: move; background: ${bgColor}; color: ${textColor};">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="flex-grow-1">
@@ -1804,9 +1787,11 @@
                 btn.innerHTML = '<i class="fa fa-eye-slash"></i> Ẩn lô đất';
                 btn.title = 'Ẩn các lô đất trên bản đồ';
             } else {
-                btn.innerHTML = '<i class="fa fa-eye"></i> Tổng';
+                btn.innerHTML = '<i class="fa fa-eye"></i> Hiện lô đất';
                 btn.title = 'Hiện các lô đất trên bản đồ';
             }
+            btn.setAttribute('aria-pressed', String(state.polygonsVisible));
+            btn.classList.toggle('is-active', !state.polygonsVisible);
         }
 
         function togglePriceLabels() {
@@ -1821,8 +1806,7 @@
 
             const canDisplayPrices = parseInt(siteMapData.priceDisplayNumber || 0, 10) > 0;
             btn.disabled = !canDisplayPrices;
-            btn.style.opacity = canDisplayPrices ? '1' : '0.5';
-            btn.style.cursor = canDisplayPrices ? 'pointer' : 'not-allowed';
+            btn.classList.toggle('is-disabled', !canDisplayPrices);
 
             if (!canDisplayPrices) {
                 btn.innerHTML = '<i class="fa fa-tag"></i> Không có giá';
@@ -1837,68 +1821,30 @@
                 btn.innerHTML = '<i class="fa fa-tags"></i> Hiện giá';
                 btn.title = 'Hiện giá bán trên các lô đất';
             }
+            btn.setAttribute('aria-pressed', String(state.priceLabelsVisible));
+            btn.classList.toggle('is-active', state.priceLabelsVisible);
         }
 
         function toggleAllGray() {
             state.forceAllGray = !state.forceAllGray;
-
-            // If turning off (Undo), also clear manual selection
-            // When turning ON, we also clear ungray list
-            // Basically, reset manual lists on toggle
             state.manuallyGrayIndices = [];
             state.manuallyUngrayIndices = [];
 
-            // Update UI
+            // Enter selection immediately: every polygon becomes gray until selected.
+            state.interactiveGrayMode = state.forceAllGray;
             const btn = document.getElementById('toggleAllGray');
-            const interactiveBtn = document.getElementById('toggleInteractiveGray');
-
             if (btn) {
-                if (state.forceAllGray) {
-                    btn.innerHTML = '<i class="fa fa-undo"></i> Hoàn tác';
-                    btn.classList.add('active-tool-btn');
-                    btn.style.background = '#e2e8f0';
-                    // Show "Chọn sản phẩm" button when forceAllGray is ON
-                    if (interactiveBtn) {
-                        interactiveBtn.style.display = '';
-                    }
-                } else {
-                    btn.innerHTML = '<i class="fa fa-paint-brush"></i> Ẩn sản phẩm';
-                    btn.classList.remove('active-tool-btn');
-                    btn.style.background = 'white';
-                    // Hide "Chọn sản phẩm" button when forceAllGray is OFF
-                    if (interactiveBtn) {
-                        interactiveBtn.style.display = 'none';
-                        // Also turn off interactive mode if it was active
-                        if (state.interactiveGrayMode) {
-                            state.interactiveGrayMode = false;
-                            interactiveBtn.innerHTML = '<i class="fa fa-magic"></i> Chọn sản phẩm';
-                            interactiveBtn.style.background = 'white';
-                            interactiveBtn.style.borderColor = '#dee2e6';
-                            canvas.style.cursor = 'pointer';
-                        }
-                    }
-                }
+                btn.innerHTML = state.forceAllGray
+                    ? '<i class="fa fa-check-circle"></i> Đang chọn căn'
+                    : '<i class="fa fa-paint-brush"></i> Chọn căn hiển thị';
+                btn.title = state.forceAllGray
+                    ? 'Bấm vào căn để hiện hoặc ẩn màu. Bấm lại để xóa lựa chọn.'
+                    : 'Làm xám toàn bộ và chọn các căn cần hiển thị';
+                btn.setAttribute('aria-pressed', String(state.forceAllGray));
+                btn.classList.toggle('is-selecting', state.forceAllGray);
             }
+            canvas.style.cursor = state.forceAllGray ? 'cell' : 'pointer';
             draw();
-        }
-
-        function toggleInteractiveGrayMode() {
-            state.interactiveGrayMode = !state.interactiveGrayMode;
-            // Update UI
-            const btn = document.getElementById('toggleInteractiveGray');
-            if (btn) {
-                if (state.interactiveGrayMode) {
-                    btn.innerHTML = '<i class="fa fa-times"></i> Tắt chọn xám';
-                    btn.style.background = '#e2e8f0';
-                    btn.style.borderColor = '#cbd5e0';
-                    canvas.style.cursor = 'cell';
-                } else {
-                    btn.innerHTML = '<i class="fa fa-magic"></i> Chọn sản phẩm';
-                    btn.style.background = 'white';
-                    btn.style.borderColor = '#dee2e6';
-                    canvas.style.cursor = 'pointer';
-                }
-            }
         }
 
         function toggleZoomLock() {
@@ -1925,9 +1871,8 @@
 
                 const isActive = state.cartFilter === value;
                 btn.classList.toggle('active-tool-btn', isActive);
-                btn.style.background = isActive ? '#2d3748' : 'white';
-                btn.style.color = isActive ? 'white' : '#495057';
-                btn.style.borderColor = isActive ? '#2d3748' : '#dee2e6';
+                btn.classList.toggle('is-active', isActive);
+                btn.setAttribute('aria-pressed', String(isActive));
             });
         }
 
@@ -1942,22 +1887,18 @@
 
             if (state.isZoomLocked) {
                 btn.innerHTML = '<i class="fa fa-lock"></i> Mở Zoom';
-                btn.style.background = '#2d3748';
-                btn.style.color = 'white';
-                btn.style.borderColor = '#2d3748';
             } else {
                 btn.innerHTML = '<i class="fa fa-unlock"></i> Khóa Zoom';
-                btn.style.background = 'white';
-                btn.style.color = '#495057';
-                btn.style.borderColor = '#dee2e6';
             }
+            btn.classList.toggle('is-active', state.isZoomLocked);
+            btn.setAttribute('aria-pressed', String(state.isZoomLocked));
 
             // Visually disable zoom controls when locked
             const controls = [zoomInBtn, zoomOutBtn, resetZoomBtn, zoomSlider];
             controls.forEach(ctrl => {
                 if (ctrl) {
-                    ctrl.style.opacity = state.isZoomLocked ? '0.5' : '1';
-                    ctrl.style.pointerEvents = state.isZoomLocked ? 'none' : 'auto';
+                    ctrl.disabled = state.isZoomLocked;
+                    ctrl.classList.toggle('is-disabled', state.isZoomLocked);
                 }
             });
         }

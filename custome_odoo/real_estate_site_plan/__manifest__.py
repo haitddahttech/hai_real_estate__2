@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Real Estate Site Plan',
-    'version': '19.0.1.9.0',
+    'version': '19.0.2.0.0',
     'category': 'Real Estate',
     'summary': 'Draw polygons on site plan images and link to products',
     'description': """
@@ -54,10 +54,22 @@ This module allows you to:
             'real_estate_site_plan/static/src/xml/site_plan_canvas.xml',
         ],
         'web.assets_frontend': [
+            # Brand fonts + tokens phải nạp TRƯỚC để biến/CSS var có sẵn.
+            'real_estate_site_plan/static/src/scss/fonts.scss',
+            'real_estate_site_plan/static/src/scss/brand_tokens.scss',
             'real_estate_site_plan/static/src/scss/custom_theme.scss',
+            'real_estate_site_plan/static/src/scss/home.scss',
+            'real_estate_site_plan/static/src/js/home_animations.js',
             # 'real_estate_site_plan/static/src/js/portal_site_map.js',  # Loaded manually in template for cache busting
         ],
+        # Font brand cho report PDF/ảnh (bổ trợ; wkhtmltopdf/image ưu tiên font hệ thống
+        # được cài qua hooks.install_brand_fonts).
+        'web.report_assets_common': [
+            'real_estate_site_plan/static/src/scss/fonts.scss',
+            'real_estate_site_plan/static/src/scss/brand_tokens.scss',
+        ],
     },
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': True,
     'auto_install': False,

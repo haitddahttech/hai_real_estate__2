@@ -133,6 +133,8 @@
 // -------------------------------------------------------------
 .hh-hero {
     background: var(--hh-primary-800, #263417);
+    // Đưa nội dung (nút Khám Phá) xuống sát lề dưới thay vì căn giữa
+    align-items: flex-end;
 
     &__video,
     &__poster {
@@ -156,8 +158,10 @@
         z-index: 2;
         text-align: center;
         color: var(--hh-text-on-dark);
-        padding: 2rem 1.25rem;
+        width: 100%;
         max-width: 1100px;
+        // Đệm dưới để nút nằm gần sát đáy, phía trên mũi tên cuộn
+        padding: 0 1.25rem clamp(4.5rem, 11vh, 7.5rem);
     }
 
     &__logo {
@@ -485,6 +489,9 @@
 // 2) FEATURE IMAGE SECTIONS (×7)
 // -------------------------------------------------------------
 .hh-feature {
+    // Nền chung để viền ảnh (được feather) tan vào → chỗ nối giữa các ảnh mềm mại
+    background: var(--hh-primary-800, #263417);
+
     &__bg {
         position: absolute;
         inset: 0;
@@ -493,6 +500,12 @@
         z-index: 0;
         transform: scale(1.08);
         transition: transform 8s ease-out;
+        // Feather (làm tan) viền TRÊN & DƯỚI của ảnh vào nền chung
+        // → giảm cảm giác các ảnh bị cắt tách bạch khi cuộn.
+        -webkit-mask-image: linear-gradient(180deg,
+            transparent 0%, #000 18%, #000 82%, transparent 100%);
+        mask-image: linear-gradient(180deg,
+            transparent 0%, #000 18%, #000 82%, transparent 100%);
     }
 
     // Ken Burns khi section vào viewport
@@ -504,7 +517,14 @@
         position: absolute;
         inset: 0;
         z-index: 1;
-        background: var(--hh-overlay-dark);
+        // Chỉ tối nhẹ ở đáy để caption đọc được; phần trên/giữa trong hơn
+        // → các ảnh full-screen bớt cảm giác bị "đóng khung" / tách bạch.
+        background: linear-gradient(
+            180deg,
+            rgba(38, 52, 23, 0) 0%,
+            rgba(38, 52, 23, 0) 48%,
+            rgba(38, 52, 23, 0.55) 100%
+        );
     }
 
     &__caption {
@@ -849,8 +869,42 @@ a.hh-card__media {
 .reveal--delay-2 { transition-delay: 0.24s; }
 .reveal--delay-3 { transition-delay: 0.36s; }
 
+// -------------------------------------------------------------
+// Stagger reveal cho TIÊU ĐỀ / dòng chữ (hiện tuần tự khi cuộn tới)
+// Khối cha chỉ fade (không tự trượt) để nhường chuyển động cho từng dòng con.
+// -------------------------------------------------------------
+.hh-stagger.reveal { transform: none; }
+
+.hh-stagger > *,
+.hh-feature__caption > * {
+    opacity: 0;
+    transform: translateY(48px);
+    filter: blur(10px);
+    transition: opacity 0.8s var(--hh-ease),
+                transform 1s var(--hh-ease),
+                filter 0.9s var(--hh-ease);
+    will-change: opacity, transform, filter;
+}
+
+.hh-stagger.is-visible > *,
+.hh-feature.is-visible .hh-feature__caption > * {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+}
+
+// Độ trễ tuần tự theo thứ tự dòng
+@for $i from 1 through 6 {
+    .hh-stagger.is-visible > *:nth-child(#{$i}),
+    .hh-feature.is-visible .hh-feature__caption > *:nth-child(#{$i}) {
+        transition-delay: #{0.06s + ($i - 1) * 0.1s};
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1; transform: none; transition: none; }
     .hh-feature__bg { transform: none !important; transition: none; }
     .hh-scroll-cue { animation: none; }
+    .hh-stagger > *,
+    .hh-feature__caption > * { opacity: 1; transform: none; filter: none; transition: none; }
 }

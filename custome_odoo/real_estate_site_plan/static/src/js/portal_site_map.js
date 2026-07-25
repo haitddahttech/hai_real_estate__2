@@ -66,7 +66,7 @@
             isDrawingArrows: false, // Flag for arrow RAF
         };
 
-        const MAX_POPUPS = 5;
+        const MAX_POPUPS = 25;
 
         // Cached DOM elements for performance
         let cachedWrapper = null;

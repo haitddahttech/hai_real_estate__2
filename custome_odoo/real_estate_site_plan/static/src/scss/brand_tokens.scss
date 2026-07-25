@@ -1,0 +1,37 @@
+// =============================================================
+// Hồng Hạc City — Brand Design Tokens (nguồn chân lý)
+// Quy tắc phối màu 50 – 30 – 10.
+// =============================================================
+
+:root {
+    // ----- Màu thương hiệu -----
+    --hh-primary: #2f3f1c;        // Urban Canopy — xanh lục đậm (~50%)
+    --hh-primary-800: #263417;
+    --hh-primary-600: #3c5226;
+    --hh-secondary: #fffaea;      // Warm Ivory — kem ngà (~30%)
+    --hh-accent: #8d974e;         // Golden Cooper — vàng đồng (~10%)
+    --hh-accent-600: #767f41;
+    --hh-accent-300: #c4ab68;     // gold sáng cho gradient
+
+    // ----- Gradient vàng đồng -----
+    --hh-gradient-gold: linear-gradient(135deg, #8d974e 0%, #c4ab68 50%, #8d974e 100%);
+    --hh-gradient-gold-soft: linear-gradient(180deg, rgba(141, 151, 78, 0.15) 0%, rgba(141, 151, 78, 0) 100%);
+    // Overlay tối tôn chữ trên ảnh/video (ám xanh brand)
+    --hh-overlay-dark: linear-gradient(180deg, rgba(38, 52, 23, 0.15) 0%, rgba(38, 52, 23, 0.55) 60%, rgba(38, 52, 23, 0.85) 100%);
+
+    // ----- Chữ -----
+    --hh-text: #333333;
+    --hh-text-on-dark: #fffaea;
+
+    // ----- Font -----
+    // Fahkwang cho toàn bộ heading/body/UI.
+    --hh-font-primary: "Fahkwang", "Helvetica Neue", Arial, sans-serif;
+    // VÉN CHỈ dùng cho title lớn. Kèm tên family hệ thống để PDF/ảnh khớp.
+    --hh-font-display: "VÉN", "VEN - Display Typeface", "Fahkwang", serif;
+
+    // ----- Layout -----
+    --hh-radius: 14px;
+    --hh-shadow-card: 0 18px 45px rgba(38, 52, 23, 0.12);
+    --hh-shadow-card-hover: 0 28px 60px rgba(38, 52, 23, 0.22);
+    --hh-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}

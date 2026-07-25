@@ -380,7 +380,11 @@
                                         <t t-set="is_first_in_group" t-value="False"/>
                                         <t t-set="group_size" t-value="1"/>
                                         <t t-set="grp_mt" t-value="False"/>
-                                        
+
+                                        <!-- Highlight đồng bộ với màn hình chi tiết portal -->
+                                        <t t-set="row_hl" t-value="timeline.type in ['ky_hop_dong', 'giao_nha']"/>
+                                        <t t-set="bank_hl" t-value="timeline.type in ['dat_coc', 'quy_bao_tri']"/>
+
                                         <!-- Group detection -->
                                         <t t-if="timeline.bank_group">
                                             <t t-if="current_idx == 0 or rows[current_idx-1].bank_group != timeline.bank_group">
@@ -407,7 +411,7 @@
                                         <!-- Skip subsequent rows ONLY when is_merge_title=True -->
                                         <t t-set="is_sub" t-value="timeline.bank_group and not is_first_in_group"/>
                                         <t t-if="not (is_sub and grp_mt)">
-                                        <tr>
+                                        <tr t-att-style="'background-color: #f8f9fa;' if row_hl else ''">
                                             <!-- LEFT COLUMNS -->
                                             <t t-if="is_first_in_group and grp_mt">
                                                 <!-- MERGED TITLE MODE -->
@@ -454,7 +458,7 @@
                                             
                                             <!-- BANK COLUMN — always merge when grouped -->
                                             <t t-if="is_first_in_group and timeline.bank_group">
-                                                <td t-att-rowspan="group_size" style="vertical-align: middle; border-bottom: 1px solid #F9ECC7 !important;">
+                                                <td t-att-rowspan="group_size" t-att-style="'vertical-align: middle; border-bottom: 1px solid #F9ECC7 !important;' + (' background-color: #4dd0e1;' if bank_hl else '')">
                                                     <t t-set="sum_bank" t-value="sum(rows[current_idx:current_idx+group_size].mapped('bank_amount'))"/>
                                                     <t t-if="sum_bank > 0">
                                                         <span class="bank-amount"><t t-esc="'{:,.0f}'.format(sum_bank)"/></span>
@@ -466,7 +470,7 @@
                                             </t>
                                             <t t-elif="not is_sub">
                                                 <!-- Standalone bank cell -->
-                                                <td style="vertical-align: middle; border-bottom: 1px solid #F9ECC7 !important;">
+                                                <td t-att-style="'vertical-align: middle; border-bottom: 1px solid #F9ECC7 !important;' + (' background-color: #4dd0e1;' if bank_hl else '')">
                                                     <t t-if="timeline.bank_amount and timeline.bank_amount > 0">
                                                         <span class="bank-amount"><t t-esc="'{:,.0f}'.format(timeline.bank_amount)"/></span>
                                                         <span class="bank-note"><t t-esc="timeline.bank_note"/></span>

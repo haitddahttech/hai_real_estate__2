@@ -1,0 +1,520 @@
+// =============================================================
+// Hồng Hạc City — Homepage (full-screen scroll)
+// Hero video → 7 section ảnh nổi bật → card dự án → footer brand
+// =============================================================
+
+.hh-home {
+    background: var(--hh-secondary);
+    color: var(--hh-text);
+    overflow-x: hidden;
+}
+
+// Full-page snap — chỉ bật khi JS đánh dấu <html class="hh-home-active">
+// và chỉ trên màn hình đủ cao + con trỏ chính xác (desktop), tránh giật mobile.
+@media (min-height: 720px) and (pointer: fine) {
+    html.hh-home-active {
+        scroll-snap-type: y proximity;
+        scroll-behavior: smooth;
+    }
+    .hh-home .hh-snap {
+        scroll-snap-align: start;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.hh-home-active { scroll-snap-type: none; scroll-behavior: auto; }
+}
+
+// Section full màn hình
+.hh-section-full {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+// -------------------------------------------------------------
+// 1) HERO VIDEO
+// -------------------------------------------------------------
+.hh-hero {
+    background: var(--hh-primary-800, #263417);
+
+    &__video,
+    &__poster {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
+    }
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: var(--hh-overlay-dark);
+    }
+
+    &__content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        color: var(--hh-text-on-dark);
+        padding: 2rem 1.25rem;
+        max-width: 1100px;
+    }
+
+    &__logo {
+        max-width: 130px;
+        height: auto;
+        margin: 0 auto 1.75rem;
+        display: block;
+        filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.35));
+    }
+
+    &__brandline {
+        display: inline-block;
+        font-size: 0.82rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        font-weight: 600;
+        color: var(--hh-accent-300, #c4ab68);
+        margin-bottom: 1.25rem;
+    }
+
+    &__title {
+        font-family: var(--hh-font-display);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        line-height: 1.05;
+        font-size: clamp(2.8rem, 8vw, 6.5rem);
+        margin: 0 0 1.25rem;
+        color: #fff;
+        text-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+
+        // background-clip gold cho chữ tiêu đề
+        background: var(--hh-gradient-gold);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    &__slogan {
+        font-family: var(--hh-font-primary);
+        font-weight: 300;
+        font-size: clamp(1.05rem, 2.4vw, 1.7rem);
+        letter-spacing: 0.06em;
+        margin-bottom: 2.25rem;
+        color: rgba(255, 250, 234, 0.94);
+    }
+
+    &__cta {
+        display: inline-block;
+        font-family: var(--hh-font-primary);
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.95rem;
+        padding: 0.95rem 2.4rem;
+        border: 1.5px solid var(--hh-accent-300, #c4ab68);
+        border-radius: 50px;
+        color: #fff;
+        text-decoration: none;
+        transition: all 0.35s var(--hh-ease);
+
+        &:hover {
+            background: var(--hh-gradient-gold);
+            border-color: transparent;
+            color: var(--hh-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 14px 34px rgba(141, 151, 78, 0.45);
+        }
+    }
+}
+
+// Mũi tên cuộn xuống
+.hh-scroll-cue {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    color: rgba(255, 250, 234, 0.85);
+    font-size: 1.5rem;
+    animation: hhBounce 2s infinite;
+    text-decoration: none;
+}
+
+@keyframes hhBounce {
+    0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
+    40% { transform: translate(-50%, 12px); }
+    60% { transform: translate(-50%, 6px); }
+}
+
+// -------------------------------------------------------------
+// 2) FEATURE IMAGE SECTIONS (×7)
+// -------------------------------------------------------------
+.hh-feature {
+    &__bg {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        z-index: 0;
+        transform: scale(1.08);
+        transition: transform 8s ease-out;
+    }
+
+    // Ken Burns khi section vào viewport
+    &.is-visible &__bg {
+        transform: scale(1);
+    }
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: var(--hh-overlay-dark);
+    }
+
+    &__caption {
+        position: relative;
+        z-index: 2;
+        color: var(--hh-text-on-dark);
+        max-width: 900px;
+        padding: 2rem 1.5rem;
+        text-align: center;
+    }
+
+    &__eyebrow {
+        display: inline-block;
+        font-family: var(--hh-font-primary);
+        font-size: 0.72rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        font-weight: 700;
+        // Chip nền vàng đồng + chữ xanh đậm để luôn nổi trên ảnh (kể cả ảnh xanh lá)
+        color: var(--hh-primary);
+        background: var(--hh-gradient-gold);
+        padding: 0.42rem 1.15rem;
+        border-radius: 50px;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    &__title {
+        font-family: var(--hh-font-display);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        line-height: 1.1;
+        font-size: clamp(2rem, 5vw, 4rem);
+        margin: 0 0 1rem;
+        color: #fff;
+        text-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    &__text {
+        font-family: var(--hh-font-primary);
+        font-weight: 300;
+        font-size: clamp(1rem, 1.9vw, 1.35rem);
+        letter-spacing: 0.03em;
+        color: rgba(255, 250, 234, 0.92);
+        margin: 0 auto;
+        max-width: 680px;
+    }
+
+    // Căn lệch trái/phải cho biến hoá nhịp điệu
+    &--left { justify-content: flex-start; .hh-feature__caption { text-align: left; margin-left: 6vw; } }
+    &--right { justify-content: flex-end; .hh-feature__caption { text-align: right; margin-right: 6vw; } }
+}
+
+// -------------------------------------------------------------
+// 3) PROJECT CARDS
+// -------------------------------------------------------------
+.hh-projects {
+    background: var(--hh-secondary);
+    padding: clamp(4rem, 9vh, 8rem) 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.hh-section-head {
+    text-align: center;
+    margin-bottom: 3.5rem;
+
+    &__eyebrow {
+        display: inline-block;
+        font-size: 0.8rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        font-weight: 600;
+        color: var(--hh-accent);
+        margin-bottom: 0.85rem;
+    }
+
+    &__title {
+        font-family: var(--hh-font-display);
+        text-transform: uppercase;
+        color: var(--hh-primary);
+        font-size: clamp(2rem, 4.5vw, 3.4rem);
+        letter-spacing: 0.02em;
+        margin: 0 0 0.75rem;
+    }
+
+    &__sub {
+        font-family: var(--hh-font-primary);
+        color: rgba(51, 51, 51, 0.7);
+        font-size: 1.05rem;
+        font-weight: 300;
+        max-width: 620px;
+        margin: 0 auto;
+    }
+
+    &__title::after {
+        content: "";
+        display: block;
+        width: 72px;
+        height: 3px;
+        margin: 1rem auto 0;
+        background: var(--hh-gradient-gold);
+        border-radius: 3px;
+    }
+}
+
+.hh-card {
+    position: relative;
+    background: #fff;
+    border-radius: var(--hh-radius);
+    overflow: hidden;
+    box-shadow: var(--hh-shadow-card);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(141, 151, 78, 0.16);
+    transition: transform 0.45s var(--hh-ease), box-shadow 0.45s var(--hh-ease), border-color 0.45s var(--hh-ease);
+
+    &:hover {
+        transform: translateY(-12px);
+        box-shadow: var(--hh-shadow-card-hover);
+        border-color: var(--hh-accent);
+    }
+
+    &__media {
+        position: relative;
+        height: 240px;
+        overflow: hidden;
+        background: var(--hh-primary);
+    }
+
+    &__img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.7s var(--hh-ease);
+    }
+
+    &:hover &__img {
+        transform: scale(1.08);
+    }
+
+    &__placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 250, 234, 0.6);
+        font-size: 3.5rem;
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-primary-600, #3c5226) 100%);
+    }
+
+    &__badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        z-index: 2;
+        background: var(--hh-gradient-gold);
+        color: var(--hh-primary);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.35rem 0.85rem;
+        border-radius: 50px;
+    }
+
+    &__body {
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    &__title {
+        font-family: var(--hh-font-primary);
+        font-weight: 600;
+        font-size: 1.35rem;
+        color: var(--hh-primary);
+        margin: 0 0 0.65rem;
+    }
+
+    &__desc {
+        font-family: var(--hh-font-primary);
+        font-weight: 300;
+        color: rgba(51, 51, 51, 0.72);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+
+    &__cta {
+        align-self: flex-start;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: var(--hh-font-primary);
+        font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--hh-primary);
+        text-decoration: none;
+        padding: 0.7rem 1.4rem;
+        border-radius: 50px;
+        border: 1.5px solid var(--hh-accent);
+        transition: all 0.3s var(--hh-ease);
+
+        i { transition: transform 0.3s var(--hh-ease); }
+
+        &:hover {
+            background: var(--hh-gradient-gold);
+            border-color: transparent;
+            color: var(--hh-primary);
+            i { transform: translateX(4px); }
+        }
+    }
+}
+
+.hh-projects__more {
+    text-align: center;
+    margin-top: 3.5rem;
+}
+
+.hh-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--hh-font-primary);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.92rem;
+    color: var(--hh-primary);
+    text-decoration: none;
+    padding: 0.9rem 2.2rem;
+    border-radius: 50px;
+    border: 1.5px solid var(--hh-primary);
+    transition: all 0.35s var(--hh-ease);
+
+    &:hover {
+        background: var(--hh-primary);
+        color: var(--hh-secondary);
+        transform: translateY(-3px);
+    }
+}
+
+.hh-empty {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: rgba(51, 51, 51, 0.7);
+
+    i { color: var(--hh-accent); }
+}
+
+// -------------------------------------------------------------
+// 4) FOOTER BRAND
+// -------------------------------------------------------------
+.hh-footer {
+    background: var(--hh-primary);
+    color: rgba(255, 250, 234, 0.9);
+    padding: 3.5rem 0 2.5rem;
+    text-align: center;
+
+    &__title {
+        font-family: var(--hh-font-display);
+        text-transform: uppercase;
+        color: #fff;
+        font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+        letter-spacing: 0.03em;
+        margin-bottom: 0.5rem;
+        background: var(--hh-gradient-gold);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    &__brandline {
+        font-size: 0.85rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--hh-accent-300, #c4ab68);
+        margin-bottom: 1.75rem;
+    }
+
+    &__contacts {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem 2.5rem;
+        font-family: var(--hh-font-primary);
+        font-weight: 300;
+        margin-bottom: 1.5rem;
+
+        a { color: rgba(255, 250, 234, 0.9); text-decoration: none;
+            &:hover { color: #fff; } }
+
+        i { color: var(--hh-accent-300, #c4ab68); margin-right: 0.5rem; }
+    }
+
+    &__divider {
+        width: 60px;
+        height: 2px;
+        background: var(--hh-gradient-gold);
+        border: 0;
+        margin: 0 auto 1.5rem;
+        opacity: 0.8;
+    }
+
+    &__copy {
+        font-size: 0.82rem;
+        color: rgba(255, 250, 234, 0.55);
+    }
+}
+
+// -------------------------------------------------------------
+// Scroll-reveal
+// -------------------------------------------------------------
+.reveal {
+    opacity: 0;
+    transform: translateY(38px);
+    transition: opacity 0.9s var(--hh-ease), transform 0.9s var(--hh-ease);
+    will-change: opacity, transform;
+}
+.reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.reveal--delay-1 { transition-delay: 0.12s; }
+.reveal--delay-2 { transition-delay: 0.24s; }
+.reveal--delay-3 { transition-delay: 0.36s; }
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .hh-feature__bg { transform: none !important; transition: none; }
+    .hh-scroll-cue { animation: none; }
+}

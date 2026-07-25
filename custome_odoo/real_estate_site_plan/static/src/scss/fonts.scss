@@ -1,0 +1,105 @@
+// =============================================================
+// Hồng Hạc City — Brand @font-face (self-hosted)
+// Web dùng các khai báo này; PDF/ảnh (wkhtmltopdf/image) dùng font
+// hệ thống được cài qua hooks.install_brand_fonts.
+// =============================================================
+
+$honghac-font-path: "/real_estate_site_plan/static/src/fonts";
+
+// ---------- Fahkwang (primary — heading + body + UI) ----------
+@font-face {
+    font-family: "Fahkwang";
+    src: url("#{$honghac-font-path}/Fahkwang-ExtraLight.ttf") format("truetype");
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Fahkwang";
+    src: url("#{$honghac-font-path}/Fahkwang-ExtraLightItalic.ttf") format("truetype");
+    font-weight: 200;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Fahkwang";
+    src: url("#{$honghac-font-path}/Fahkwang-Light.ttf") format("truetype");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Fahkwang";
+    src: url("#{$honghac-font-path}/Fahkwang-LightItalic.ttf") format("truetype");
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Fahkwang";
+    src: url("#{$honghac-font-path}/Fahkwang-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Fahkwang";
+    src: url("#{$honghac-font-path}/Fahkwang-Italic.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Fahkwang";
+    src: url("#{$honghac-font-path}/Fahkwang-Medium.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Fahkwang";
+    src: url("#{$honghac-font-path}/Fahkwang-MediumItalic.ttf") format("truetype");
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Fahkwang";
+    src: url("#{$honghac-font-path}/Fahkwang-SemiBold.ttf") format("truetype");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Fahkwang";
+    src: url("#{$honghac-font-path}/Fahkwang-SemiBoldItalic.ttf") format("truetype");
+    font-weight: 600;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Fahkwang";
+    src: url("#{$honghac-font-path}/Fahkwang-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Fahkwang";
+    src: url("#{$honghac-font-path}/Fahkwang-BoldItalic.ttf") format("truetype");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+
+// ---------- VÉN (display — TITLE ONLY) ----------
+// Tên family nội bộ của file là "VEN - Display Typeface"; ta expose thêm alias "VÉN"
+// cho tiện dùng. Web ăn theo alias này. Với PDF/ảnh, font-stack ở brand_tokens có
+// kèm "VEN - Display Typeface" để wkhtmltoimage khớp font hệ thống.
+@font-face {
+    font-family: "VÉN";
+    src: url("#{$honghac-font-path}/VEN-Regular.otf") format("opentype");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+}

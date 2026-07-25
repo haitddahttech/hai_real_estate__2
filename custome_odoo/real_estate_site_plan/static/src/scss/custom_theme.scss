@@ -1,111 +1,141 @@
 /**
- * Custom Theme - Soft Yellow Primary Color
- * Primary color: #c9a63f (Soft pastel yellow)
+ * Hồng Hạc City — Frontend theme override
+ * Primary  #2f3f1c (Urban Canopy)  ·  Secondary #fffaea (Warm Ivory)  ·  Accent #8d974e (Golden Cooper)
  */
 
-// Override Odoo's primary color variables
-$o-brand-odoo: #c9a63f !default;
-$o-brand-primary: #c9a63f !default;
+$hh-primary: #2f3f1c;
+$hh-secondary: #fffaea;
+$hh-accent: #8d974e;
 
-// Additional color variations
-$o-brand-lighten: lighten(#c9a63f, 10%) !default;
-$o-brand-darken: darken(#c9a63f, 10%) !default;
+// Override Odoo brand vars (best-effort — chỉ có tác dụng nếu scss này biên dịch cùng bundle biến)
+$o-brand-odoo: $hh-primary !default;
+$o-brand-primary: $hh-primary !default;
 
-// Override Bootstrap primary color
+// ----- Typography: Fahkwang cho toàn bộ frontend -----
+body,
+p,
+span,
+div,
+li,
+a,
+button,
+input,
+select,
+textarea,
+label,
+.o_portal {
+    font-family: var(--hh-font-primary, "Fahkwang", sans-serif);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--hh-font-primary, "Fahkwang", sans-serif);
+    color: $hh-primary;
+}
+
+// ----- Buttons -----
 .btn-primary {
-    background-color: #c9a63f !important;
-    border-color: #c9a63f !important;
+    background-color: $hh-primary !important;
+    border-color: $hh-primary !important;
+    color: $hh-secondary !important;
 
     &:hover,
     &:focus,
     &:active {
-        background-color: darken(#c9a63f, 10%) !important;
-        border-color: darken(#c9a63f, 10%) !important;
+        background-color: $hh-accent !important;
+        border-color: $hh-accent !important;
+        color: #fff !important;
     }
 }
 
-// Links
-a {
-    color: #c9a63f;
+.btn-outline-primary {
+    color: $hh-primary !important;
+    border-color: $hh-accent !important;
 
     &:hover {
-        color: darken(#c9a63f, 15%);
+        background-color: $hh-accent !important;
+        border-color: $hh-accent !important;
+        color: #fff !important;
     }
 }
 
-// Navbar
-.o_main_navbar {
-    background-color: #c9a63f !important;
+// ----- Links -----
+a {
+    color: $hh-accent;
+
+    &:hover {
+        color: darken($hh-accent, 15%);
+    }
 }
 
-// Buttons and badges
-.badge-primary {
-    background-color: #c9a63f !important;
-}
-
+// ----- Utility color classes -----
+.badge-primary,
 .bg-primary {
-    background-color: #c9a63f !important;
+    background-color: $hh-primary !important;
 }
 
 .text-primary {
-    color: #c9a63f !important;
+    color: $hh-primary !important;
 }
 
-// Form controls focus
 .form-control:focus,
 .form-select:focus {
-    border-color: #c9a63f !important;
-    box-shadow: 0 0 0 0.25rem rgba(201, 166, 63, 0.25) !important;
+    border-color: $hh-accent !important;
+    box-shadow: 0 0 0 0.25rem rgba(141, 151, 78, 0.25) !important;
 }
 
-// Checkboxes and radios
 .form-check-input:checked {
-    background-color: #c9a63f !important;
-    border-color: #c9a63f !important;
+    background-color: $hh-accent !important;
+    border-color: $hh-accent !important;
 }
 
-// Odoo specific elements
-.o_form_statusbar>.o_statusbar_status.o_arrow_button.btn-primary {
-    background-color: #c9a63f !important;
-    border-color: #c9a63f !important;
+.progress-bar {
+    background-color: $hh-accent !important;
 }
 
-.o_kanban_record .oe_kanban_colorpicker span[data-color="1"] {
-    background-color: #c9a63f !important;
+.nav-tabs .nav-link.active {
+    color: $hh-primary !important;
+    border-bottom-color: $hh-accent !important;
 }
 
-// Menu items active state
-.o_menu_sections .o_nav_entry.active {
-    background-color: rgba(201, 166, 63, 0.1) !important;
-    color: #c9a63f !important;
+.alert-primary {
+    background-color: rgba(141, 151, 78, 0.12) !important;
+    border-color: $hh-accent !important;
+    color: darken($hh-primary, 5%) !important;
 }
 
-// Stat buttons
-.oe_stat_button {
-    &:hover {
-        background-color: rgba(201, 166, 63, 0.1) !important;
+// ----- Website navbar (brand green) -----
+#wrapwrap header .navbar,
+.o_main_navbar {
+    background-color: $hh-primary !important;
+}
+
+header .navbar {
+    .nav-link {
+        color: rgba(255, 250, 234, 0.88) !important;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition: color 0.25s ease;
+
+        &:hover,
+        &.active {
+            color: #fff !important;
+        }
+    }
+
+    .navbar-brand {
+        color: $hh-secondary !important;
     }
 }
 
-// Progress bars
-.progress-bar {
-    background-color: #c9a63f !important;
+// Navbar đổ bóng mượt khi cuộn (class toggle bởi home_animations.js)
+header.hh-nav-scrolled .navbar,
+header .navbar.hh-nav-scrolled,
+.hh-nav-scrolled.navbar {
+    box-shadow: 0 6px 24px rgba(38, 52, 23, 0.28);
+    transition: box-shadow 0.35s ease;
 }
 
-// Tabs
-.nav-tabs .nav-link.active {
-    color: #c9a63f !important;
-    border-bottom-color: #c9a63f !important;
-}
-
-// Alerts
-.alert-primary {
-    background-color: rgba(201, 166, 63, 0.1) !important;
-    border-color: #c9a63f !important;
-    color: darken(#c9a63f, 30%) !important;
-}
-
-// Portal Navbar - Center Menu
+// Portal navbar center menu (giữ từ bản cũ)
 .navbar .container {
     display: flex !important;
     justify-content: space-between;
@@ -113,8 +143,6 @@ a {
 }
 
 .navbar-nav {
-
-    // Ensure navbar items are centered
     &.mx-auto {
         margin-left: auto !important;
         margin-right: auto !important;
@@ -131,20 +159,8 @@ a {
     margin-left: 0 !important;
 }
 
-
-// Site Plans Dropdown Styling
-#sitePlansDropdown {
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-
-    &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 0.25rem;
-    }
-}
-
+// Dropdown
 .dropdown-menu {
-    // Smooth dropdown animation
     animation: fadeInDown 0.3s ease-in-out;
 
     .dropdown-item {
@@ -158,25 +174,14 @@ a {
         }
 
         &:hover {
-            background-color: rgba(201, 166, 63, 0.1);
-            color: #c9a63f;
+            background-color: rgba(141, 151, 78, 0.12);
+            color: $hh-accent;
             padding-left: 1.75rem;
         }
-    }
-
-    .dropdown-divider {
-        margin: 0.5rem 0;
     }
 }
 
 @keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
 }

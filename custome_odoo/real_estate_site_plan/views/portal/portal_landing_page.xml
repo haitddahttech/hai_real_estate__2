@@ -25,6 +25,8 @@
          ===================================================================== -->
     <template id="portal_landing_page" name="Real Estate Landing Page">
         <t t-call="website.layout">
+            <!-- Ẩn footer mặc định của Odoo (trang chủ đã có footer brand hh-footer riêng) -->
+            <t t-set="no_footer" t-value="True"/>
             <div id="wrap">
                 <div class="hh-home">
 
@@ -50,9 +52,54 @@
                                 <i class="fa fa-map-marker"/> Khám Phá Dự Án
                             </a>
                         </div>
-                        <a href="#hh-feature-1" class="hh-scroll-cue" aria-label="Cuộn xuống">
+                        <a href="#hh-map" class="hh-scroll-cue" aria-label="Cuộn xuống">
                             <i class="fa fa-angle-down"/>
                         </a>
+                    </section>
+
+                    <!-- ============ 1.5) BẢN ĐỒ VỊ TRÍ (image map interactive) ============ -->
+                    <section id="hh-map" class="hh-section-full hh-map hh-snap reveal">
+                        <div class="hh-map__inner">
+                            <div class="hh-map__head">
+                                <span class="hh-feature__eyebrow">Vị trí kết nối</span>
+                                <h2 class="hh-map__title">Bản Đồ Liên Kết Vùng</h2>
+                            </div>
+                            <svg class="hh-map__svg" viewBox="0 0 2560 1539" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                            <defs>
+                                <filter id="pinGlow" x="-30%" y="-30%" width="160%" height="160%">
+                                    <feGaussianBlur in="SourceAlpha" stdDeviation="10" result="blur"/>
+                                    <feFlood flood-color="#FFB830" flood-opacity="0.7" result="color"/>
+                                    <feComposite in="color" in2="blur" operator="in" result="glow"/>
+                                    <feMerge>
+                                        <feMergeNode in="glow"/>
+                                        <feMergeNode in="SourceGraphic"/>
+                                    </feMerge>
+                                </filter>
+                                <linearGradient id="shimmerGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="white" stop-opacity="0"/>
+                                    <stop offset="30%" stop-color="white" stop-opacity="0.9"/>
+                                    <stop offset="50%" stop-color="white" stop-opacity="1"/>
+                                    <stop offset="70%" stop-color="white" stop-opacity="0.9"/>
+                                    <stop offset="100%" stop-color="white" stop-opacity="0"/>
+                                </linearGradient>
+                                <clipPath id="pinClip">
+                                    <rect x="0" y="0" width="180" height="198"/>
+                                </clipPath>
+                            </defs>
+                            <image width="2560" height="1539" href="/real_estate_site_plan/static/src/img/home/map-bg.png" xlink:href="/real_estate_site_plan/static/src/img/home/map-bg.png"/>
+                            <path class="hh-map__route hh-map__route--1" d="M812.28,842.99s77.62-27.57,132.77-84.26c0,2.55,52.6,78.64,52.6,78.64,0,0,14.3,14.81,20.94,17.87,6.64,3.57,82.72,29.11,82.72,29.11l47.49,22.98,64.85,41.36s7.6,5.94,12.19,1.15,25.66-25.28,25.66-25.28l11.49-9.19s11.87-8.62,27-13.98c-.77,0,29.49-8.23,29.49-8.23l33.51-8.04,31.02-6.32,31.02-5.36,32.55-5.17,36.38-7.47,29.87-6.7,14.17-3.06s22.02-4.6,35.23-5.74c.77.19,14.49-1.53,14.49-1.53l17.87-1.53,17.36-.77,20.17-.77,32.94,1.53,21.7,1.02,28.34.51h12.77s23.49-2.81,38.04-4.09c1.02,0,19.91-3.83,19.91-3.83l38.81-9.45,25.28-6.13,54.89-14.55,73.53-15.06,21.19-3.83,38.3-7.4,58.98-9.19,85.02-13.53,77.11-12,42.89-6.38s28.6-5.11,54.13-14.55c-.26,0,19.4-9.96,19.4-9.96l13.28-8.43,17.87-13.02,24-22.98,21.96-20.74,22.6-16.47s10.72-7.47,6.7-13.4-22.02-31.02-27.96-52.47c0-.77-7.47-28.91-7.47-28.91l-7.66-36.96-5.17-29.68s-.96-1.72-6.32-3.26c-6.51-.38-21.26-2.11-21.26-2.11l-15.51-1.53-24.32-2.49-23.36-3.06-24.13-3.26-19.34-3.45-17.23-3.45-6.26-1.91-10.34-3.06-22.34-6.64-16.21-6.64-20.94-9.57-26.04-14.3-23.23-15.45-27.45-20.17s-30.64-24-46.21-31.66c-.26-.26-27.57-13.15-44.68-16.47,0-.13-14.81-3.06-14.81-3.06l-16.47-2.68-21.45-2.94-16.09-1.91-18-2.94s-29.87-5.49-43.91-10.98-14.81-5.74-14.81-5.74l-9.7-4.98-12-8.43-16.09-10.72-11.11-7.98-8.23-5.17-7.85-5.17s-24.13-12.64-41.36-13.21c.38-.19-6.51-6.38-3.7-10.98s4.6-7.66,4.6-7.66l3.57-6.64,3.06-7.91,3.83-10.47,5.11-19.4,4.6-17.11,2.81-11.49,4.34-14.3,5.11-20.81,8.43-26.43,7.66-26.28"/>
+                            <polyline class="hh-map__route hh-map__route--2" points="837.45 1539 830.81 1526.06 830.81 1516.11 828 1507.68 812.94 1455.6 806.55 1431.34 804.51 1426.49 804.51 1403.26 804.51 1399.43 802.72 1394.57 802.72 1380.79 802.72 1353.72 800.17 1347.34 797.62 1337.64 793.79 1329.72 789.96 1323.6 785.62 1317.21 781.28 1304.7 773.62 1283.77 769.79 1274.06 768.51 1270.74 768.51 1262.57 768.51 1218.91 768.51 1214.06 762.38 1188.02 759.57 1173.72 759.57 1169.13 761.36 1158.66 762.38 1154.57 762.38 1149.21 761.11 1143.6 759.57 1133.64 758.55 1129.3 757.28 1123.94 757.28 1120.87 757.28 952.82 756.26 887.51 756.26 885.47 770.55 870.4 773.87 867.09 775.66 864.02 781.28 833.64 782.55 829.04 783.83 826.23 785.87 823.43 787.91 821.89 790.21 821.89 807.06 842.06"/>
+                            <path class="hh-map__route hh-map__route--3" d="M1783.66,56.89l-14.55,51.94s-1.02,5.49-4.72,7.91-27.96,20.55-27.96,20.55l-10.98,9.06-9.45,7.15-14.55,8.81-6.89,4.21s-6.13,3.45-10.6,7.66-29.36,25.4-29.36,25.4l-62.81,55.66-88.72,83.62-26.68,22.72s-3.06,5.36-14.81,9.7c-11.87,4.85-76.72,33.32-76.72,33.32,0,0-4.09,1.79-14.3,3.96s-11.62,2.3-11.62,2.3c0,0-10.09,2.55-20.3,7.66s-27.7,15.83-27.7,15.83l-71.62,40.72-29.49,16.34-18.89,11.49-27.06,18.51-16.34,12.26-35.74,33.96-51.19,52.21-41.11,44.55-79.79,84.89"/>
+                            <g transform="translate(1397.19 713.09)">
+                                <g class="pin-group">
+                                    <image filter="url(#pinGlow)" width="180" height="198" href="/real_estate_site_plan/static/src/img/home/map-pin.png" xlink:href="/real_estate_site_plan/static/src/img/home/map-pin.png"/>
+                                    <g clip-path="url(#pinClip)">
+                                        <rect class="pin-light" fill="url(#shimmerGrad)" x="-25" y="0" width="50" height="198" opacity="0.65"/>
+                                    </g>
+                                </g>
+                            </g>
+                        </svg>
+                        </div>
                     </section>
 
                     <!-- ============ 2) ẢNH NỔI BẬT ×7 ============ -->
@@ -79,6 +126,294 @@
                         </section>
                     </t>
 
+                    <!-- ============ MẢNG XANH — slideshow tiện ích ============ -->
+                    <section id="hh-green" class="hh-section-full hh-green hh-snap">
+                        <div class="hh-green__grid">
+                            <div class="hh-green__text reveal">
+                                <span class="hh-feature__eyebrow">Mảng Xanh</span>
+                                <h2 class="hh-green__title">Trong Lành</h2>
+                                <p class="hh-green__lead">Sống kề hồ, cận công viên — giữa thiên nhiên thuần khiết.</p>
+                                <p class="hh-green__body">
+                                    Tại phân khu Hồng Phát, những khoảng xanh vô tận dành cho cư dân, nơi đặc quyền sống
+                                    “kề hồ, cận công viên” trở thành hiện thực ngay ngưỡng cửa — kề cận công viên trung tâm
+                                    quy mô gần 20ha, công viên điểm đến 6,2ha và hồ điều hòa, trao tặng bầu không khí trong
+                                    lành và sự tĩnh lặng đáng giá đến từng centimet.
+                                </p>
+                                <a class="hh-btn-outline" href="https://honghacphumyhung.vn/phankhuhongphat/360/" target="_blank" rel="noopener">
+                                    Xem Thêm Tiện Ích <i class="fa fa-arrow-right"/>
+                                </a>
+                            </div>
+
+                            <div class="hh-green__slider reveal reveal--delay-1"
+                                 data-hh-green-total="17">
+                                <div class="hh-green__viewport">
+                                    <div class="hh-green__track">
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-01.webp" alt="CÔNG VIÊN TRUNG TÂM 17,8ha" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">CÔNG VIÊN TRUNG TÂM 17,8ha</h4>
+                                            <p class="hh-green__cap-desc">Trải nghiệm sống xanh độc bản giữa lòng đô thị sinh thái.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-02.webp" alt="CÔNG VIÊN" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">CÔNG VIÊN</h4>
+                                            <p class="hh-green__cap-desc">Lá phổi xanh của toàn khu, nơi tái tạo năng lượng và kết nối cộng đồng.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-03.webp" alt="CÔNG VIÊN" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">CÔNG VIÊN</h4>
+                                            <p class="hh-green__cap-desc">Lá phổi xanh của toàn khu, nơi tái tạo năng lượng và kết nối cộng đồng.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-04.webp" alt="CÔNG VIÊN" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">CÔNG VIÊN</h4>
+                                            <p class="hh-green__cap-desc">Lá phổi xanh của toàn khu, nơi tái tạo năng lượng và kết nối cộng đồng.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-05.webp" alt="CÔNG VIÊN" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">CÔNG VIÊN</h4>
+                                            <p class="hh-green__cap-desc">Lá phổi xanh của toàn khu, nơi tái tạo năng lượng và kết nối cộng đồng.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-06.webp" alt="KHU SINH HOẠT CỘNG ĐỒNG" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">KHU SINH HOẠT CỘNG ĐỒNG</h4>
+                                            <p class="hh-green__cap-desc">Không gian giao lưu, kết nối cư dân trong một môi trường sống văn minh.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-07.webp" alt="KHU VỰC NGHỈ NGƠI" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">KHU VỰC NGHỈ NGƠI</h4>
+                                            <p class="hh-green__cap-desc">Không gian thư giãn yên tĩnh, tận hưởng thiên nhiên xanh mát mỗi ngày.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-08.webp" alt="CAFÉ BỜ HỒ" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">CAFÉ BỜ HỒ</h4>
+                                            <p class="hh-green__cap-desc">Thưởng thức cà phê bên hồ điều hòa thơ mộng, lãng mạn và thư thái.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-09.webp" alt="OUTDOOR GYM" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">OUTDOOR GYM</h4>
+                                            <p class="hh-green__cap-desc">Phòng tập ngoài trời hiện đại giữa thiên nhiên xanh trong lành.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-10.webp" alt="SÂN CHƠI SKATEBOARD" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">SÂN CHƠI SKATEBOARD</h4>
+                                            <p class="hh-green__cap-desc">Không gian thể thao sôi động, hiện đại dành cho giới trẻ năng động.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-11.webp" alt="KIOSK TIỆN ÍCH" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">KIOSK TIỆN ÍCH</h4>
+                                            <p class="hh-green__cap-desc">Dịch vụ đa dạng tiện lợi, phục vụ nhu cầu sinh hoạt hàng ngày của cư dân.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-12.webp" alt="TRƯỜNG HỌC QUỐC TẾ" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">TRƯỜNG HỌC QUỐC TẾ</h4>
+                                            <p class="hh-green__cap-desc">Hệ thống giáo dục chất lượng cao, chuẩn quốc tế ngay trong lòng khu đô thị.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-13.webp" alt="KHÔNG GIAN THỂ THAO TRƯỜNG HỌC" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">KHÔNG GIAN THỂ THAO TRƯỜNG HỌC</h4>
+                                            <p class="hh-green__cap-desc">Sân chơi rộng rãi, an toàn cho học sinh vận động và phát triển thể chất.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-14.webp" alt="TRƯỜNG TIỂU HỌC" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">TRƯỜNG TIỂU HỌC</h4>
+                                            <p class="hh-green__cap-desc">Môi trường học tập hiện đại, thân thiện cho con trẻ phát triển toàn diện.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-15.webp" alt="SÂN THỂ THAO TRƯỜNG HỌC" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">SÂN THỂ THAO TRƯỜNG HỌC</h4>
+                                            <p class="hh-green__cap-desc">Sân chơi rộng rãi, an toàn cho học sinh vận động và phát triển thể chất.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-16.webp" alt="TRƯỜNG HỌC" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">TRƯỜNG HỌC</h4>
+                                            <p class="hh-green__cap-desc">Hỗ trợ phát triển kiến thức toàn diện.</p>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/greenspace/slide-17.webp" alt="TRUNG TÂM Y TẾ VNVC" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <h4 class="hh-green__cap-title">TRUNG TÂM Y TẾ VNVC</h4>
+                                            <p class="hh-green__cap-desc">Chăm sóc sức khỏe toàn diện với đội ngũ y bác sĩ chuyên nghiệp hàng đầu.</p>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="hh-green__nav hh-green__nav--prev" aria-label="Ảnh trước"><i class="fa fa-angle-left"/></button>
+                                <button type="button" class="hh-green__nav hh-green__nav--next" aria-label="Ảnh tiếp theo"><i class="fa fa-angle-right"/></button>
+                                <div class="hh-green__progress">
+                                    <span class="hh-green__cur">01</span>
+                                    <div class="hh-green__bar"><div class="hh-green__fill"/></div>
+                                    <span class="hh-green__total">17</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ============ NƠI KIẾN TRÚC — slideshow sản phẩm ============ -->
+                    <section id="hh-arch" class="hh-section-full hh-arch hh-snap">
+                        <div class="hh-green__grid hh-arch__grid">
+                            <div class="hh-green__slider hh-arch__slider reveal" data-hh-green-total="14">
+                                <div class="hh-green__viewport">
+                                    <div class="hh-green__track">
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-01.webp" alt="Villa C2" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Biệt thự</span>
+                                            <h4 class="hh-green__cap-title">Villa C2</h4>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-02.webp" alt="Villa B" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Biệt thự</span>
+                                            <h4 class="hh-green__cap-title">Villa B</h4>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-03.webp" alt="Villa B2" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Biệt thự</span>
+                                            <h4 class="hh-green__cap-title">Villa B2</h4>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-04.webp" alt="Semi-detached" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Biệt thự song lập</span>
+                                            <h4 class="hh-green__cap-title">Semi-detached</h4>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-05.webp" alt="Semi-detached" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Biệt thự song lập</span>
+                                            <h4 class="hh-green__cap-title">Semi-detached</h4>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-06.webp" alt="Semi-detached" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Biệt thự song lập</span>
+                                            <h4 class="hh-green__cap-title">Semi-detached</h4>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-07.webp" alt="Semi-detached B" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Biệt thự song lập</span>
+                                            <h4 class="hh-green__cap-title">Semi-detached B</h4>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-08.webp" alt="Semi-detached B-3" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Biệt thự song lập</span>
+                                            <h4 class="hh-green__cap-title">Semi-detached B-3</h4>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-09.webp" alt="SH A2.1" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Shophouse</span>
+                                            <h4 class="hh-green__cap-title">SH A2.1</h4>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-10.webp" alt="SH A2" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Shophouse</span>
+                                            <h4 class="hh-green__cap-title">SH A2</h4>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-11.webp" alt="SH B2" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Shophouse</span>
+                                            <h4 class="hh-green__cap-title">SH B2</h4>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-12.webp" alt="Townhouse A" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Townhouse</span>
+                                            <h4 class="hh-green__cap-title">Townhouse A</h4>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-13.webp" alt="Townhouse A" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Townhouse</span>
+                                            <h4 class="hh-green__cap-title">Townhouse A</h4>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-14.webp" alt="Townhouse B &amp; D" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Townhouse</span>
+                                            <h4 class="hh-green__cap-title">Townhouse B &amp; D</h4>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="hh-green__nav hh-green__nav--prev" aria-label="Ảnh trước"><i class="fa fa-angle-left"/></button>
+                                <button type="button" class="hh-green__nav hh-green__nav--next" aria-label="Ảnh tiếp theo"><i class="fa fa-angle-right"/></button>
+                                <div class="hh-green__progress hh-arch__progress">
+                                    <span class="hh-green__cur">01</span>
+                                    <div class="hh-green__bar"><div class="hh-green__fill"/></div>
+                                    <span class="hh-green__total">14</span>
+                                </div>
+                            </div>
+
+                            <div class="hh-green__text hh-arch__text reveal reveal--delay-1">
+                                <span class="hh-feature__eyebrow">Nơi Kiến Trúc</span>
+                                <h2 class="hh-green__title hh-arch__title">Tiếp Mạch <span>Di Sản</span></h2>
+                                <p class="hh-green__body hh-arch__body">
+                                    Tại Phân khu Hồng Phát, mỗi căn nhà là kết tinh của kiến trúc Modern Classical sang trọng,
+                                    ngôn ngữ Indochine tinh tế, tô điểm bởi dáng hình đặc trưng miền Kinh Bắc — từ chiếc nón
+                                    quai thao mềm mại đến hình ảnh lọng vua uy nghiêm.
+                                </p>
+                                <p class="hh-green__body hh-arch__body">
+                                    Tất cả thổi hồn nên một không gian sống đậm bản sắc, vừa nghệ thuật vừa chuẩn sống hiện đại,
+                                    dành riêng cho chủ nhân tinh hoa.
+                                </p>
+                                <a class="hh-btn-outline hh-btn-outline--light" href="#hh-projects">
+                                    Xem Mặt Bằng <i class="fa fa-arrow-right"/>
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- ============ 3) CARD DỰ ÁN ============ -->
                     <section id="hh-projects" class="hh-projects hh-snap">
                         <div class="container">
@@ -104,9 +439,6 @@
                                         <div class="col-lg-4 col-md-6 reveal">
                                             <div class="hh-card">
                                                 <div class="hh-card__media">
-                                                    <t t-if="site_plan.polygon_count">
-                                                        <span class="hh-card__badge"><t t-esc="site_plan.polygon_count"/> lô</span>
-                                                    </t>
                                                     <t t-if="site_plan.cover_image">
                                                         <img class="hh-card__img"
                                                              t-attf-src="/web/image/site.plan/#{site_plan.id}/cover_image"
@@ -147,10 +479,8 @@
                             <div class="hh-footer__title">HỒNG HẠC CITY</div>
                             <div class="hh-footer__brandline">Phú Mỹ Hưng &amp; Nomura</div>
                             <div class="hh-footer__contacts">
-                                <span><i class="fa fa-phone"/> 024 3936 2640</span>
-                                <span><i class="fa fa-phone"/> 0222 3616 888</span>
-                                <a href="https://honghacphumyhung.vn" target="_blank" rel="noopener">
-                                    <i class="fa fa-globe"/> honghacphumyhung.vn
+                                <a href="https://phumyhung.group" target="_blank" rel="noopener">
+                                    <i class="fa fa-globe"/> phumyhung.group
                                 </a>
                             </div>
                             <hr class="hh-footer__divider"/>

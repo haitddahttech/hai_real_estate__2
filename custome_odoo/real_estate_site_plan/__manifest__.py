@@ -62,6 +62,7 @@ This module allows you to:
             'real_estate_site_plan/static/src/scss/home.scss',
             'real_estate_site_plan/static/src/scss/fab_360.scss',
             'real_estate_site_plan/static/src/js/home_animations.js',
+            'real_estate_site_plan/static/src/js/greenspace_slider.js',
             'real_estate_site_plan/static/src/js/fab_360.js',
             # 'real_estate_site_plan/static/src/js/portal_site_map.js',  # Loaded manually in template for cache busting
         ],

@@ -45,12 +45,22 @@
     
     <!-- Website Navbar: ONLY link individual site plans in header, remove other menus -->
     <template id="site_plan_navbar_menus" inherit_id="website.template_header_default" priority="50">
-        <!-- 1. Replace default menu loop with our site plans -->
+        <!-- 1. Replace default menu loop: chỉ "Trang chủ" + toàn bộ dự án active (top-level, phẳng) -->
         <xpath expr="//t[@t-foreach='website.menu_id.child_id']" position="replace">
+            <t t-set="current_path" t-value="request.httprequest.path"/>
+
+            <!-- Trang chủ -->
+            <li class="nav-item">
+                <a t-attf-class="nav-link #{'active' if current_path in ('/', '/real-estate', '/real-estate/') else ''}"
+                   href="/real-estate">Trang chủ</a>
+            </li>
+
+            <!-- Toàn bộ dự án đang active -->
             <t t-set="active_site_plans" t-value="request.env['site.plan'].sudo().search([('active', '=', True)])"/>
             <t t-foreach="active_site_plans" t-as="plan">
                 <li class="nav-item">
-                    <a class="nav-link" t-attf-href="/my/site-plan/#{plan.id}">
+                    <a t-attf-class="nav-link #{'active' if current_path == '/my/site-plan/%s' % plan.id else ''}"
+                       t-attf-href="/my/site-plan/#{plan.id}">
                         <t t-esc="plan.name"/>
                     </a>
                 </li>
@@ -85,7 +95,7 @@
     </template>
 
 
-    <!-- Site Plans List Page -->
+    <!-- Site Plans List Page — lưới card theo brand Hồng Hạc City -->
     <template id="portal_my_site_plans" name="My Site Plans">
         <t t-call="portal.portal_layout">
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
@@ -95,38 +105,52 @@
             </t>
 
             <t t-if="not site_plans">
-                <div class="alert alert-info" role="alert">
-                    <p class="mb-0">Hiện tại chưa có bản đồ dự án nào.</p>
+                <div class="hh-empty text-center py-5">
+                    <i class="fa fa-building-o fa-3x mb-3 d-block"/>
+                    <h4>Chưa Có Dự Án</h4>
+                    <p class="mb-0">Hiện tại chưa có bản đồ dự án nào. Vui lòng quay lại sau!</p>
                 </div>
             </t>
 
-            <t t-if="site_plans" t-call="portal.portal_table">
-                <thead>
-                    <tr class="active">
-                        <th>Tên Dự Án</th>
-                        <th></th>
-                        <th class="text-end">Thao Tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <t t-foreach="site_plans" t-as="site_plan">
-                        <tr>
-                            <td>
-                                <a t-attf-href="/my/site-plan/#{site_plan.id}">
-                                    <t t-esc="site_plan.name"/>
-                                </a>
-                            </td>
-                            <td>
+            <t t-if="site_plans">
+                <div class="hh-portal-grid">
+                    <div class="row g-4">
+                        <t t-foreach="site_plans" t-as="site_plan">
+                            <div class="col-lg-4 col-md-6">
+                                <div class="hh-card">
+                                    <a t-attf-href="/my/site-plan/#{site_plan.id}" class="hh-card__media">
+                                        <t t-if="site_plan.polygon_count">
+                                            <span class="hh-card__badge"><t t-esc="site_plan.polygon_count"/> lô</span>
+                                        </t>
+                                        <t t-if="site_plan.cover_image">
+                                            <img class="hh-card__img"
+                                                 t-attf-src="/web/image/site.plan/#{site_plan.id}/cover_image"
+                                                 t-att-alt="site_plan.name"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="hh-card__placeholder"><i class="fa fa-building-o"/></div>
+                                        </t>
+                                    </a>
+                                    <div class="hh-card__body">
+                                        <h3 class="hh-card__title"><t t-esc="site_plan.name"/></h3>
+                                        <p class="hh-card__desc">
+                                            <t t-if="site_plan.description"
+                                               t-esc="site_plan.description[:110] + '…' if len(site_plan.description) > 110 else site_plan.description"/>
+                                            <t t-else="">Khám phá bản đồ chi tiết và lựa chọn lô đất phù hợp với nhu cầu của bạn.</t>
+                                        </p>
+                                        <a t-attf-href="/my/site-plan/#{site_plan.id}" class="hh-card__cta">
+                                            Xem Bản Đồ <i class="fa fa-arrow-right"/>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
 
-                            </td>
-                            <td class="text-end">
-                                <a t-attf-href="/my/site-plan/#{site_plan.id}" class="btn btn-sm btn-primary">
-                                    <i class="fa fa-map"/> Xem Bản Đồ
-                                </a>
-                            </td>
-                        </tr>
-                    </t>
-                </tbody>
+                <div t-if="pager" class="o_portal_pager mt-4 d-flex justify-content-center">
+                    <t t-call="portal.pager"/>
+                </div>
             </t>
         </t>
     </template>

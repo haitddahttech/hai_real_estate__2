@@ -39,16 +39,8 @@
                             <source src="/real_estate_site_plan/static/src/video/hero.webm" type="video/webm"/>
                             <source src="/real_estate_site_plan/static/src/video/hero.mp4" type="video/mp4"/>
                         </video>
-                        <div class="hh-hero__overlay"/>
                         <div class="hh-hero__content">
-                            <img class="hh-hero__logo"
-                                 src="/real_estate_site_plan/static/src/img/home/logo-white.png"
-                                 alt="Hồng Hạc City"
-                                 onerror="this.style.display='none'"/>
-                            <span class="hh-hero__brandline reveal">Phát triển bởi Phú Mỹ Hưng &amp; Nomura</span>
-                            <h1 class="hh-hero__title reveal reveal--delay-1">HỒNG HẠC CITY</h1>
-                            <p class="hh-hero__slogan reveal reveal--delay-2">Đô Thị Văn Minh – Cộng Đồng Hạnh Phúc</p>
-                            <a href="#hh-projects" class="hh-hero__cta reveal reveal--delay-3">
+                            <a href="#hh-projects" class="hh-hero__cta reveal">
                                 <i class="fa fa-map-marker"/> Khám Phá Dự Án
                             </a>
                         </div>
@@ -58,9 +50,9 @@
                     </section>
 
                     <!-- ============ 1.5) BẢN ĐỒ VỊ TRÍ (image map interactive) ============ -->
-                    <section id="hh-map" class="hh-section-full hh-map hh-snap reveal">
+                    <section id="hh-map" class="hh-section-full hh-map hh-snap">
                         <div class="hh-map__inner">
-                            <div class="hh-map__head">
+                            <div class="hh-map__head reveal hh-stagger">
                                 <span class="hh-feature__eyebrow">Vị trí kết nối</span>
                                 <h2 class="hh-map__title">Bản Đồ Liên Kết Vùng</h2>
                             </div>
@@ -129,7 +121,7 @@
                     <!-- ============ MẢNG XANH — slideshow tiện ích ============ -->
                     <section id="hh-green" class="hh-section-full hh-green hh-snap">
                         <div class="hh-green__grid">
-                            <div class="hh-green__text reveal">
+                            <div class="hh-green__text reveal hh-stagger">
                                 <span class="hh-feature__eyebrow">Mảng Xanh</span>
                                 <h2 class="hh-green__title">Trong Lành</h2>
                                 <p class="hh-green__lead">Sống kề hồ, cận công viên — giữa thiên nhiên thuần khiết.</p>
@@ -395,7 +387,7 @@
                                 </div>
                             </div>
 
-                            <div class="hh-green__text hh-arch__text reveal reveal--delay-1">
+                            <div class="hh-green__text hh-arch__text reveal hh-stagger">
                                 <span class="hh-feature__eyebrow">Nơi Kiến Trúc</span>
                                 <h2 class="hh-green__title hh-arch__title">Tiếp Mạch <span>Di Sản</span></h2>
                                 <p class="hh-green__body hh-arch__body">
@@ -417,7 +409,7 @@
                     <!-- ============ 3) CARD DỰ ÁN ============ -->
                     <section id="hh-projects" class="hh-projects hh-snap">
                         <div class="container">
-                            <div class="hh-section-head reveal">
+                            <div class="hh-section-head reveal hh-stagger">
                                 <span class="hh-section-head__eyebrow">Bất động sản Wellness &amp; Longevity</span>
                                 <h2 class="hh-section-head__title">Dự Án Nổi Bật</h2>
                                 <p class="hh-section-head__sub">Khám phá bản đồ tương tác và lựa chọn không gian sống an lành cho gia đình.</p>

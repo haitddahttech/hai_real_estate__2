@@ -4,7 +4,10 @@
 // hệ thống được cài qua hooks.install_brand_fonts.
 // =============================================================
 
-$honghac-font-path: "/real_estate_site_plan/static/src/fonts";
+// Đường dẫn TƯƠNG ĐỐI từ file scss này (static/src/scss/) tới thư mục font
+// (static/src/fonts/). Odoo rewrite url() theo vị trí file scss → phải dùng
+// tương đối, KHÔNG dùng tuyệt đối "/real_estate_site_plan/..." (sẽ bị nối đôi path).
+$honghac-font-path: "../fonts";
 
 // ---------- Fahkwang (primary — heading + body + UI) ----------
 @font-face {

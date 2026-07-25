@@ -37,7 +37,6 @@
                                 data-src="https://honghacphumyhung.vn/phankhuhongphat/360/"
                                 title="Tham quan 360 độ Phân khu Hồng Phát"
                                 allow="fullscreen; accelerometer; gyroscope; magnetometer; xr-spatial-tracking"
-                                allowfullscreen="allowfullscreen"
                                 loading="lazy"/>
                     </div>
                 </div>

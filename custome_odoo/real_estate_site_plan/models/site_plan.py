@@ -82,46 +82,28 @@ class SitePlan(models.Model):
         help='Tên gốc của file Catalogue đã tải lên'
     )
 
-    project_legal_1 = fields.Binary(
-        string='Pháp lý dự án 1',
-        attachment=True,
-        help='File pháp lý dự án 1 (PDF)'
-    )
-    project_legal_1_filename = fields.Char(string='Tên file Pháp lý 1')
-
-    project_legal_2 = fields.Binary(
-        string='Pháp lý dự án 2',
-        attachment=True,
-        help='File pháp lý dự án 2 (PDF)'
-    )
-    project_legal_2_filename = fields.Char(string='Tên file Pháp lý 2')
-
-    project_legal_3 = fields.Binary(
-        string='Pháp lý dự án 3',
-        attachment=True,
-        help='File pháp lý dự án 3 (PDF)'
-    )
-    project_legal_3_filename = fields.Char(string='Tên file Pháp lý 3')
-
-    project_legal_4 = fields.Binary(
-        string='Pháp lý dự án 4',
-        attachment=True,
-        help='File pháp lý dự án 4 (PDF)'
-    )
-    project_legal_4_filename = fields.Char(string='Tên file Pháp lý 4')
-
-    project_legal_5 = fields.Binary(
-        string='Pháp lý dự án 5',
-        attachment=True,
-        help='File pháp lý dự án 5 (PDF)'
-    )
-    project_legal_5_filename = fields.Char(string='Tên file Pháp lý 5')
-
     folder_ids = fields.One2many(
         comodel_name='site.plan.folder',
         inverse_name='site_plan_id',
         string='Thư mục ảnh'
     )
+
+    def get_legal_attachments(self):
+        """Hồ sơ pháp lý của phân khu = các tệp đính kèm của chính bản ghi này.
+
+        Thay cho 5 trường cứng project_legal_1..5 trước đây: người dùng đính kèm
+        bao nhiêu tệp tuỳ ý qua chatter của site.plan.
+
+        res_field = False là bắt buộc: các trường Binary(attachment=True) của
+        model (image, cover_image, catalog...) cũng được lưu trong ir.attachment
+        nhưng có res_field, không phải hồ sơ pháp lý.
+        """
+        self.ensure_one()
+        return self.env['ir.attachment'].sudo().search([
+            ('res_model', '=', 'site.plan'),
+            ('res_id', '=', self.id),
+            ('res_field', '=', False),
+        ], order='id')
 
     @api.model_create_multi
     def create(self, vals_list):

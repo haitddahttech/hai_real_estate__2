@@ -17,6 +17,8 @@
                         <field name="bank_account_holder_name"/>
                         <field name="bank_account_number"/>
                         <field name="swift_code"/>
+                        <field name="product_category_ids" widget="many2many_tags" optional="show"
+                               placeholder="Để trống = mọi danh mục"/>
                         <field name="payment_qr_code" widget="image" class="oe_avatar" options="{'size': [50, 50]}"/>
                     </list>
                     <form>
@@ -32,6 +34,14 @@
                                     <field name="sequence"/>
                                     <field name="active"/>
                                 </group>
+                            </group>
+                            <group string="Phạm vi áp dụng">
+                                <field name="product_category_ids" widget="many2many_tags" nolabel="1"
+                                       placeholder="Để trống = hiển thị ở mọi sản phẩm"/>
+                                <div class="text-muted" colspan="2">
+                                    Để trống: tài khoản hiển thị trên màn hình chi tiết của mọi sản phẩm.
+                                    Nếu chọn danh mục: chỉ hiển thị ở các sản phẩm thuộc đúng những danh mục đó.
+                                </div>
                             </group>
                             <group string="Mã QR Chuyển khoản">
                                 <field name="payment_qr_code" widget="image" nolabel="1"/>

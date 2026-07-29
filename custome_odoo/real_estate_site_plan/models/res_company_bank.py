@@ -44,7 +44,17 @@ class ResCompanyBank(models.Model):
         string='QR Chuyển khoản',
         help='Hình ảnh mã QR để khách hàng quét chuyển khoản'
     )
-    
+
+    product_category_ids = fields.Many2many(
+        comodel_name='product.category',
+        relation='res_company_bank_product_categ_rel',
+        column1='bank_id',
+        column2='category_id',
+        string='Danh mục sản phẩm áp dụng',
+        help='Để TRỐNG: tài khoản hiển thị ở mọi sản phẩm.\n'
+             'Có chọn: chỉ hiển thị ở các sản phẩm thuộc đúng những danh mục này.',
+    )
+
     sequence = fields.Integer(
         string='Thứ tự',
         default=10

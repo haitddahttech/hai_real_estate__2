@@ -312,6 +312,21 @@ class ProductTemplate(models.Model):
             else:
                 product.price_per_m2 = 0.0
 
+    def get_available_bank_accounts(self):
+        """Tài khoản ngân hàng được phép hiển thị cho sản phẩm này.
+
+        Dùng chung cho màn portal chi tiết sản phẩm và template PDF/ảnh.
+        - Tài khoản KHÔNG chọn danh mục -> hiện ở mọi sản phẩm.
+        - Tài khoản CÓ chọn danh mục    -> chỉ hiện nếu danh mục của sản phẩm
+                                            nằm trong danh sách đã chọn.
+        """
+        self.ensure_one()
+        banks = self.env.company.sudo().bank_account_ids.filtered(lambda b: b.active)
+        categ = self.categ_id
+        return banks.filtered(
+            lambda b: not b.product_category_ids or categ in b.product_category_ids
+        )
+
     def get_available_discounts(self):
         """Trả về danh sách các discount config áp dụng được cho sản phẩm này"""
         self.ensure_one()

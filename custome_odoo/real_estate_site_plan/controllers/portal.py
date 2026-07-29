@@ -11,6 +11,87 @@ from odoo.addons.portal.controllers.portal import CustomerPortal, pager as porta
 
 _logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# Trang chủ — 7 section "ảnh nổi bật"
+# ---------------------------------------------------------------------------
+# 'media' là đường dẫn TƯƠNG ĐỐI từ static/src/. Section nào không tìm thấy file
+# trên đĩa sẽ bị bỏ qua hoàn toàn (không render section rỗng).
+# Muốn đổi chữ hiển thị: sửa ngay tại đây.
+MODULE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_SRC = os.path.join(MODULE_ROOT, 'static', 'src')
+STATIC_URL = '/real_estate_site_plan/static/src/'
+
+HOME_FEATURES = [
+    {'media': 'img/home/feature-1.jpg', 'type': 'image',
+     'eyebrow': 'Vượng Khởi', 'title': 'Hồng Phát',
+     'text': 'Khởi đầu sự phồn vinh, tài lộc và cơ hội phát triển bền vững.',
+     'align': ''},
+    {'media': 'img/home/feature-2.jpg', 'type': 'image',
+     'eyebrow': 'Vượng Bền', 'title': 'Hồng Thịnh',
+     'text': 'Thịnh vượng lâu dài, giá trị gia tăng theo thời gian và di sản trường tồn.',
+     'align': 'hh-feature--left'},
+    {'media': 'img/home/feature-3.jpg', 'type': 'image',
+     'eyebrow': 'Vượng An', 'title': 'Hồng Phúc',
+     'text': 'An lạc trong tâm hồn, cuộc sống khoẻ mạnh và hạnh phúc vẹn tròn.',
+     'align': 'hh-feature--right'},
+    {'media': 'img/home/feature-4.jpg', 'type': 'image',
+     'eyebrow': 'Wellness Living', 'title': 'Chất Sống Xanh',
+     'text': 'Không gian sống Wellness — ánh sáng tự nhiên, không khí trong lành, cân bằng tâm – thân – trí.',
+     'align': ''},
+    # feature-5 dùng VIDEO nền; feature-5.jpg (nếu có) làm poster lúc video đang tải.
+    {'media': 'video/feature-5.mp4', 'type': 'video', 'poster': 'img/home/feature-5.jpg',
+     'eyebrow': 'Di Sản Kinh Bắc', 'title': 'Chất Sống Kinh Bắc',
+     'text': 'Đậm đà bản sắc văn hoá Kinh Bắc kết hợp chuẩn mực sống hiện đại.',
+     'align': 'hh-feature--left'},
+    {'media': 'img/home/feature-6.jpg', 'type': 'image',
+     'eyebrow': 'Cộng Đồng Tinh Anh', 'title': 'Cộng Đồng Hạnh Phúc',
+     'text': 'Nơi hội tụ những cư dân tinh anh, cùng kiến tạo giá trị sống trường tồn.',
+     'align': 'hh-feature--right'},
+    {'media': 'img/home/feature-7.jpg', 'type': 'image',
+     'eyebrow': 'Eco City', 'title': 'Đô Thị Văn Minh',
+     'text': 'Đô thị xanh sinh thái tích hợp trọn vẹn tiện ích, nâng đỡ mọi giá trị sống.',
+     'align': ''},
+]
+
+
+# ---------------------------------------------------------------------------
+# Trang chủ — dải "Kết nối vùng" (thay cho ảnh infographic tĩnh)
+# ---------------------------------------------------------------------------
+# Mỗi mốc là một điểm dừng trên trục đường, xếp theo khoảng cách tăng dần.
+# 'color' dùng để tô số km, icon, viền thẻ và ghim bản đồ của mốc đó.
+HOME_CONNECTIVITY = [
+    {'km': '0', 'tag': 'Tiếp giáp', 'color': '#c2413b', 'items': [
+        {'icon': 'fa-train', 'text': 'Tuyến đường sắt Xuyên Việt Trung Quốc – Hà Nội – Hải Phòng'},
+        {'icon': 'fa-map-signs', 'text': 'Xã Thuận An, Hà Nội (Gia Lâm cũ)'},
+    ]},
+    {'km': '2.5', 'tag': '', 'color': '#e08d2e', 'items': [
+        {'icon': 'fa-road', 'text': 'Đường cao tốc Hà Nội – Gia Bình'},
+        {'icon': 'fa-train', 'text': 'Đường sắt cao tốc Hà Nội – Quảng Ninh'},
+    ]},
+    {'km': '3.5', 'tag': '', 'color': '#5b8c3e', 'items': [
+        {'icon': 'fa-dot-circle-o', 'text': 'Đường vành đai 4'},
+    ]},
+    {'km': '20', 'tag': '', 'color': '#d4a531', 'items': [
+        {'icon': 'fa-plane', 'text': 'Sân bay quốc tế Gia Bình (tương lai)'},
+    ]},
+    {'km': '23', 'tag': '', 'color': '#b8353f', 'items': [
+        {'icon': 'fa-university', 'text': 'Trung tâm thành phố Bắc Ninh'},
+    ]},
+    {'km': '25', 'tag': '', 'color': '#2f6fb0', 'items': [
+        {'icon': 'fa-building', 'text': 'Trung tâm thành phố Hà Nội'},
+    ]},
+    {'km': '40', 'tag': '', 'color': '#2b8fc4', 'items': [
+        {'icon': 'fa-plane', 'text': 'Sân bay Nội Bài'},
+    ]},
+]
+
+
+def _static_exists(rel_path):
+    """Kiểm tra file tĩnh có thật trên đĩa không (rel_path tính từ static/src/)."""
+    if not rel_path:
+        return False
+    return os.path.isfile(os.path.join(STATIC_SRC, *rel_path.split('/')))
+
 
 class SitePlanPortal(CustomerPortal):
 
@@ -26,10 +107,40 @@ class SitePlanPortal(CustomerPortal):
         values['site_plans_list'] = site_plans
         return values
 
+    def _get_home_features(self):
+        """7 section ảnh nổi bật, đã lọc bỏ những section thiếu file media.
+
+        Trả về list dict kèm sẵn URL để template không phải tự ghép chuỗi.
+        """
+        features = []
+        for feat in HOME_FEATURES:
+            if not _static_exists(feat['media']):
+                _logger.info(
+                    'Trang chủ: bỏ qua section "%s" — thiếu file %s',
+                    feat['title'], feat['media'],
+                )
+                continue
+
+            item = dict(feat)
+            item['url'] = STATIC_URL + feat['media']
+
+            poster = feat.get('poster')
+            item['poster_url'] = STATIC_URL + poster if _static_exists(poster) else False
+
+            # Bản .webm cùng tên (nếu có) được ưu tiên vì nhẹ hơn.
+            webm = feat['media'].rsplit('.', 1)[0] + '.webm'
+            item['webm_url'] = STATIC_URL + webm if _static_exists(webm) else False
+
+            features.append(item)
+        return features
+
     @http.route(['/', '/real-estate', '/real-estate/'], type='http', auth='user', website=True)
     def portal_landing_page(self, **kw):
         """Landing page for real estate site plans"""
-        return request.render('real_estate_site_plan.portal_landing_page')
+        return request.render('real_estate_site_plan.portal_landing_page', {
+            'features': self._get_home_features(),
+            'connectivity': HOME_CONNECTIVITY,
+        })
 
     @http.route(['/my/site-plans', '/my/site-plans/page/<int:page>'], type='http', auth='user', website=True)
     def portal_my_site_plans(self, page=1, sortby=None, **kw):

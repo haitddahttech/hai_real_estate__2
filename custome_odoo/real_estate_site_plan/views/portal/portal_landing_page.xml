@@ -94,21 +94,69 @@
                         </div>
                     </section>
 
-                    <!-- ============ 2) ẢNH NỔI BẬT ×7 ============ -->
-                    <t t-set="features" t-value="[
-                        {'img': 'feature-1.jpg', 'eyebrow': 'Vượng Khởi',        'title': 'Hồng Phát',           'text': 'Khởi đầu sự phồn vinh, tài lộc và cơ hội phát triển bền vững.',                              'align': ''},
-                        {'img': 'feature-2.jpg', 'eyebrow': 'Vượng Bền',         'title': 'Hồng Thịnh',          'text': 'Thịnh vượng lâu dài, giá trị gia tăng theo thời gian và di sản trường tồn.',                'align': 'hh-feature--left'},
-                        {'img': 'feature-3.jpg', 'eyebrow': 'Vượng An',          'title': 'Hồng Phúc',           'text': 'An lạc trong tâm hồn, cuộc sống khoẻ mạnh và hạnh phúc vẹn tròn.',                           'align': 'hh-feature--right'},
-                        {'img': 'feature-4.jpg', 'eyebrow': 'Wellness Living',   'title': 'Chất Sống Xanh',      'text': 'Không gian sống Wellness — ánh sáng tự nhiên, không khí trong lành, cân bằng tâm – thân – trí.', 'align': ''},
-                        {'img': 'feature-5.jpg', 'eyebrow': 'Di Sản Kinh Bắc',   'title': 'Chất Sống Kinh Bắc',  'text': 'Đậm đà bản sắc văn hoá Kinh Bắc kết hợp chuẩn mực sống hiện đại.',                          'align': 'hh-feature--left'},
-                        {'img': 'feature-6.jpg', 'eyebrow': 'Cộng Đồng Tinh Anh','title': 'Cộng Đồng Hạnh Phúc', 'text': 'Nơi hội tụ những cư dân tinh anh, cùng kiến tạo giá trị sống trường tồn.',                 'align': 'hh-feature--right'},
-                        {'img': 'feature-7.jpg', 'eyebrow': 'Eco City',          'title': 'Đô Thị Văn Minh',     'text': 'Đô thị xanh sinh thái tích hợp trọn vẹn tiện ích, nâng đỡ mọi giá trị sống.',              'align': ''}
-                    ]"/>
-                    <t t-foreach="features" t-as="feat">
+                    <!-- ============ 1.6) KẾT NỐI VÙNG — dải mốc khoảng cách ============
+                         Dữ liệu: HOME_CONNECTIVITY trong controllers/portal.py.
+                         Dựng bằng HTML/CSS thật (không dùng ảnh infographic tĩnh). -->
+                    <section id="hh-connect" class="hh-section-full hh-connect hh-snap">
+                        <div class="hh-connect__inner">
+                            <div class="hh-connect__head reveal hh-stagger">
+                                <span class="hh-feature__eyebrow">Kết Nối Vùng</span>
+                                <h2 class="hh-connect__title">Mọi Điểm Đến <span>Trong Tầm Tay</span></h2>
+                                <p class="hh-connect__lead">
+                                    Từ Hồng Hạc City, cao tốc – vành đai – sân bay quốc tế đều nằm trong bán kính ngắn,
+                                    rút gọn mọi hành trình về đúng nhịp sống thường ngày.
+                                </p>
+                            </div>
+
+                            <div class="hh-connect__viz reveal">
+                                <ol class="hh-connect__track">
+                                    <t t-foreach="connectivity or []" t-as="stop">
+                                        <li class="hh-connect__stop"
+                                            t-attf-style="--stop-color: #{stop['color']}; --stop-delay: #{stop_index * 0.09}s;">
+                                            <div class="hh-connect__card">
+                                                <p class="hh-connect__km">
+                                                    <span class="hh-connect__km-num"><t t-esc="stop['km']"/></span><span class="hh-connect__km-unit">km</span>
+                                                </p>
+                                                <span t-if="stop['tag']" class="hh-connect__tag"><t t-esc="stop['tag']"/></span>
+                                                <div class="hh-connect__items">
+                                                    <t t-foreach="stop['items']" t-as="poi">
+                                                        <div class="hh-connect__item">
+                                                            <span class="hh-connect__icon"><i t-attf-class="fa #{poi['icon']}"/></span>
+                                                            <span class="hh-connect__text"><t t-esc="poi['text']"/></span>
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                            </div>
+                                            <span class="hh-connect__stem" aria-hidden="true"/>
+                                            <span class="hh-connect__pin" aria-hidden="true"><i class="fa fa-map-marker"/></span>
+                                        </li>
+                                    </t>
+                                </ol>
+                                <div class="hh-connect__road" aria-hidden="true"/>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ============ 2) ẢNH/VIDEO NỔI BẬT ============
+                         Danh sách 'features' do controller dựng (HOME_FEATURES trong
+                         controllers/portal.py) và đã lọc bỏ section thiếu file media.
+                         Sửa CHỮ hiển thị hoặc thứ tự tại đó, không sửa ở đây. -->
+                    <t t-foreach="features or []" t-as="feat">
                         <section t-attf-id="hh-feature-#{feat_index + 1}"
                                  t-attf-class="hh-section-full hh-feature hh-snap #{feat['align']}">
-                            <div class="hh-feature__bg"
-                                 t-attf-style="background-image:url('/real_estate_site_plan/static/src/img/home/#{feat['img']}');"/>
+                            <t t-if="feat['type'] == 'video'">
+                                <video class="hh-feature__video"
+                                       autoplay="autoplay" muted="muted" loop="loop"
+                                       playsinline="playsinline" preload="metadata"
+                                       t-att-poster="feat['poster_url'] or None">
+                                    <source t-if="feat['webm_url']" t-att-src="feat['webm_url']" type="video/webm"/>
+                                    <source t-att-src="feat['url']" type="video/mp4"/>
+                                </video>
+                            </t>
+                            <t t-else="">
+                                <div class="hh-feature__bg"
+                                     t-attf-style="background-image:url('#{feat['url']}');"/>
+                            </t>
                             <div class="hh-feature__overlay"/>
                             <div class="hh-feature__caption">
                                 <span class="hh-feature__eyebrow"><t t-esc="feat['eyebrow']"/></span>
@@ -275,105 +323,35 @@
                     <!-- ============ NƠI KIẾN TRÚC — slideshow sản phẩm ============ -->
                     <section id="hh-arch" class="hh-section-full hh-arch hh-snap">
                         <div class="hh-green__grid hh-arch__grid">
-                            <div class="hh-green__slider hh-arch__slider reveal" data-hh-green-total="14">
+                            <div class="hh-green__slider hh-arch__slider reveal" data-hh-green-total="4">
                                 <div class="hh-green__viewport">
                                     <div class="hh-green__track">
                                     <div class="hh-green__slide">
-                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-01.webp" alt="Villa C2" loading="lazy"/>
-                                        <div class="hh-green__cap">
-                                            <span class="hh-green__type">Biệt thự</span>
-                                            <h4 class="hh-green__cap-title">Villa C2</h4>
-                                        </div>
-                                    </div>
-                                    <div class="hh-green__slide">
-                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-02.webp" alt="Villa B" loading="lazy"/>
-                                        <div class="hh-green__cap">
-                                            <span class="hh-green__type">Biệt thự</span>
-                                            <h4 class="hh-green__cap-title">Villa B</h4>
-                                        </div>
-                                    </div>
-                                    <div class="hh-green__slide">
-                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-03.webp" alt="Villa B2" loading="lazy"/>
-                                        <div class="hh-green__cap">
-                                            <span class="hh-green__type">Biệt thự</span>
-                                            <h4 class="hh-green__cap-title">Villa B2</h4>
-                                        </div>
-                                    </div>
-                                    <div class="hh-green__slide">
-                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-04.webp" alt="Semi-detached" loading="lazy"/>
-                                        <div class="hh-green__cap">
-                                            <span class="hh-green__type">Biệt thự song lập</span>
-                                            <h4 class="hh-green__cap-title">Semi-detached</h4>
-                                        </div>
-                                    </div>
-                                    <div class="hh-green__slide">
-                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-05.webp" alt="Semi-detached" loading="lazy"/>
-                                        <div class="hh-green__cap">
-                                            <span class="hh-green__type">Biệt thự song lập</span>
-                                            <h4 class="hh-green__cap-title">Semi-detached</h4>
-                                        </div>
-                                    </div>
-                                    <div class="hh-green__slide">
-                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-06.webp" alt="Semi-detached" loading="lazy"/>
-                                        <div class="hh-green__cap">
-                                            <span class="hh-green__type">Biệt thự song lập</span>
-                                            <h4 class="hh-green__cap-title">Semi-detached</h4>
-                                        </div>
-                                    </div>
-                                    <div class="hh-green__slide">
-                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-07.webp" alt="Semi-detached B" loading="lazy"/>
-                                        <div class="hh-green__cap">
-                                            <span class="hh-green__type">Biệt thự song lập</span>
-                                            <h4 class="hh-green__cap-title">Semi-detached B</h4>
-                                        </div>
-                                    </div>
-                                    <div class="hh-green__slide">
-                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-08.webp" alt="Semi-detached B-3" loading="lazy"/>
-                                        <div class="hh-green__cap">
-                                            <span class="hh-green__type">Biệt thự song lập</span>
-                                            <h4 class="hh-green__cap-title">Semi-detached B-3</h4>
-                                        </div>
-                                    </div>
-                                    <div class="hh-green__slide">
-                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-09.webp" alt="SH A2.1" loading="lazy"/>
-                                        <div class="hh-green__cap">
-                                            <span class="hh-green__type">Shophouse</span>
-                                            <h4 class="hh-green__cap-title">SH A2.1</h4>
-                                        </div>
-                                    </div>
-                                    <div class="hh-green__slide">
-                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-10.webp" alt="SH A2" loading="lazy"/>
-                                        <div class="hh-green__cap">
-                                            <span class="hh-green__type">Shophouse</span>
-                                            <h4 class="hh-green__cap-title">SH A2</h4>
-                                        </div>
-                                    </div>
-                                    <div class="hh-green__slide">
-                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-11.webp" alt="SH B2" loading="lazy"/>
-                                        <div class="hh-green__cap">
-                                            <span class="hh-green__type">Shophouse</span>
-                                            <h4 class="hh-green__cap-title">SH B2</h4>
-                                        </div>
-                                    </div>
-                                    <div class="hh-green__slide">
-                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-12.webp" alt="Townhouse A" loading="lazy"/>
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/type-lien-ke.webp" alt="Townhouse Type B" loading="lazy"/>
                                         <div class="hh-green__cap">
                                             <span class="hh-green__type">Townhouse</span>
-                                            <h4 class="hh-green__cap-title">Townhouse A</h4>
+                                            <h4 class="hh-green__cap-title">CĂN LIỀN KỀ</h4>
                                         </div>
                                     </div>
                                     <div class="hh-green__slide">
-                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-13.webp" alt="Townhouse A" loading="lazy"/>
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/type-song-lap.webp" alt="Semi Detached Villa A" loading="lazy"/>
                                         <div class="hh-green__cap">
-                                            <span class="hh-green__type">Townhouse</span>
-                                            <h4 class="hh-green__cap-title">Townhouse A</h4>
+                                            <span class="hh-green__type">Semi-detached Villa</span>
+                                            <h4 class="hh-green__cap-title">BIỆT THỰ SONG LẬP</h4>
                                         </div>
                                     </div>
                                     <div class="hh-green__slide">
-                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/arch-14.webp" alt="Townhouse B &amp; D" loading="lazy"/>
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/type-don-lap.webp" alt="Villa B" loading="lazy"/>
                                         <div class="hh-green__cap">
-                                            <span class="hh-green__type">Townhouse</span>
-                                            <h4 class="hh-green__cap-title">Townhouse B &amp; D</h4>
+                                            <span class="hh-green__type">Villa</span>
+                                            <h4 class="hh-green__cap-title">BIỆT THỰ ĐƠN LẬP</h4>
+                                        </div>
+                                    </div>
+                                    <div class="hh-green__slide">
+                                        <img class="hh-green__img" src="/real_estate_site_plan/static/src/img/home/architecture/type-shophouse.webp" alt="Shophouse Type B" loading="lazy"/>
+                                        <div class="hh-green__cap">
+                                            <span class="hh-green__type">Shophouse</span>
+                                            <h4 class="hh-green__cap-title">SHOPHOUSE</h4>
                                         </div>
                                     </div>
                                     </div>
@@ -383,7 +361,7 @@
                                 <div class="hh-green__progress hh-arch__progress">
                                     <span class="hh-green__cur">01</span>
                                     <div class="hh-green__bar"><div class="hh-green__fill"/></div>
-                                    <span class="hh-green__total">14</span>
+                                    <span class="hh-green__total">04</span>
                                 </div>
                             </div>
 

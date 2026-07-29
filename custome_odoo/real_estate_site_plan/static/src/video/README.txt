@@ -6,6 +6,12 @@ Thả video nền cho hero (section đầu trang chủ) vào ĐÚNG thư mục n
   hero.mp4    (BẮT BUỘC)  — H.264/MP4, 1920x1080 (16:9), MUTED, loop mượt 10–25s, nên ≤ ~20MB
   hero.webm   (tùy chọn)  — VP9/WebM, nhẹ hơn cho trình duyệt hiện đại (nếu có)
 
+  feature-5.mp4   — Video nền section "Chất Sống Kinh Bắc" (thay cho ảnh feature-5.jpg).
+  feature-5.webm  (tùy chọn) — bản nhẹ hơn, được ưu tiên nếu có.
+      Cùng chuẩn với hero: H.264/MP4, 1920x1080, MUTED, loop mượt.
+      CHƯA có file này thì section Kinh Bắc sẽ KHÔNG hiện trên trang chủ.
+      img/home/feature-5.jpg (nếu còn) được dùng làm poster lúc video đang tải.
+
 Ghi chú:
 - Video sẽ tự phát (autoplay), tắt tiếng, lặp lại. Không cần âm thanh.
 - Khi video đang tải / trên mobile chặn autoplay, ảnh poster sẽ hiển thị:

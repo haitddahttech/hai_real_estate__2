@@ -588,10 +588,18 @@
             return true;
         }
 
+        function isDecorationPolygon(polygon) {
+            return Boolean(polygon && polygon.product && polygon.product.is_decoration);
+        }
+
         function isPolygonGrayByState(index, polygon) {
             let isEffectivelySold;
             if (state.forceAllGray) {
-                isEffectivelySold = !state.manuallyUngrayIndices.includes(index);
+                // Chế độ "Chọn căn hiển thị" chỉ làm xám các CĂN (is_decoration = false).
+                // Vật trang trí (cây xanh, tiện ích...) luôn giữ màu để nền bản đồ
+                // không bị xám hết, mất ngữ cảnh khu.
+                isEffectivelySold = !isDecorationPolygon(polygon)
+                    && !state.manuallyUngrayIndices.includes(index);
             } else {
                 isEffectivelySold = state.manuallyGrayIndices.includes(index);
             }
@@ -800,6 +808,11 @@
                 // Interactive Gray Mode Logic
                 // Interactive Gray Mode Logic
                 if (state.interactiveGrayMode) {
+                    // Vật trang trí không tham gia chế độ chọn căn: bỏ qua click,
+                    // để nguyên popup giới thiệu cây/tiện ích hoạt động bình thường.
+                    if (state.forceAllGray && isDecorationPolygon(state.polygons[clickedIndex])) {
+                        return;
+                    }
                     if (state.forceAllGray) {
                         // When Force All Gray is ON: Clicking toggles "Not Gray" (Un-gray)
                         const idxInUngray = state.manuallyUngrayIndices.indexOf(clickedIndex);

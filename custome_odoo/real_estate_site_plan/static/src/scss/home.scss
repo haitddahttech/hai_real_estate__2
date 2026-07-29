@@ -129,6 +129,436 @@
 }
 
 // -------------------------------------------------------------
+// 1.6) KẾT NỐI VÙNG — dải mốc khoảng cách
+// Dựng hoàn toàn bằng HTML/CSS (thay ảnh infographic tĩnh) nên chữ vẫn
+// chọn/dịch/SEO được và sắc nét ở mọi mật độ điểm ảnh.
+// Màu từng mốc truyền qua biến --stop-color đặt inline trên <li>.
+// -------------------------------------------------------------
+.hh-connect {
+    background: var(--hh-secondary, #fffaea);
+    flex-direction: column;
+    padding: clamp(3rem, 7vh, 5.5rem) 1rem clamp(2rem, 5vh, 3.5rem);
+}
+
+.hh-connect__inner {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.hh-connect__head {
+    text-align: center;
+    max-width: 60rem;
+    margin: 0 auto clamp(2rem, 5vh, 3.25rem);
+}
+
+.hh-connect__title {
+    font-family: var(--hh-font-display);
+    font-size: clamp(1.9rem, 4vw, 3.1rem);
+    line-height: 1.15;
+    color: var(--hh-primary, #2f3f1c);
+    margin: 0.4rem 0 0.75rem;
+    text-transform: uppercase;
+
+    span { color: var(--hh-accent, #8d974e); }
+}
+
+.hh-connect__lead {
+    color: rgba(51, 51, 51, 0.75);
+    font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+    line-height: 1.6;
+    margin: 0;
+}
+
+// ---- Trục đường + các mốc ----
+.hh-connect__viz {
+    position: relative;
+    padding-bottom: 3.25rem; // chừa chỗ cho dải đường
+}
+
+.hh-connect__track {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: stretch; // mọi thẻ cao bằng nhau, lấy theo thẻ cao nhất
+    justify-content: center;
+    gap: clamp(0.4rem, 0.9vw, 1.1rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.hh-connect__stop {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    // Xuất hiện lần lượt từ trái sang phải khi section lọt vào khung nhìn
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s var(--hh-ease), transform 0.8s var(--hh-ease);
+    transition-delay: var(--stop-delay, 0s);
+}
+
+.hh-connect__viz.is-visible .hh-connect__stop {
+    opacity: 1;
+    transform: none;
+}
+
+// ---- Thẻ thông tin ----
+.hh-connect__card {
+    width: 100%;
+    // flex:1 để thẻ giãn hết chiều cao cột -> mọi thẻ bằng nhau
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-top: 3px solid var(--stop-color, #8d974e);
+    border-radius: 1.75rem;
+    padding: clamp(0.85rem, 1.2vw, 1.35rem) clamp(0.6rem, 0.9vw, 1rem) clamp(1rem, 1.4vw, 1.5rem);
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(38, 52, 23, 0.09);
+    transition: transform 0.45s var(--hh-ease), box-shadow 0.45s var(--hh-ease);
+}
+
+.hh-connect__stop:hover .hh-connect__card {
+    transform: translateY(-8px);
+    box-shadow: 0 22px 46px rgba(38, 52, 23, 0.18);
+}
+
+.hh-connect__km {
+    margin: 0;
+    color: var(--stop-color, #8d974e);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.hh-connect__km-num {
+    font-size: clamp(1.5rem, 2.4vw, 2.35rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.hh-connect__km-unit {
+    font-size: clamp(0.7rem, 1vw, 0.95rem);
+    font-weight: 600;
+    margin-left: 0.12em;
+}
+
+// Nền nhạt theo màu mốc. Dùng lớp phủ ::before + opacity thay cho color-mix()
+// để không phụ thuộc phiên bản trình biên dịch Sass lẫn trình duyệt cũ.
+%hh-connect-tint {
+    position: relative;
+    isolation: isolate;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: var(--stop-color, #8d974e);
+        opacity: 0.1;
+        z-index: -1;
+    }
+}
+
+.hh-connect__tag {
+    @extend %hh-connect-tint;
+    display: inline-block;
+    align-self: center; // là flex item của thẻ nên phải tự canh, không giãn hết ngang
+    margin-top: 0.45rem;
+    padding: 0.15rem 0.7rem;
+    border-radius: 999px;
+    color: var(--stop-color, #8d974e);
+    font-size: clamp(0.6rem, 0.7vw, 0.7rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.hh-connect__items {
+    margin-top: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    // Chiếm phần cao còn thừa và căn giữa, để thẻ ít nội dung không bị hụt đáy
+    flex: 1 1 auto;
+    justify-content: center;
+    gap: 0.85rem;
+}
+
+.hh-connect__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.hh-connect__icon {
+    @extend %hh-connect-tint;
+    width: clamp(2.1rem, 2.8vw, 2.75rem);
+    height: clamp(2.1rem, 2.8vw, 2.75rem);
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--stop-color, #8d974e);
+    color: var(--stop-color, #8d974e);
+    font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+    transition: transform 0.4s var(--hh-ease), box-shadow 0.4s var(--hh-ease);
+}
+
+// Icon nảy nhẹ lần lượt khi rê chuột vào thẻ
+.hh-connect__stop:hover .hh-connect__icon {
+    transform: translateY(-3px) scale(1.08);
+    box-shadow: 0 6px 16px rgba(38, 52, 23, 0.16);
+}
+
+.hh-connect__stop:hover .hh-connect__item:nth-child(2) .hh-connect__icon {
+    transition-delay: 0.07s;
+}
+
+.hh-connect__text {
+    font-size: clamp(0.68rem, 0.82vw, 0.85rem);
+    line-height: 1.4;
+    color: rgba(51, 51, 51, 0.88);
+}
+
+// ---- Cuống nối thẻ xuống ghim ----
+.hh-connect__stem {
+    width: 2px;
+    height: clamp(0.9rem, 2vh, 1.6rem);
+    background: var(--stop-color, #8d974e);
+    opacity: 0.75;
+
+    // Vẽ dần từ trên xuống, ngay sau khi thẻ nổi lên
+    transform: scaleY(0);
+    transform-origin: top center;
+    transition: transform 0.45s var(--hh-ease);
+    transition-delay: calc(var(--stop-delay, 0s) + 0.22s);
+}
+
+.hh-connect__viz.is-visible .hh-connect__stem { transform: scaleY(1); }
+
+.hh-connect__pin {
+    position: relative;
+    color: var(--stop-color, #8d974e);
+    font-size: clamp(1.3rem, 1.9vw, 1.75rem);
+    line-height: 1;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
+    margin-bottom: -0.35rem; // mũi ghim cắm vào mặt đường
+    opacity: 0;
+}
+
+// Ghim rơi xuống và nảy nhẹ khi chạm mặt đường
+.hh-connect__viz.is-visible .hh-connect__pin {
+    animation: hh-pin-drop 0.62s var(--hh-ease) forwards;
+    animation-delay: calc(var(--stop-delay, 0s) + 0.42s);
+}
+
+@keyframes hh-pin-drop {
+    0%   { opacity: 0; transform: translateY(-16px) scale(0.65); }
+    55%  { opacity: 1; transform: translateY(3px) scale(1.06); }
+    78%  { transform: translateY(-2px) scale(0.98); }
+    100% { opacity: 1; transform: none; }
+}
+
+// Vòng sóng lan toả khi rê chuột vào mốc
+.hh-connect__stop:hover .hh-connect__pin::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 42%;
+    width: 0.7em;
+    height: 0.7em;
+    margin: -0.35em 0 0 -0.35em;
+    border-radius: 50%;
+    border: 2px solid var(--stop-color, #8d974e);
+    animation: hh-pin-ping 1.4s var(--hh-ease) infinite;
+}
+
+@keyframes hh-pin-ping {
+    0%   { transform: scale(0.6); opacity: 0.75; }
+    100% { transform: scale(2.6); opacity: 0; }
+}
+
+// ---- Dải đường ----
+.hh-connect__road {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    height: 2.75rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #4c4c4c 0%, #333 55%, #262626 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+                0 10px 26px rgba(0, 0, 0, 0.18);
+
+    // Vạch kẻ tim đường — chạy liên tục tạo cảm giác đang di chuyển
+    &::after {
+        content: "";
+        position: absolute;
+        left: 2.5%;
+        right: 2.5%;
+        top: 50%;
+        height: 2px;
+        transform: translateY(-50%);
+        background: repeating-linear-gradient(90deg,
+            rgba(255, 250, 234, 0.85) 0 26px,
+            transparent 26px 52px);
+        background-size: 52px 100%;
+        animation: hh-road-dash 1.5s linear infinite;
+    }
+
+    // Vệt sáng như đèn xe quét dọc mặt đường
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 250, 234, 0.06) 38%,
+            rgba(255, 250, 234, 0.22) 50%,
+            rgba(255, 250, 234, 0.06) 62%,
+            transparent 100%);
+        background-size: 32% 100%;
+        background-repeat: no-repeat;
+        animation: hh-road-sweep 5.5s var(--hh-ease) infinite;
+    }
+}
+
+@keyframes hh-road-dash {
+    to { background-position: -52px 0; }
+}
+
+@keyframes hh-road-sweep {
+    0%        { background-position: -35% 0; }
+    60%, 100% { background-position: 135% 0; }
+}
+
+// ---- Tablet ngang: 7 cột vẫn vừa, chỉ siết khoảng cách và bo góc ----
+@media (max-width: 1200px) and (min-width: 993px) {
+    .hh-connect__track { gap: 0.35rem; }
+    .hh-connect__card {
+        border-radius: 1.25rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}
+
+// ---- Tablet dọc & điện thoại: xoay dọc, đường thành trục bên trái ----
+// Ghim nằm trong một cột máng rộng cố định, đường ray canh đúng tâm cột đó.
+@media (max-width: 992px) {
+    $pin-gutter: 1.75rem; // bề rộng cột ghim
+
+    .hh-connect {
+        min-height: auto;
+        padding-bottom: clamp(2.5rem, 6vh, 4rem);
+    }
+
+    .hh-connect__head { margin-bottom: 2rem; }
+
+    .hh-connect__viz { padding-bottom: 0; }
+
+    .hh-connect__track {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.85rem;
+    }
+
+    .hh-connect__stop {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.75rem;
+        transform: translateX(-20px); // trượt ngang thay vì trượt dọc
+    }
+
+    .hh-connect__viz.is-visible .hh-connect__stop { transform: none; }
+
+    // Ghim đứng trước thẻ, chiếm đúng bề rộng cột máng
+    .hh-connect__pin {
+        order: -1;
+        flex: 0 0 $pin-gutter;
+        width: $pin-gutter;
+        text-align: center;
+        margin: 0;
+        font-size: 1.35rem;
+    }
+
+    .hh-connect__stem { display: none; }
+
+    // flex: 1 1 auto + min-width: 0 để thẻ co lại thay vì đẩy tràn khung
+    .hh-connect__card {
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+        text-align: left;
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+        border-left: 3px solid var(--stop-color, #8d974e);
+        border-radius: 1rem;
+        padding: 0.9rem 1rem;
+    }
+
+    .hh-connect__km-num { font-size: 1.5rem; }
+    .hh-connect__km-unit { font-size: 0.8rem; }
+    // Chữ căn trái ở khổ dọc nên nhãn cũng phải bám lề trái
+    .hh-connect__tag { font-size: 0.62rem; align-self: flex-start; }
+
+    .hh-connect__items { margin-top: 0.6rem; gap: 0.55rem; }
+
+    .hh-connect__item {
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        gap: 0.6rem;
+    }
+
+    .hh-connect__icon {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.85rem;
+    }
+
+    .hh-connect__text { font-size: 0.82rem; }
+
+    .hh-connect__road {
+        top: 0;
+        bottom: 0;
+        left: calc(#{$pin-gutter} / 2 - 0.3rem); // canh tâm cột ghim
+        right: auto;
+        width: 0.6rem;
+        height: auto;
+
+        &::after {
+            left: 50%;
+            right: auto;
+            top: 2%;
+            bottom: 2%;
+            width: 2px;
+            height: auto;
+            transform: translateX(-50%);
+            background: repeating-linear-gradient(180deg,
+                rgba(255, 250, 234, 0.85) 0 16px,
+                transparent 16px 32px);
+        }
+    }
+}
+
+// ---- Điện thoại nhỏ: rút gọn thêm cho vừa bề ngang ----
+@media (max-width: 480px) {
+    .hh-connect { padding-left: 0.65rem; padding-right: 0.65rem; }
+    .hh-connect__stop { gap: 0.5rem; }
+    .hh-connect__card { padding: 0.75rem 0.8rem; }
+    .hh-connect__text { font-size: 0.78rem; }
+    .hh-connect__icon { width: 1.75rem; height: 1.75rem; font-size: 0.75rem; }
+}
+
+// -------------------------------------------------------------
 // 1) HERO VIDEO
 // -------------------------------------------------------------
 .hh-hero {
@@ -511,6 +941,22 @@
     // Ken Burns khi section vào viewport
     &.is-visible &__bg {
         transform: scale(1);
+    }
+
+    // Video nền — thay cho __bg ở section dùng video.
+    // Không áp Ken Burns: bản thân video đã chuyển động.
+    &__video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
+        // Cùng dải feather trên/dưới như ảnh để chỗ nối giữa các section đồng nhất.
+        -webkit-mask-image: linear-gradient(180deg,
+            transparent 0%, #000 18%, #000 82%, transparent 100%);
+        mask-image: linear-gradient(180deg,
+            transparent 0%, #000 18%, #000 82%, transparent 100%);
     }
 
     &__overlay {
@@ -904,6 +1350,16 @@ a.hh-card__media {
 @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1; transform: none; transition: none; }
     .hh-feature__bg { transform: none !important; transition: none; }
+    // Kết nối vùng: giữ nguyên bố cục, tắt mọi chuyển động
+    .hh-connect__stop { opacity: 1; transform: none; transition: none; }
+    .hh-connect__stop:hover .hh-connect__card { transform: none; }
+    .hh-connect__stem { transform: scaleY(1); transition: none; }
+    .hh-connect__pin { opacity: 1; animation: none; }
+    .hh-connect__stop:hover .hh-connect__pin::after { animation: none; display: none; }
+    .hh-connect__road::after,
+    .hh-connect__road::before { animation: none; }
+    .hh-connect__road::before { display: none; }
+    .hh-connect__stop:hover .hh-connect__icon { transform: none; }
     .hh-scroll-cue { animation: none; }
     .hh-stagger > *,
     .hh-feature__caption > * { opacity: 1; transform: none; filter: none; transition: none; }

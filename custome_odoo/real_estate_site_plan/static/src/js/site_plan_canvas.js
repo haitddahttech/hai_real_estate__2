@@ -48,8 +48,7 @@ export class SitePlanCanvasWidget extends Component {
         // { pivot, lastPointerAngle, rotation }. Giữ ngoài useState vì đây là dữ
         // liệu tạm của một cử chỉ chuột, không cần OWL theo dõi để re-render.
         this.priceLabelRotateGesture = null;
-        // Ngữ cảnh của thao tác kéo góc ô giá, cũng chốt lại lúc mousedown:
-        // { anchor, sx, sy, rotation, horizontalPadding, aspect }.
+        // Đỉnh ô giá đang được kéo: { cornerIndex }.
         this.priceLabelResizeGesture = null;
         // Id của requestAnimationFrame đang chờ vẽ (gộp nhiều mousemove thành 1 lần vẽ)
         this.pendingDrawFrame = null;
@@ -264,7 +263,7 @@ export class SitePlanCanvasWidget extends Component {
             const polygons = await this.orm.searchRead(
                 'site.plan.polygon',
                 [['site_plan_id', '=', recordId]],
-                ['name', 'coordinates', 'color', 'polygon_type', 'product_template_id', 'price_label_x', 'price_label_y', 'price_label_rotation', 'price_label_width', 'price_label_height']
+                ['name', 'coordinates', 'color', 'polygon_type', 'product_template_id', 'price_label_x', 'price_label_y', 'price_label_rotation', 'price_label_width', 'price_label_height', 'price_label_corners']
             );
             this.state.priceDisplayNumber = parseInt(sitePlanData?.[0]?.price_display_number || 0, 10);
 
@@ -291,6 +290,7 @@ export class SitePlanCanvasWidget extends Component {
                 priceLabelRotation: p.price_label_rotation || 0,
                 priceLabelWidth: p.price_label_width || 0,
                 priceLabelHeight: p.price_label_height || 0,
+                priceLabelCorners: this.parsePriceLabelCorners(p.price_label_corners),
             }));
 
             this.draw();
@@ -365,16 +365,15 @@ export class SitePlanCanvasWidget extends Component {
                 if (this.state.selectedPolygon !== null) {
                     const selectedPolygon = this.state.polygons[this.state.selectedPolygon];
                     if (this.isPointOnPriceLabelRotateHandle(pos, selectedPolygon)) {
-                        // Chốt tâm xoay + góc con trỏ + góc hiện tại ngay lúc bấm.
-                        // Nhờ vậy nhãn xoay đúng bằng lượng chuột đã quét, thay vì
-                        // nhảy ngay đến góc tuyệt đối của con trỏ.
-                        const labelBox = this.getPriceLabelBox(selectedPolygon);
-                        if (labelBox) {
-                            const pivot = { x: labelBox.centerX, y: labelBox.centerY };
+                        // Chốt tâm xoay + góc con trỏ ngay lúc bấm. Nhờ vậy ô xoay
+                        // đúng bằng lượng chuột đã quét, thay vì nhảy ngay đến góc
+                        // tuyệt đối của con trỏ.
+                        const quad = this.getPriceLabelQuad(selectedPolygon);
+                        if (quad && this.ensurePriceLabelCorners(selectedPolygon)) {
+                            const pivot = this.getPriceLabelCentroid(selectedPolygon.priceLabelCorners);
                             this.priceLabelRotateGesture = {
                                 pivot,
                                 lastPointerAngle: this.getPointerAngleDegrees(pivot, pos),
-                                rotation: selectedPolygon.priceLabelRotation || 0,
                             };
                             this.state.isRotatingPriceLabel = true;
                             this.canvas.style.cursor = 'grabbing';
@@ -382,12 +381,12 @@ export class SitePlanCanvasWidget extends Component {
                         }
                     }
 
-                    // Kéo 1 trong 4 góc để đổi kích thước / tỉ lệ ô giá.
-                    // Phải xét trước khi xét "bấm trong ô" vì tay nắm góc nằm
-                    // chồng lên mép ô.
+                    // Kéo 1 trong 4 đỉnh — mỗi đỉnh đi độc lập, ô không bắt buộc
+                    // phải giữ hình chữ nhật. Phải xét trước khi xét "bấm trong ô"
+                    // vì tay nắm đỉnh nằm chồng lên mép ô.
                     const cornerIndex = this.findPriceLabelCornerAtPosition(pos, selectedPolygon);
                     if (cornerIndex !== -1) {
-                        this.startPriceLabelResize(selectedPolygon, cornerIndex);
+                        this.startPriceLabelCornerDrag(selectedPolygon, cornerIndex);
                         return;
                     }
                 }
@@ -445,6 +444,7 @@ export class SitePlanCanvasWidget extends Component {
                 polygon.priceLabelX += dx;
                 polygon.priceLabelY += dy;
             }
+            this.translatePriceLabelCorners(polygon, dx, dy);
 
             this.state.polygonDragStart = pos;
             this.requestDraw();
@@ -458,6 +458,7 @@ export class SitePlanCanvasWidget extends Component {
             const dy = pos.y - this.state.priceLabelDragStart.y;
             polygon.priceLabelX = (polygon.priceLabelX || 0) + dx;
             polygon.priceLabelY = (polygon.priceLabelY || 0) + dy;
+            this.translatePriceLabelCorners(polygon, dx, dy);
             this.state.priceLabelDragStart = pos;
             this.requestDraw();
             return;
@@ -474,10 +475,13 @@ export class SitePlanCanvasWidget extends Component {
 
             // Cộng dồn từng bước nhỏ (đã quy về [-180, 180]) để quay qua mốc
             // ±180° vẫn liên tục, không bị nhảy một vòng.
-            gesture.rotation += this.normalizeDeltaAngle(pointerAngle - gesture.lastPointerAngle);
+            const delta = this.normalizeDeltaAngle(pointerAngle - gesture.lastPointerAngle);
             gesture.lastPointerAngle = pointerAngle;
 
-            polygon.priceLabelRotation = this.normalizeAngle(gesture.rotation);
+            this.rotatePriceLabelCorners(polygon, delta);
+            // Vẫn cộng dồn vào priceLabelRotation để góc xoay không mất khi người
+            // dùng trả ô về hình chữ nhật mặc định.
+            polygon.priceLabelRotation = this.normalizeAngle((polygon.priceLabelRotation || 0) + delta);
             this.requestDraw();
             return;
         }
@@ -486,7 +490,7 @@ export class SitePlanCanvasWidget extends Component {
             if (!this.priceLabelResizeGesture) {
                 return;
             }
-            this.applyPriceLabelResize(this.getMousePos(e), e.shiftKey);
+            this.applyPriceLabelCornerDrag(this.getMousePos(e));
             this.requestDraw();
             return;
         }
@@ -523,8 +527,7 @@ export class SitePlanCanvasWidget extends Component {
             if (this.isPointOnPriceLabelRotateHandle(pos, polygon)) {
                 cursor = 'grab';
             } else if (hoveredCorner !== -1) {
-                // Góc 0/2 nằm trên đường chéo ↘, góc 1/3 trên đường chéo ↗
-                cursor = hoveredCorner % 2 === 0 ? 'nwse-resize' : 'nesw-resize';
+                cursor = 'grab';
             } else if (this.isPointOnPriceLabelHandle(pos, polygon)) {
                 cursor = 'move';
             }
@@ -1054,7 +1057,8 @@ export class SitePlanCanvasWidget extends Component {
         const autoBoxWidth = textWidth + horizontalPadding * 2;
         const autoBoxHeight = fontSize + verticalPadding * 2;
 
-        // Người dùng kéo góc thì ghi đè bằng kích thước đã lưu (0 = giữ tự động).
+        // Kích thước hình chữ nhật mặc định. Chỉ còn dùng khi polygon chưa có
+        // priceLabelCorners — hễ người dùng đã kéo đỉnh thì 4 đỉnh mới là nguồn.
         const boxWidth = polygon.priceLabelWidth > 0 ? polygon.priceLabelWidth : autoBoxWidth;
         const boxHeight = polygon.priceLabelHeight > 0 ? polygon.priceLabelHeight : autoBoxHeight;
 
@@ -1072,11 +1076,6 @@ export class SitePlanCanvasWidget extends Component {
             boxHeight,
             boxX,
             boxY,
-            // Hệ số co giãn chữ + nền để lấp đầy ô sau khi người dùng chỉnh kích thước
-            textScaleX: boxWidth / autoBoxWidth,
-            textScaleY: boxHeight / autoBoxHeight,
-            textX: position.x,
-            textY: position.y,
             rotation: polygon.priceLabelRotation || 0,
             centerX: boxX + boxWidth / 2,
             centerY: position.y,
@@ -1084,10 +1083,11 @@ export class SitePlanCanvasWidget extends Component {
     }
 
     /**
-     * Toạ độ 4 góc ô giá trong không gian thế giới, đã tính cả góc xoay.
+     * 4 đỉnh của ô giá suy ra từ hình chữ nhật + góc xoay.
+     * Chỉ dùng khi polygon chưa có priceLabelCorners.
      * Thứ tự: 0 = trên-trái, 1 = trên-phải, 2 = dưới-phải, 3 = dưới-trái.
      */
-    getPriceLabelCorners(labelBox) {
+    getPriceLabelRectCorners(labelBox) {
         const halfWidth = labelBox.boxWidth / 2;
         const halfHeight = labelBox.boxHeight / 2;
         const angle = (labelBox.rotation * Math.PI) / 180;
@@ -1099,29 +1099,109 @@ export class SitePlanCanvasWidget extends Component {
             { sx: 1, sy: -1 },
             { sx: 1, sy: 1 },
             { sx: -1, sy: 1 },
-        ].map((corner, index) => {
+        ].map((corner) => {
             const localX = corner.sx * halfWidth;
             const localY = corner.sy * halfHeight;
             return {
-                index,
-                sx: corner.sx,
-                sy: corner.sy,
                 x: labelBox.centerX + localX * cos - localY * sin,
                 y: labelBox.centerY + localX * sin + localY * cos,
             };
         });
     }
 
-    getPriceLabelCornerHandleRadius() {
-        // Nhỏ hơn tay nắm xoay để không nuốt mất vùng bấm của nó
-        return 1.9;
+    /** Đọc 4 đỉnh từ chuỗi JSON của DB; dữ liệu hỏng thì coi như chưa có. */
+    parsePriceLabelCorners(raw) {
+        if (!raw) {
+            return null;
+        }
+        try {
+            const parsed = JSON.parse(raw);
+            return this.isValidPriceLabelCorners(parsed)
+                ? parsed.map(point => ({ x: point.x, y: point.y }))
+                : null;
+        } catch (error) {
+            console.warn('Toạ độ 4 đỉnh ô giá không đọc được:', error);
+            return null;
+        }
     }
 
-    drawPriceLabelCornerHandles(labelBox) {
+    serializePriceLabelCorners(corners) {
+        return this.isValidPriceLabelCorners(corners)
+            ? JSON.stringify(corners.map(point => ({ x: point.x, y: point.y })))
+            : false;
+    }
+
+    /** Kiểm tra một giá trị có phải mảng 4 điểm hợp lệ hay không. */
+    isValidPriceLabelCorners(corners) {
+        return Array.isArray(corners)
+            && corners.length === 4
+            && corners.every(point => point && Number.isFinite(point.x) && Number.isFinite(point.y));
+    }
+
+    /**
+     * Hình dạng thật sự của ô giá: 4 đỉnh tự do nếu người dùng đã kéo, ngược lại
+     * là hình chữ nhật mặc định. Đây là hàm duy nhất mọi thao tác vẽ / bắt chuột
+     * dùng đến, nên phần còn lại không cần biết ô đang ở dạng nào.
+     */
+    getPriceLabelQuad(polygon) {
+        const labelBox = this.getPriceLabelBox(polygon);
+        if (!labelBox) {
+            return null;
+        }
+        const corners = this.isValidPriceLabelCorners(polygon.priceLabelCorners)
+            ? polygon.priceLabelCorners.map(point => ({ x: point.x, y: point.y }))
+            : this.getPriceLabelRectCorners(labelBox);
+        return { labelBox, corners };
+    }
+
+    getPriceLabelCentroid(corners) {
+        return {
+            x: corners.reduce((sum, point) => sum + point.x, 0) / corners.length,
+            y: corners.reduce((sum, point) => sum + point.y, 0) / corners.length,
+        };
+    }
+
+    /**
+     * Chuyển ô giá sang dạng 4 đỉnh tự do (nếu chưa) để mọi thao tác kéo thả
+     * sau đó chỉ còn phải làm việc với toạ độ đỉnh.
+     */
+    ensurePriceLabelCorners(polygon) {
+        if (this.isValidPriceLabelCorners(polygon.priceLabelCorners)) {
+            return polygon.priceLabelCorners;
+        }
+        const quad = this.getPriceLabelQuad(polygon);
+        if (!quad) {
+            return null;
+        }
+        polygon.priceLabelCorners = quad.corners;
+        // Kích thước hình chữ nhật đã được nuốt vào toạ độ đỉnh, giữ lại chỉ gây
+        // hiểu nhầm về nguồn dữ liệu nào đang có hiệu lực.
+        polygon.priceLabelWidth = 0;
+        polygon.priceLabelHeight = 0;
+        return polygon.priceLabelCorners;
+    }
+
+    /**
+     * Hệ số quy đổi cho các chi tiết điều khiển (chấm ở đỉnh, tay nắm xoay,
+     * nét viền chọn): canvas đã nhân sẵn state.scale khi zoom, nên chia lại để
+     * chúng giữ nguyên kích thước trên màn hình thay vì to lên theo ảnh.
+     * Cùng quy ước với pointRadius / lineWidth trong drawPolygon().
+     */
+    getHandleScale() {
+        return 1 / (this.state.scale || 1);
+    }
+
+    getPriceLabelCornerHandleRadius() {
+        // Nhỏ hơn tay nắm xoay để không nuốt mất vùng bấm của nó
+        return 1.9 * this.getHandleScale();
+    }
+
+    drawPriceLabelCornerHandles(corners) {
+        const handleScale = this.getHandleScale();
         const radius = this.getPriceLabelCornerHandleRadius();
         this.ctx.save();
-        this.ctx.lineWidth = 0.4;
-        this.getPriceLabelCorners(labelBox).forEach((corner) => {
+        this.ctx.lineWidth = 0.4 * handleScale;
+        corners.forEach((corner) => {
             this.ctx.beginPath();
             this.ctx.arc(corner.x, corner.y, radius, 0, Math.PI * 2);
             this.ctx.fillStyle = '#ffffff';
@@ -1132,68 +1212,84 @@ export class SitePlanCanvasWidget extends Component {
         this.ctx.restore();
     }
 
-    /** Trả về góc đang bị trỏ vào (0..3), hoặc -1 nếu không trúng góc nào. */
+    /** Trả về đỉnh đang bị trỏ vào (0..3), hoặc -1 nếu không trúng đỉnh nào. */
     findPriceLabelCornerAtPosition(pos, polygon) {
         if (!polygon || this.getPriceDisplayNumber() <= 0) {
             return -1;
         }
-        const labelBox = this.getPriceLabelBox(polygon);
-        if (!labelBox) {
+        const quad = this.getPriceLabelQuad(polygon);
+        if (!quad) {
             return -1;
         }
 
-        const threshold = this.getPriceLabelCornerHandleRadius() + 1.2;
-        const corners = this.getPriceLabelCorners(labelBox);
         let bestIndex = -1;
-        let bestDistance = threshold;
+        // Vùng bấm nới thêm 1.2 — cũng phải theo zoom để bấm trúng đúng cái chấm
+        // đang thấy trên màn hình.
+        let bestDistance = this.getPriceLabelCornerHandleRadius() + 1.2 * this.getHandleScale();
 
-        corners.forEach((corner) => {
+        quad.corners.forEach((corner, index) => {
             const distance = Math.hypot(pos.x - corner.x, pos.y - corner.y);
             if (distance <= bestDistance) {
                 bestDistance = distance;
-                bestIndex = corner.index;
+                bestIndex = index;
             }
         });
         return bestIndex;
     }
 
+    /**
+     * Hướng chữ trong ô: lấy trung bình 2 cạnh "ngang" (trên và dưới) nên vẫn
+     * hợp lý khi ô đã bị kéo thành hình thang hay hình xiên.
+     */
+    getPriceLabelTextAngle(corners) {
+        const dirX = (corners[1].x - corners[0].x) + (corners[2].x - corners[3].x);
+        const dirY = (corners[1].y - corners[0].y) + (corners[2].y - corners[3].y);
+        return Math.hypot(dirX, dirY) < 1e-6 ? 0 : Math.atan2(dirY, dirX);
+    }
+
     drawPriceLabel(polygon, isSelected) {
-        const labelBox = this.getPriceLabelBox(polygon);
-        if (!labelBox) {
+        const quad = this.getPriceLabelQuad(polygon);
+        if (!quad) {
             return;
         }
 
-        // Vẽ trong hệ toạ độ "kích thước tự nhiên" rồi co giãn cả khối, nhờ vậy
-        // chữ luôn lấp đầy ô dù người dùng đã kéo góc để đổi kích thước/tỉ lệ.
-        const halfWidth = labelBox.autoBoxWidth / 2;
-        const halfHeight = labelBox.autoBoxHeight / 2;
+        const { labelBox, corners } = quad;
 
+        // Nền là tứ giác 4 đỉnh tự do — đây là phần duy nhất đổi hình theo
+        // thao tác kéo đỉnh.
         this.ctx.save();
-        this.ctx.translate(labelBox.centerX, labelBox.centerY);
-        this.ctx.rotate((labelBox.rotation * Math.PI) / 180);
-        this.ctx.scale(labelBox.textScaleX, labelBox.textScaleY);
-        this.ctx.font = `bold ${labelBox.fontSize}px Arial`;
-        this.ctx.textAlign = 'left';
-        this.ctx.textBaseline = 'middle';
-
+        this.ctx.beginPath();
+        this.ctx.moveTo(corners[0].x, corners[0].y);
+        for (let i = 1; i < corners.length; i++) {
+            this.ctx.lineTo(corners[i].x, corners[i].y);
+        }
+        this.ctx.closePath();
         this.ctx.fillStyle = '#dc3545';
-        this.ctx.fillRect(-halfWidth, -halfHeight, labelBox.autoBoxWidth, labelBox.autoBoxHeight);
-
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.fillText(labelBox.priceText, -halfWidth + labelBox.horizontalPadding, 0);
+        this.ctx.fill();
 
         if (isSelected) {
             this.ctx.strokeStyle = '#ffffff';
-            // Chia ngược hệ số co giãn để nét viền không bị dày mỏng lệch nhau
-            this.ctx.lineWidth = 0.5 / Math.max(labelBox.textScaleX, labelBox.textScaleY);
-            this.ctx.strokeRect(-halfWidth, -halfHeight, labelBox.autoBoxWidth, labelBox.autoBoxHeight);
+            this.ctx.lineWidth = 0.5 * this.getHandleScale();
+            this.ctx.stroke();
         }
+        this.ctx.restore();
 
+        // Chữ giữ nguyên cỡ và tỉ lệ gốc dù ô bị kéo méo tới đâu: chỉ đặt vào
+        // tâm ô và nghiêng theo hướng ô, tuyệt đối không co giãn.
+        const center = this.getPriceLabelCentroid(corners);
+        this.ctx.save();
+        this.ctx.translate(center.x, center.y);
+        this.ctx.rotate(this.getPriceLabelTextAngle(corners));
+        this.ctx.font = `bold ${labelBox.fontSize}px Arial`;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillText(labelBox.priceText, 0, 0);
         this.ctx.restore();
 
         if (isSelected) {
-            this.drawPriceLabelRotateHandle(labelBox);
-            this.drawPriceLabelCornerHandles(labelBox);
+            this.drawPriceLabelRotateHandle(corners);
+            this.drawPriceLabelCornerHandles(corners);
         }
     }
 
@@ -1202,53 +1298,58 @@ export class SitePlanCanvasWidget extends Component {
             return false;
         }
 
-        const labelBox = this.getPriceLabelBox(polygon);
-        if (!labelBox) {
-            return false;
-        }
-
-        const angle = (-labelBox.rotation * Math.PI) / 180;
-        const dx = pos.x - labelBox.centerX;
-        const dy = pos.y - labelBox.centerY;
-        const localX = dx * Math.cos(angle) - dy * Math.sin(angle) + labelBox.centerX;
-        const localY = dx * Math.sin(angle) + dy * Math.cos(angle) + labelBox.centerY;
-
-        return (
-            localX >= labelBox.boxX
-            && localX <= labelBox.boxX + labelBox.boxWidth
-            && localY >= labelBox.boxY
-            && localY <= labelBox.boxY + labelBox.boxHeight
-        );
+        const quad = this.getPriceLabelQuad(polygon);
+        return quad ? this.isPointInPolygon(pos, quad.corners) : false;
     }
 
-    getPriceLabelRotateHandle(labelBox) {
-        const radius = 2.8;
-        const gap = 2.5;
-        const angle = (labelBox.rotation * Math.PI) / 180;
-        const localX = 0;
-        const localY = -labelBox.boxHeight / 2 - gap - radius;
+    /**
+     * Tay nắm xoay nằm ngoài cạnh trên, trên đường nối từ tâm ô ra trung điểm
+     * cạnh đó — cách đặt này vẫn hợp lý với tứ giác méo bất kỳ.
+     */
+    getPriceLabelRotateHandle(corners) {
+        const handleScale = this.getHandleScale();
+        const radius = 2.8 * handleScale;
+        const gap = 2.5 * handleScale;
+        const centroid = this.getPriceLabelCentroid(corners);
+        const topMiddle = {
+            x: (corners[0].x + corners[1].x) / 2,
+            y: (corners[0].y + corners[1].y) / 2,
+        };
+
+        let dirX = topMiddle.x - centroid.x;
+        let dirY = topMiddle.y - centroid.y;
+        const length = Math.hypot(dirX, dirY);
+        if (length < 1e-6) {
+            dirX = 0;
+            dirY = -1;
+        } else {
+            dirX /= length;
+            dirY /= length;
+        }
+
         return {
-            x: labelBox.centerX + localX * Math.cos(angle) - localY * Math.sin(angle),
-            y: labelBox.centerY + localX * Math.sin(angle) + localY * Math.cos(angle),
+            x: topMiddle.x + dirX * (gap + radius),
+            y: topMiddle.y + dirY * (gap + radius),
             radius,
         };
     }
 
-    drawPriceLabelRotateHandle(labelBox) {
-        const handle = this.getPriceLabelRotateHandle(labelBox);
+    drawPriceLabelRotateHandle(corners) {
+        const handleScale = this.getHandleScale();
+        const handle = this.getPriceLabelRotateHandle(corners);
         this.ctx.save();
         this.ctx.fillStyle = '#ffffff';
         this.ctx.beginPath();
         this.ctx.arc(handle.x, handle.y, handle.radius, 0, Math.PI * 2);
         this.ctx.fill();
         this.ctx.strokeStyle = '#0d6efd';
-        this.ctx.lineWidth = 0.4;
+        this.ctx.lineWidth = 0.4 * handleScale;
         this.ctx.stroke();
         this.ctx.fillStyle = '#0d6efd';
-        this.ctx.font = 'bold 3px Arial';
+        this.ctx.font = `bold ${3 * handleScale}px Arial`;
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText('↻', handle.x, handle.y + 0.1);
+        this.ctx.fillText('↻', handle.x, handle.y + 0.1 * handleScale);
         this.ctx.restore();
     }
 
@@ -1256,14 +1357,13 @@ export class SitePlanCanvasWidget extends Component {
         if (!polygon || this.getPriceDisplayNumber() <= 0) {
             return false;
         }
-        const labelBox = this.getPriceLabelBox(polygon);
-        if (!labelBox) {
+        const quad = this.getPriceLabelQuad(polygon);
+        if (!quad) {
             return false;
         }
-        const handle = this.getPriceLabelRotateHandle(labelBox);
-        const dx = pos.x - handle.x;
-        const dy = pos.y - handle.y;
-        return Math.sqrt(dx * dx + dy * dy) <= handle.radius + 1.2;
+        const handle = this.getPriceLabelRotateHandle(quad.corners);
+        const threshold = handle.radius + 1.2 * this.getHandleScale();
+        return Math.hypot(pos.x - handle.x, pos.y - handle.y) <= threshold;
     }
 
     /**
@@ -1286,104 +1386,96 @@ export class SitePlanCanvasWidget extends Component {
         return ((angle % 360) + 360) % 360;
     }
 
-    /** Cạnh nhỏ nhất của ô giá, tính trên hệ quy chiếu 1200x800. */
-    static get PRICE_LABEL_MIN_SIZE() {
-        return 3;
-    }
-
     /**
-     * Bắt đầu kéo góc: chốt góc đối diện làm điểm neo cố định, cùng góc xoay và
-     * tỉ lệ hiện tại. Toàn bộ phép tính sau đó quy về hệ trục của ô giá nên
-     * thao tác vẫn đúng khi ô đã bị xoay.
+     * Bắt đầu kéo một đỉnh. Ô giá được chuyển sang dạng 4 đỉnh tự do ngay tại
+     * đây, nên từ lúc này đỉnh đi thẳng theo con trỏ — không còn ràng buộc phải
+     * giữ hình chữ nhật.
      */
-    startPriceLabelResize(polygon, cornerIndex) {
-        const labelBox = this.getPriceLabelBox(polygon);
-        if (!labelBox) {
+    startPriceLabelCornerDrag(polygon, cornerIndex) {
+        if (!this.ensurePriceLabelCorners(polygon)) {
             return;
         }
-
-        const corners = this.getPriceLabelCorners(labelBox);
-        const corner = corners[cornerIndex];
-        const anchor = corners[(cornerIndex + 2) % 4];
-
-        this.priceLabelResizeGesture = {
-            anchor: { x: anchor.x, y: anchor.y },
-            sx: corner.sx,
-            sy: corner.sy,
-            rotation: (labelBox.rotation * Math.PI) / 180,
-            horizontalPadding: labelBox.horizontalPadding,
-            aspect: labelBox.boxHeight > 0 ? labelBox.boxWidth / labelBox.boxHeight : 1,
-        };
+        this.priceLabelResizeGesture = { cornerIndex };
         this.state.isResizingPriceLabel = true;
-        this.canvas.style.cursor = cornerIndex % 2 === 0 ? 'nwse-resize' : 'nesw-resize';
+        this.canvas.style.cursor = 'grabbing';
     }
 
-    /**
-     * Cập nhật kích thước ô giá theo vị trí con trỏ, giữ nguyên góc đối diện.
-     * keepAspect (giữ Shift) thì khoá tỉ lệ ngang/dọc như lúc bắt đầu kéo.
-     */
-    applyPriceLabelResize(pos, keepAspect) {
+    /** Đặt đỉnh đang kéo đúng vào vị trí con trỏ. */
+    applyPriceLabelCornerDrag(pos) {
         const gesture = this.priceLabelResizeGesture;
         const polygon = this.state.polygons[this.state.selectedPolygon];
-        if (!gesture || !polygon) {
+        if (!gesture || !polygon || !this.isValidPriceLabelCorners(polygon.priceLabelCorners)) {
             return;
         }
 
-        const minSize = SitePlanCanvasWidget.PRICE_LABEL_MIN_SIZE;
-        const cos = Math.cos(gesture.rotation);
-        const sin = Math.sin(gesture.rotation);
-        const dx = pos.x - gesture.anchor.x;
-        const dy = pos.y - gesture.anchor.y;
+        // Thay cả mảng thay vì sửa tại chỗ để OWL nhận ra state đã đổi
+        polygon.priceLabelCorners = polygon.priceLabelCorners.map((corner, index) => (
+            index === gesture.cornerIndex ? { x: pos.x, y: pos.y } : corner
+        ));
 
-        // Quay ngược con trỏ về hệ trục của ô giá
-        const localX = dx * cos + dy * sin;
-        const localY = -dx * sin + dy * cos;
-
-        // Nhân với dấu của góc đang kéo: kéo vượt qua điểm neo thì bị chặn ở
-        // kích thước tối thiểu chứ không lật ngược ô.
-        let width = Math.max(minSize, localX * gesture.sx);
-        let height = Math.max(minSize, localY * gesture.sy);
-
-        if (keepAspect && gesture.aspect > 0) {
-            // Bám theo chiều nào người dùng kéo xa hơn để cảm giác đi theo tay
-            if (width / gesture.aspect >= height) {
-                height = Math.max(minSize, width / gesture.aspect);
-                width = height * gesture.aspect;
-            } else {
-                width = Math.max(minSize, height * gesture.aspect);
-                height = width / gesture.aspect;
-            }
-        }
-
-        // Tâm mới = điểm neo + nửa đường chéo (theo hệ trục ô, rồi quay về thế giới)
-        const halfLocalX = (gesture.sx * width) / 2;
-        const halfLocalY = (gesture.sy * height) / 2;
-        const centerX = gesture.anchor.x + halfLocalX * cos - halfLocalY * sin;
-        const centerY = gesture.anchor.y + halfLocalX * sin + halfLocalY * cos;
-
-        polygon.priceLabelWidth = width;
-        polygon.priceLabelHeight = height;
-        // priceLabelX/Y là điểm neo chữ (mép trái + padding, giữa theo chiều dọc),
-        // suy ngược từ tâm để khớp đúng công thức trong getPriceLabelBox().
-        polygon.priceLabelX = centerX - width / 2 + gesture.horizontalPadding;
-        polygon.priceLabelY = centerY;
+        // priceLabelX/Y không còn quyết định hình dạng nhưng vẫn là toạ độ neo
+        // dùng khi trả ô về mặc định, nên giữ nó bám theo tâm tứ giác.
+        const centroid = this.getPriceLabelCentroid(polygon.priceLabelCorners);
+        polygon.priceLabelX = centroid.x;
+        polygon.priceLabelY = centroid.y;
     }
 
-    /** Trả ô giá về kích thước tự động (vừa khít chuỗi giá). */
+    /** Dời cả 4 đỉnh (dùng khi kéo cả ô hoặc kéo cả polygon). */
+    translatePriceLabelCorners(polygon, dx, dy) {
+        if (!this.isValidPriceLabelCorners(polygon.priceLabelCorners)) {
+            return;
+        }
+        polygon.priceLabelCorners = polygon.priceLabelCorners.map(corner => ({
+            x: corner.x + dx,
+            y: corner.y + dy,
+        }));
+    }
+
+    /** Xoay cả 4 đỉnh quanh tâm tứ giác một góc cho trước (độ). */
+    rotatePriceLabelCorners(polygon, deltaDegrees) {
+        if (!this.isValidPriceLabelCorners(polygon.priceLabelCorners)) {
+            return;
+        }
+        const centroid = this.getPriceLabelCentroid(polygon.priceLabelCorners);
+        const angle = (deltaDegrees * Math.PI) / 180;
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+
+        polygon.priceLabelCorners = polygon.priceLabelCorners.map((corner) => {
+            const dx = corner.x - centroid.x;
+            const dy = corner.y - centroid.y;
+            return {
+                x: centroid.x + dx * cos - dy * sin,
+                y: centroid.y + dx * sin + dy * cos,
+            };
+        });
+    }
+
+    /**
+     * Trả ô giá về hình chữ nhật tự động (vừa khít chuỗi giá), giữ nguyên tâm ô
+     * và góc xoay đã canh.
+     */
     async resetPriceLabelSize(polygonIndex) {
         const polygon = this.state.polygons[polygonIndex];
-        if (!polygon || (!polygon.priceLabelWidth && !polygon.priceLabelHeight)) {
+        const hasCustomShape = polygon
+            && (this.isValidPriceLabelCorners(polygon.priceLabelCorners)
+                || polygon.priceLabelWidth
+                || polygon.priceLabelHeight);
+        if (!hasCustomShape) {
             return;
         }
 
-        const labelBox = this.getPriceLabelBox(polygon);
+        const quad = this.getPriceLabelQuad(polygon);
+        const center = quad ? this.getPriceLabelCentroid(quad.corners) : null;
+
+        polygon.priceLabelCorners = null;
         polygon.priceLabelWidth = 0;
         polygon.priceLabelHeight = 0;
 
-        // Giữ nguyên tâm ô để nhãn không nhảy chỗ khi thu về kích thước gốc
-        if (labelBox) {
-            polygon.priceLabelX = labelBox.centerX - labelBox.autoBoxWidth / 2 + labelBox.horizontalPadding;
-            polygon.priceLabelY = labelBox.centerY;
+        // Đặt lại điểm neo chữ sao cho tâm ô không xê dịch
+        if (quad && center) {
+            polygon.priceLabelX = center.x - quad.labelBox.autoBoxWidth / 2 + quad.labelBox.horizontalPadding;
+            polygon.priceLabelY = center.y;
         }
 
         this.draw();
@@ -1485,6 +1577,7 @@ export class SitePlanCanvasWidget extends Component {
                 price_label_rotation: polygon.priceLabelRotation || 0,
                 price_label_width: polygon.priceLabelWidth || 0,
                 price_label_height: polygon.priceLabelHeight || 0,
+                price_label_corners: this.serializePriceLabelCorners(polygon.priceLabelCorners),
             });
             // Silent save - no notification
         } catch (error) {
@@ -1503,6 +1596,7 @@ export class SitePlanCanvasWidget extends Component {
                 price_label_rotation: polygon.priceLabelRotation || 0,
                 price_label_width: polygon.priceLabelWidth || 0,
                 price_label_height: polygon.priceLabelHeight || 0,
+                price_label_corners: this.serializePriceLabelCorners(polygon.priceLabelCorners),
             });
         } catch (error) {
             this.notification.add(`Lỗi khi cập nhật vị trí giá: ${error.message}`, { type: 'danger' });

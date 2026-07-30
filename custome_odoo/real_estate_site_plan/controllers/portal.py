@@ -272,6 +272,7 @@ class SitePlanPortal(CustomerPortal):
                         'price_label_rotation': polygon.price_label_rotation,
                         'price_label_width': polygon.price_label_width,
                         'price_label_height': polygon.price_label_height,
+                        'price_label_corners': polygon.price_label_corners or '',
                         'product': product_data
                     })
                 except Exception as e:

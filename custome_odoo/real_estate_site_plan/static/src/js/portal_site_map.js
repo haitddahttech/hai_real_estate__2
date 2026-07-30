@@ -502,21 +502,33 @@
             ctx.textBaseline = 'middle';
 
             const textWidth = ctx.measureText(priceLabel).width;
-            const boxWidth = textWidth + horizontalPadding * 2;
-            const boxHeight = fontSize + verticalPadding * 2;
+
+            // Kích thước tự nhiên (vừa khít chuỗi giá) — dùng làm hệ quy chiếu để vẽ
+            const autoBoxWidth = textWidth + horizontalPadding * 2;
+            const autoBoxHeight = fontSize + verticalPadding * 2;
+
+            // Kích thước người dùng đã chỉnh trong màn vẽ (0 = giữ tự động).
+            // Giá trị lưu theo hệ 1200x800 nên phải nhân lại theo tỉ lệ hiển thị.
+            const savedWidth = (polygon && polygon.price_label_width) || 0;
+            const savedHeight = (polygon && polygon.price_label_height) || 0;
+            const boxWidth = savedWidth > 0 ? savedWidth * scaleX : autoBoxWidth;
+            const boxHeight = savedHeight > 0 ? savedHeight * scaleY : autoBoxHeight;
+
             const boxX = labelX - horizontalPadding;
-            const boxY = labelY - boxHeight / 2;
             const centerX = boxX + boxWidth / 2;
             const centerY = labelY;
 
             ctx.translate(centerX, centerY);
             ctx.rotate(rotation);
+            // Co giãn cả khối để chữ lấp đầy ô đúng như xem trên màn vẽ
+            ctx.scale(boxWidth / autoBoxWidth, boxHeight / autoBoxHeight);
+
             ctx.fillStyle = '#dc3545';
-            ctx.fillRect(boxX - centerX, boxY - centerY, boxWidth, boxHeight);
+            ctx.fillRect(-autoBoxWidth / 2, -autoBoxHeight / 2, autoBoxWidth, autoBoxHeight);
 
             ctx.fillStyle = '#ffffff';
             ctx.textAlign = 'left';
-            ctx.fillText(priceLabel, labelX - centerX, labelY - centerY);
+            ctx.fillText(priceLabel, -autoBoxWidth / 2 + horizontalPadding, 0);
             ctx.restore();
         }
 

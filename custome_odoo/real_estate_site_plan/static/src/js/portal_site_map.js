@@ -366,22 +366,29 @@
             // Draw polygons (need to scale coordinates from 1200x800 to canvas size)
             // Draw polygons (need to scale coordinates from 1200x800 to canvas size)
 
-            // First pass: Draw all UNSELECTED polygons (Only if visible)
             if (state.polygonsVisible) {
+                // First pass: Draw all UNSELECTED polygons
                 state.polygons.forEach((polygon, index) => {
                     // Skip if selected (will be drawn later)
                     if (state.selectedPolygons.includes(index)) return;
 
                     drawPolygonScaled(polygon, false, isPolygonGrayByState(index, polygon));
                 });
+
+                // Second pass: Draw SELECTED polygons on top
+                state.selectedPolygons.forEach(index => {
+                    const polygon = state.polygons[index];
+                    if (!polygon) return;
+
+                    drawPolygonScaled(polygon, true, isPolygonGrayByState(index, polygon));
+                });
             } else if (state.priceLabelsVisible) {
-                // Price labels are an independent display layer: keep them visible
-                // even when polygon fills and borders are hidden.
+                // Ẩn lô đất chỉ ẩn phần vẽ (nền + viền) của MỌI polygon, kể cả căn
+                // đang được chọn — chúng vẫn click được để mở popup thông tin.
+                // Nhãn giá là lớp hiển thị độc lập nên vẫn giữ nguyên.
                 const scaleX = displayWidth / 1200;
                 const scaleY = displayHeight / 800;
-                state.polygons.forEach((polygon, index) => {
-                    // Selected polygons are drawn below and already render their label.
-                    if (state.selectedPolygons.includes(index)) return;
+                state.polygons.forEach((polygon) => {
                     drawPolygonPriceLabel(
                         polygon.points,
                         scaleX,
@@ -391,14 +398,6 @@
                     );
                 });
             }
-
-            // Second pass: Draw SELECTED polygons on top (ALWAYS DRAW)
-            state.selectedPolygons.forEach(index => {
-                const polygon = state.polygons[index];
-                if (!polygon) return;
-
-                drawPolygonScaled(polygon, true, isPolygonGrayByState(index, polygon));
-            });
 
             ctx.restore();
 
@@ -428,6 +427,17 @@
         function getPolygonPriceLabel(polygon) {
             const displayNumber = parseInt(siteMapData.priceDisplayNumber || 0, 10);
             if (!state.priceLabelsVisible || !displayNumber || displayNumber <= 0 || !polygon || !polygon.product) {
+                return '';
+            }
+
+            // Giá chỉ hiện trên những căn đang thuộc giỏ được chọn (Tổng / Inhouse
+            // / Đại lý). Căn bị lọc ra đã bị làm xám nên hiện giá lên cũng vô nghĩa.
+            if (!matchesCartFilter(polygon)) {
+                return '';
+            }
+
+            // Căn đã bán không còn chào bán nên không hiển thị giá.
+            if (polygon.product.is_sold) {
                 return '';
             }
 
@@ -1509,11 +1519,8 @@
             console.log('Total polygons to check:', state.polygons.length);
 
             for (let i = state.polygons.length - 1; i >= 0; i--) {
-                // If polygons are hidden, only allow interaction with SELECTED ones
-                if (!state.polygonsVisible && !state.selectedPolygons.includes(i)) {
-                    continue;
-                }
-
+                // Ẩn lô đất chỉ ảnh hưởng phần vẽ: vùng click của polygon vẫn còn
+                // nguyên để người xem bấm vào và mở popup thông tin căn.
                 const polygon = state.polygons[i];
                 console.log(`\n=== Polygon ${i}: ${polygon.name} ===`);
                 polygon.points.forEach((p, idx) => {
@@ -2085,18 +2092,20 @@
                 offCtx.stroke();
             }
 
+            // Ảnh xuất ra bám đúng những gì đang thấy trên màn hình: ẩn lô đất thì
+            // không vẽ polygon nào, kể cả căn đang được chọn.
             if (state.polygonsVisible) {
                 state.polygons.forEach((polygon, index) => {
                     if (state.selectedPolygons.includes(index)) return;
                     drawPolygonOnOff(polygon, false, isPolygonGrayByState(index, polygon));
                 });
-            }
 
-            state.selectedPolygons.forEach(index => {
-                const polygon = state.polygons[index];
-                if (!polygon) return;
-                drawPolygonOnOff(polygon, true, isPolygonGrayByState(index, polygon));
-            });
+                state.selectedPolygons.forEach(index => {
+                    const polygon = state.polygons[index];
+                    if (!polygon) return;
+                    drawPolygonOnOff(polygon, true, isPolygonGrayByState(index, polygon));
+                });
+            }
 
             // Capture and composite popups
             const displayWidth = state.displayWidth || canvas.getBoundingClientRect().width;

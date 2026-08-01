@@ -483,6 +483,38 @@
             };
         }
 
+        // Hướng chữ trong ô: trung bình 2 cạnh "ngang" (trên và dưới) nên vẫn
+        // hợp lý khi ô đã bị kéo thành hình thang hay hình xiên.
+        function getPriceLabelTextAngle(corners) {
+            const dirX = (corners[1].x - corners[0].x) + (corners[2].x - corners[3].x);
+            const dirY = (corners[1].y - corners[0].y) + (corners[2].y - corners[3].y);
+            return Math.hypot(dirX, dirY) < 1e-6 ? 0 : Math.atan2(dirY, dirX);
+        }
+
+        // 4 đỉnh tự do người dùng đã canh trong màn vẽ. Toạ độ lưu theo hệ
+        // 1200x800 nên phải nhân lại theo tỉ lệ hiển thị.
+        function getSavedPriceLabelCorners(polygon, scaleX, scaleY) {
+            const raw = polygon && polygon.price_label_corners;
+            if (!raw) {
+                return null;
+            }
+            try {
+                const parsed = JSON.parse(raw);
+                const isValid = Array.isArray(parsed)
+                    && parsed.length === 4
+                    && parsed.every(function (point) {
+                        return point && isFinite(point.x) && isFinite(point.y);
+                    });
+                return isValid
+                    ? parsed.map(function (point) {
+                        return { x: point.x * scaleX, y: point.y * scaleY };
+                    })
+                    : null;
+            } catch (error) {
+                return null;
+            }
+        }
+
         function drawPolygonPriceLabel(points, scaleX, scaleY, priceLabel, polygon) {
             if (!priceLabel) {
                 return;
@@ -500,23 +532,60 @@
             ctx.font = `bold ${fontSize}px Arial`;
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
-
             const textWidth = ctx.measureText(priceLabel).width;
-            const boxWidth = textWidth + horizontalPadding * 2;
-            const boxHeight = fontSize + verticalPadding * 2;
-            const boxX = labelX - horizontalPadding;
-            const boxY = labelY - boxHeight / 2;
-            const centerX = boxX + boxWidth / 2;
-            const centerY = labelY;
+            ctx.restore();
 
-            ctx.translate(centerX, centerY);
-            ctx.rotate(rotation);
+            // Kích thước tự nhiên (vừa khít chuỗi giá) — dùng làm hệ quy chiếu để vẽ
+            const autoBoxWidth = textWidth + horizontalPadding * 2;
+            const autoBoxHeight = fontSize + verticalPadding * 2;
+
+            let corners = getSavedPriceLabelCorners(polygon, scaleX, scaleY);
+            if (!corners) {
+                // Chưa kéo đỉnh: suy ra hình chữ nhật từ vị trí / kích thước / góc xoay
+                const savedWidth = (polygon && polygon.price_label_width) || 0;
+                const savedHeight = (polygon && polygon.price_label_height) || 0;
+                const boxWidth = savedWidth > 0 ? savedWidth * scaleX : autoBoxWidth;
+                const boxHeight = savedHeight > 0 ? savedHeight * scaleY : autoBoxHeight;
+                const rectCenterX = labelX - horizontalPadding + boxWidth / 2;
+                const rectCenterY = labelY;
+                const cos = Math.cos(rotation);
+                const sin = Math.sin(rotation);
+
+                corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(function (sign) {
+                    const localX = sign[0] * boxWidth / 2;
+                    const localY = sign[1] * boxHeight / 2;
+                    return {
+                        x: rectCenterX + localX * cos - localY * sin,
+                        y: rectCenterY + localX * sin + localY * cos,
+                    };
+                });
+            }
+
+            // Nền là tứ giác 4 đỉnh tự do — phần duy nhất đổi hình theo thao tác kéo
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(corners[0].x, corners[0].y);
+            for (let i = 1; i < corners.length; i++) {
+                ctx.lineTo(corners[i].x, corners[i].y);
+            }
+            ctx.closePath();
             ctx.fillStyle = '#dc3545';
-            ctx.fillRect(boxX - centerX, boxY - centerY, boxWidth, boxHeight);
+            ctx.fill();
+            ctx.restore();
 
+            // Chữ giữ nguyên cỡ và tỉ lệ gốc dù ô bị kéo méo tới đâu: chỉ đặt vào
+            // tâm ô và nghiêng theo hướng ô, tuyệt đối không co giãn.
+            const centerX = corners.reduce(function (sum, c) { return sum + c.x; }, 0) / 4;
+            const centerY = corners.reduce(function (sum, c) { return sum + c.y; }, 0) / 4;
+
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(getPriceLabelTextAngle(corners));
+            ctx.font = `bold ${fontSize}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
             ctx.fillStyle = '#ffffff';
-            ctx.textAlign = 'left';
-            ctx.fillText(priceLabel, labelX - centerX, labelY - centerY);
+            ctx.fillText(priceLabel, 0, 0);
             ctx.restore();
         }
 

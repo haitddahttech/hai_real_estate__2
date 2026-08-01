@@ -87,6 +87,30 @@ class SitePlanPolygon(models.Model):
         help='Góc xoay của nhãn giá theo độ.'
     )
 
+    price_label_width = fields.Float(
+        string='Chiều rộng ô giá',
+        default=0.0,
+        help='Chiều rộng ô hiển thị giá trên canvas tham chiếu 1200x800. '
+             'Để 0 nghĩa là tự co theo độ dài chuỗi giá. '
+             'Bị bỏ qua khi đã có price_label_corners.'
+    )
+
+    price_label_height = fields.Float(
+        string='Chiều cao ô giá',
+        default=0.0,
+        help='Chiều cao ô hiển thị giá trên canvas tham chiếu 1200x800. '
+             'Để 0 nghĩa là tự co theo cỡ chữ mặc định. '
+             'Bị bỏ qua khi đã có price_label_corners.'
+    )
+
+    price_label_corners = fields.Text(
+        string='4 đỉnh ô giá',
+        help='Mảng JSON 4 đỉnh ô hiển thị giá theo thứ tự trên-trái, trên-phải, '
+             'dưới-phải, dưới-trái: [{"x": 0, "y": 0}, ...] trên canvas tham '
+             'chiếu 1200x800. Đây là nguồn dữ liệu ưu tiên cho hình dạng ô giá; '
+             'để trống thì ô được suy ra từ vị trí / góc xoay / kích thước.'
+    )
+
     def _get_default_price_label_position(self, coordinates):
         try:
             points = json.loads(coordinates)

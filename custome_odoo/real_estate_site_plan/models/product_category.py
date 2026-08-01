@@ -5,12 +5,14 @@ from odoo import models, fields, api
 
 class ProductCategory(models.Model):
     _inherit = 'product.category'
+    _order = "sequence, id"
 
     real_estate_color = fields.Char(
         string='Màu sắc',
         default='#3498db',
         help='Mã màu Hex cho các sản phẩm trong danh mục này (ví dụ: #3498db)'
     )
+    sequence = fields.Integer(required=True, default=10)
 
     def _auto_init(self):
         """

@@ -318,11 +318,19 @@ class SitePlanPortal(CustomerPortal):
                 'TIỆN ÍCH DỰ ÁN': safe_translate('TIỆN ÍCH DỰ ÁN'),
                 'Xem thêm': safe_translate('Xem thêm')
             }
+            # Nhóm nút lọc giỏ hàng chỉ có nghĩa khi bản vẽ thực sự có căn được
+            # gắn giỏ Inhouse hoặc Đại lý; không có căn nào thì ẩn cả nhóm.
+            has_cart_filter = any(
+                item['product'].get('is_inhouse_cart') or item['product'].get('is_agency_cart')
+                for item in polygon_data
+            )
+
             values = {
                 'site_plan': site_plan,
                 'polygon_data_json': json.dumps(polygon_data),
                 'js_translations_json': json.dumps(js_translations),
                 'price_display_number': site_plan.price_display_number or 0,
+                'has_cart_filter': has_cart_filter,
                 'page_name': 'site_plan_detail',
             }
             return request.render('real_estate_site_plan.portal_site_plan_detail', values)

@@ -649,7 +649,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="toolbar-group toolbar-segmented" role="group" aria-label="Lọc giỏ hàng">
+                                        <div t-if="has_cart_filter" class="toolbar-group toolbar-segmented" role="group" aria-label="Lọc giỏ hàng">
                                             <span class="toolbar-group-label">Giỏ hàng</span>
                                             <button type="button" class="toolbar-btn active-tool-btn" id="cartFilterAll" title="Hiển thị tất cả sản phẩm" aria-label="Hiển thị tất cả sản phẩm" aria-pressed="true">
                                             <i class="fa fa-th-large"/> Tổng

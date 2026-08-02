@@ -893,14 +893,24 @@
                         return;
                     }
                     if (state.forceAllGray) {
-                        // When Force All Gray is ON: Clicking toggles "Not Gray" (Un-gray)
+                        // Chế độ "Chọn căn hiển thị": mỗi căn đi qua 3 trạng thái theo
+                        // số lần bấm — ẩn (xám) → hiện căn → hiện popup thông tin → ẩn lại.
                         const idxInUngray = state.manuallyUngrayIndices.indexOf(clickedIndex);
-                        if (idxInUngray !== -1) {
-                            // Already un-grayed -> remove from un-gray list (becomes gray again)
-                            state.manuallyUngrayIndices.splice(idxInUngray, 1);
-                        } else {
-                            // Currently gray -> add to un-gray list (becomes colored)
+                        const hasPopup = state.selectedPolygons.includes(clickedIndex);
+
+                        if (idxInUngray === -1) {
+                            // Lần 1: bỏ xám để hiện căn, chưa mở popup
                             state.manuallyUngrayIndices.push(clickedIndex);
+                        } else if (!hasPopup && canOpenPopup(state.polygons[clickedIndex])) {
+                            // Lần 2: căn đang hiện -> mở popup thông tin
+                            selectPolygonWithPopup(clickedIndex);
+                        } else {
+                            // Lần 3 (hoặc lần 2 với căn đã bán - không có popup):
+                            // đóng popup nếu có và ẩn căn trở lại
+                            if (hasPopup) {
+                                removePolygonSelection(clickedIndex);
+                            }
+                            state.manuallyUngrayIndices.splice(idxInUngray, 1);
                         }
                     } else {
                         // When Force All Gray is OFF: Clicking toggles "Gray"
@@ -920,46 +930,58 @@
 
                 // Không cho tương tác với các căn đã bán (hiển thị màu xám):
                 // bỏ qua, không mở popup thông tin.
-                if (polygon.product && polygon.product.is_sold) {
+                if (!canOpenPopup(polygon)) {
                     return;
                 }
 
-                const productId = polygon.product.id;
-
-                const selectedIdx = state.selectedPolygons.indexOf(clickedIndex);
-
-                if (selectedIdx !== -1) {
+                if (state.selectedPolygons.includes(clickedIndex)) {
                     // DESELECT
                     removePolygonSelection(clickedIndex);
                 } else {
                     // SELECT
-                    // Find if a popup for this product already exists
-                    let popupData = state.activePopups.find(p => p.productId === productId);
-
-                    if (popupData) {
-                        // Popup exists, just add this polygon as an origin
-                        state.selectedPolygons.push(clickedIndex);
-                        addOriginToPopup(popupData, clickedIndex);
-                    } else {
-                        // Create new popup
-                        if (state.activePopups.length >= MAX_POPUPS) {
-                            // Prune oldest popup (including all its origins)
-                            const oldestPopup = state.activePopups[0];
-                            // Remove all its polygon indices from selectedPolygons
-                            oldestPopup.origins.forEach(orig => {
-                                const idx = state.selectedPolygons.indexOf(orig.polygonIndex);
-                                if (idx !== -1) state.selectedPolygons.splice(idx, 1);
-                            });
-                            removePopup(0);
-                        }
-
-                        state.selectedPolygons.push(clickedIndex);
-                        showPopup(polygon, clickedIndex);
-                    }
+                    selectPolygonWithPopup(clickedIndex);
                 }
 
                 draw();
             }
+        }
+
+        function canOpenPopup(polygon) {
+            return Boolean(polygon && polygon.product && !polygon.product.is_sold);
+        }
+
+        function selectPolygonWithPopup(polygonIndex) {
+            const polygon = state.polygons[polygonIndex];
+            if (!polygon || state.selectedPolygons.includes(polygonIndex)) {
+                return;
+            }
+
+            const productId = polygon.product.id;
+
+            // Find if a popup for this product already exists
+            const popupData = state.activePopups.find(p => p.productId === productId);
+
+            if (popupData) {
+                // Popup exists, just add this polygon as an origin
+                state.selectedPolygons.push(polygonIndex);
+                addOriginToPopup(popupData, polygonIndex);
+                return;
+            }
+
+            // Create new popup
+            if (state.activePopups.length >= MAX_POPUPS) {
+                // Prune oldest popup (including all its origins)
+                const oldestPopup = state.activePopups[0];
+                // Remove all its polygon indices from selectedPolygons
+                oldestPopup.origins.forEach(orig => {
+                    const idx = state.selectedPolygons.indexOf(orig.polygonIndex);
+                    if (idx !== -1) state.selectedPolygons.splice(idx, 1);
+                });
+                removePopup(0);
+            }
+
+            state.selectedPolygons.push(polygonIndex);
+            showPopup(polygon, polygonIndex);
         }
 
         function addOriginToPopup(popupData, polygonIndex) {
@@ -1919,6 +1941,13 @@
             state.manuallyGrayIndices = [];
             state.manuallyUngrayIndices = [];
 
+            // Vào/ra chế độ chọn căn đều bắt đầu lại từ đầu: đóng hết popup đang mở
+            // để mỗi căn chạy đúng chu kỳ hiện căn → hiện popup → ẩn căn.
+            while (state.activePopups.length) {
+                removePopup(0);
+            }
+            state.selectedPolygons = [];
+
             // Enter selection immediately: every polygon becomes gray until selected.
             state.interactiveGrayMode = state.forceAllGray;
             const btn = document.getElementById('toggleAllGray');
@@ -1927,7 +1956,7 @@
                     ? '<i class="fa fa-check-circle"></i> Đang chọn căn'
                     : '<i class="fa fa-paint-brush"></i> Chọn căn hiển thị';
                 btn.title = state.forceAllGray
-                    ? 'Bấm vào căn để hiện hoặc ẩn màu. Bấm lại để xóa lựa chọn.'
+                    ? 'Bấm lần 1 hiện căn, lần 2 hiện thông tin, lần 3 ẩn căn.'
                     : 'Làm xám toàn bộ và chọn các căn cần hiển thị';
                 btn.setAttribute('aria-pressed', String(state.forceAllGray));
                 btn.classList.toggle('is-selecting', state.forceAllGray);

@@ -297,13 +297,13 @@
                                         <tr>
                                             <td style="vertical-align: top;">
                                                 <table class="info-table" style="width: 100%; border-collapse: collapse;">
-                                                    <tr><td class="info-label" style="padding: 2px 0;">Số tiền đặt cọc</td><td class="info-value" style="font-size: 10px; color: #856404;"><t t-esc="'{:,.0f}'.format(product.deposit or 0)"/> VNĐ</td></tr>
                                                     <t t-if="bank">
                                                         <tr><td class="info-label" style="padding: 2px 0;">Chủ tài khoản</td><td class="info-value" style="font-size: 8px;"><t t-esc="bank.bank_account_holder_name"/></td></tr>
                                                         <tr><td class="info-label" style="padding: 2px 0;">Số tài khoản</td><td class="info-value" style="font-size: 10px; color: #000;"><t t-esc="bank.bank_account_number"/></td></tr>
                                                         <tr><td class="info-label" style="padding: 2px 0;">Ngân hàng</td><td class="info-value"><t t-esc="bank.bank_name"/></td></tr>
                                                         <tr><td class="info-label" style="padding: 2px 0;">Swift code</td><td class="info-value"><t t-esc="bank.swift_code or '---'"/></td></tr>
                                                     </t>
+                                                    <tr><td class="info-label" style="padding: 2px 0;">Số tiền cọc</td><td class="info-value" style="font-size: 10px; color: #856404;"><t t-esc="'{:,.0f}'.format(product.deposit or 0)"/> VNĐ</td></tr>
                                                 </table>
                                             </td>
                                             <!-- Cột QR bám sát kích thước ảnh (100px) thay vì chiếm 30% bề ngang,

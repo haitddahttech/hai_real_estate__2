@@ -32,6 +32,7 @@ This module allows you to:
         'data/real_estate_direction_data.xml',
         'data/payment_schedule_template_data.xml',
         'data/payment_schedule_hong_hac_villa_data.xml',
+        'data/discount_config_data.xml',
         'views/product_product_views.xml',
         'views/discount_config_views.xml',
         'views/site_plan_views.xml',

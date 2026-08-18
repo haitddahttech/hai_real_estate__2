@@ -549,12 +549,31 @@ class SitePlanPortal(CustomerPortal):
             product.write({
                 'selected_discount_ids': [(6, 0, discount_ids)]  # Replace all with new selection
             })
-            
-            return {
+
+            payload = {
                 'success': True,
                 'message': 'Discounts saved successfully',
-                'selected_count': len(discount_ids)
+                'selected_count': len(discount_ids),
             }
+
+            # Chiết khấu loại percent_recalc nhân chuỗi theo sequence nên client
+            # không cộng dồn từng dòng được — trả luôn số đã tính về cho JS dùng.
+            # Bọc riêng: tính lỗi thì vẫn coi như lưu thành công, chỉ thiếu các
+            # khoá bổ sung và client giữ nguyên số đang hiển thị.
+            try:
+                total_discount, per_discount = product.selected_discount_ids.compute_discounts_for_product(product)
+                payload.update({
+                    'total_discount': total_discount,
+                    'final_price': product.final_price,
+                    'price_per_m2': (product.final_price / product.area) if product.area else 0,
+                    'amounts': {str(k): v for k, v in per_discount.items()},
+                })
+            except Exception as calc_error:
+                _logger.error(
+                    "Khong tinh duoc chiet khau cho san pham %s: %s", product_id, calc_error
+                )
+
+            return payload
         except Exception as e:
             _logger.error(f"Error saving discounts: {str(e)}")
             return {'success': False, 'error': str(e)}

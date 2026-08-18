@@ -275,15 +275,15 @@ class ProductTemplate(models.Model):
     
     @api.depends('list_price', 'selected_discount_ids', 'selected_discount_ids.discount_type',
                  'selected_discount_ids.discount_value', 'selected_discount_ids.formula_type',
-                 'selected_discount_ids.qty',
+                 'selected_discount_ids.qty', 'selected_discount_ids.sequence',
                  'price_exclude_land_tax', 'land_tax',
                  'management_fee', 'maintenance_fee', 'area')
     def _compute_final_price(self):
         for product in self:
-            total_discount = 0.0
-            for discount in product.selected_discount_ids:
-                # Sử dụng method từ discount model để tính giá trị chiết khấu
-                total_discount += discount.compute_discount_for_product(product)
+            # Chiết khấu loại percent_recalc nhân chuỗi theo sequence (CK sau
+            # tính trên giá đã giảm của CK trước) nên không cộng dồn từng cái
+            # được — phải tính cả nhóm một lượt.
+            total_discount, _ = product.selected_discount_ids.compute_discounts_for_product(product)
             product.final_price = product.list_price - total_discount
 
     @api.depends('categ_id', 'categ_id.real_estate_color')

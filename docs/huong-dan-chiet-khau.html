@@ -1,0 +1,693 @@
+<meta charset="utf-8"/>
+<title>Chiết khấu nhân chuỗi</title>
+<style>
+  /* ---------------------------------------------------------------
+     Palette lấy từ brand token Hồng Hạc City
+     (static/src/scss/brand_tokens.scss): olive #263417, vàng đồng
+     #8d974e / #c4ab68, kem ngà #fffaea. Neutral ám olive, không dùng
+     xám thuần.
+     --------------------------------------------------------------- */
+  :root {
+    --ground:      #FDFDF7;
+    --surface:     #F1F2E6;
+    --surface-2:   #E7E9D8;
+    --rule:        #D7DAC5;
+    --rule-strong: #B9BEA1;
+    --ink:         #16190E;
+    --ink-soft:    #565B45;
+    --ink-faint:   #83886E;
+    --primary:     #263417;
+    --brass:       #77813E;
+    --brass-lite:  #C4AB68;
+    --brass-wash:  #F0EFD9;
+    --flag:        #8F2A1D;
+    --flag-wash:   #F7E9E4;
+
+    --serif: ui-serif, Georgia, "DejaVu Serif", "Liberation Serif", serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", "Liberation Sans", sans-serif;
+    --data: ui-monospace, "DejaVu Sans Mono", "Liberation Mono", "Courier New", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #12150D;
+      --surface:     #1B1F14;
+      --surface-2:   #24291B;
+      --rule:        #2F3524;
+      --rule-strong: #4A5138;
+      --ink:         #EDEFE1;
+      --ink-soft:    #AFB49B;
+      --ink-faint:   #868C71;
+      --primary:     #B4C489;
+      --brass:       #B9C47C;
+      --brass-lite:  #D8C489;
+      --brass-wash:  #23281A;
+      --flag:        #E2988B;
+      --flag-wash:   #2B1E1A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:      #12150D;
+    --surface:     #1B1F14;
+    --surface-2:   #24291B;
+    --rule:        #2F3524;
+    --rule-strong: #4A5138;
+    --ink:         #EDEFE1;
+    --ink-soft:    #AFB49B;
+    --ink-faint:   #868C71;
+    --primary:     #B4C489;
+    --brass:       #B9C47C;
+    --brass-lite:  #D8C489;
+    --brass-wash:  #23281A;
+    --flag:        #E2988B;
+    --flag-wash:   #2B1E1A;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: clamp(2rem, 6vw, 5rem) clamp(1.1rem, 4vw, 3rem) 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.75rem, 5vw, 4rem);
+  }
+
+  /* Cột đọc hẹp cho văn xuôi; bảng số và sơ đồ tràn ra hết bề ngang */
+  .prose { max-width: 68ch; display: flex; flex-direction: column; gap: 1rem; }
+
+  /* ---------- masthead ---------- */
+  .masthead { display: flex; flex-direction: column; gap: 1rem; }
+  .eyebrow {
+    font-family: var(--data);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brass);
+  }
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 5.5vw, 3.1rem);
+    line-height: 1.08;
+    font-weight: 600;
+    margin: 0;
+    text-wrap: balance;
+    letter-spacing: -0.015em;
+  }
+  .standfirst {
+    max-width: 62ch;
+    font-size: 1.075rem;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .sourceline {
+    font-family: var(--data);
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    border-top: 1px solid var(--rule);
+    padding-top: 0.85rem;
+    margin: 0.5rem 0 0;
+  }
+
+  /* ---------- sections ---------- */
+  section { display: flex; flex-direction: column; gap: 1.35rem; }
+  h2 {
+    font-family: var(--serif);
+    font-size: clamp(1.35rem, 2.6vw, 1.7rem);
+    font-weight: 600;
+    line-height: 1.2;
+    margin: 0;
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid var(--rule-strong);
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--sans);
+    font-size: 0.94rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin: 0.4rem 0 0;
+  }
+  p { margin: 0; }
+  strong { font-weight: 650; }
+  code, .num {
+    font-family: var(--data);
+    font-variant-numeric: tabular-nums;
+  }
+  code {
+    font-size: 0.875em;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 0.08em 0.34em;
+  }
+  ul, ol { margin: 0; padding-left: 1.35rem; display: flex; flex-direction: column; gap: 0.55rem; }
+  li::marker { color: var(--brass); }
+
+  /* ---------- formula block ---------- */
+  .formula {
+    font-family: var(--data);
+    font-size: 0.86rem;
+    line-height: 1.85;
+    background: var(--surface);
+    border-left: 3px solid var(--brass-lite);
+    padding: 1rem 1.15rem;
+    overflow-x: auto;
+    white-space: pre;
+    color: var(--ink);
+  }
+
+  /* ---------- tables ---------- */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 34rem; }
+  caption {
+    caption-side: top;
+    text-align: left;
+    font-family: var(--data);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 0 0 0.6rem;
+  }
+  th, td { padding: 0.6rem 0.85rem; text-align: left; border-bottom: 1px solid var(--rule); }
+  thead th {
+    background: var(--surface-2);
+    font-size: 0.74rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--ink-soft);
+    vertical-align: bottom;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  .money { text-align: right; font-family: var(--data); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .rowtotal td { background: var(--brass-wash); font-weight: 700; }
+  .cellref { font-family: var(--data); font-size: 0.78rem; color: var(--ink-faint); white-space: nowrap; }
+  .flat { color: var(--ink-faint); }
+  .bad { color: var(--flag); }
+
+  /* ---------- chain (thiết bị cấu trúc chính: A → C là chuỗi thật) ---------- */
+  .chain {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: stretch;
+    gap: 0;
+  }
+  .stop {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    padding: 1.1rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .stop--now { border-color: var(--rule-strong); }
+  .stop--end { background: var(--brass-wash); border-color: var(--brass-lite); }
+  .stop__when {
+    font-family: var(--data);
+    font-size: 0.68rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--brass);
+  }
+  .stop__label { font-size: 0.9rem; font-weight: 650; line-height: 1.35; }
+  .stop__price {
+    font-family: var(--data);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-top: auto;
+  }
+  .stop__unit { font-size: 0.7rem; color: var(--ink-faint); font-family: var(--data); }
+  .link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0 0.9rem;
+    min-width: 9.5rem;
+  }
+  .link__op {
+    font-family: var(--data);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .link__amt {
+    font-family: var(--data);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.76rem;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .link__arrow { color: var(--brass-lite); font-size: 1.1rem; line-height: 1; }
+  @media (max-width: 780px) {
+    .chain { grid-template-columns: 1fr; }
+    .link { padding: 0.75rem 0; min-width: 0; }
+    .link__arrow { transform: rotate(90deg); }
+  }
+
+  /* ---------- callout ---------- */
+  .callout {
+    border: 1px solid var(--rule-strong);
+    border-left: 4px solid var(--brass);
+    background: var(--surface);
+    padding: 1.05rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 74ch;
+  }
+  .callout--warn { border-left-color: var(--flag); background: var(--flag-wash); }
+  .callout__title {
+    font-family: var(--data);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brass);
+  }
+  .callout--warn .callout__title { color: var(--flag); }
+
+  /* ---------- steps ---------- */
+  .steps { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0; counter-reset: s; }
+  .steps li {
+    counter-increment: s;
+    display: grid;
+    grid-template-columns: 2.1rem 1fr;
+    gap: 0.9rem;
+    padding: 0.95rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .steps li:last-child { border-bottom: none; }
+  .steps li::before {
+    content: counter(s);
+    font-family: var(--data);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--brass);
+    border: 1px solid var(--rule-strong);
+    border-radius: 50%;
+    width: 1.85rem; height: 1.85rem;
+    display: grid; place-items: center;
+  }
+  .steps__body { display: flex; flex-direction: column; gap: 0.3rem; }
+
+  .field {
+    font-family: var(--data);
+    font-size: 0.86em;
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding-top: 1.2rem;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    max-width: 68ch;
+  }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="eyebrow">Hồng Hạc City · Tài liệu nội bộ</div>
+    <h1>Chiết khấu nhân chuỗi</h1>
+    <p class="standfirst">Cách hai mốc chiết khấu — CK 7,5% ghi trong phụ lục hợp đồng và CK cho thuê 8% tại bàn giao — cộng hưởng với nhau, và cách cấu hình chúng trong hệ thống.</p>
+    <p class="sourceline">Nguồn công thức: <strong>LTT mới -TÍNH CK 8%.xlsx</strong>, sheet <strong>CK GD2 SH</strong> · Số liệu minh hoạ theo mã sản phẩm <strong>F2.2.B.3.10</strong>, mốc CK 5% (cột G)</p>
+  </header>
+
+  <section>
+    <h2>Giá một căn gồm bốn dòng</h2>
+    <div class="prose">
+      <p>Trước khi nói tới chiết khấu, phải rõ giá được cấu thành thế nào. Chỉ một trong bốn dòng là đối tượng bị trừ.</p>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <caption>Bốn dòng cấu thành giá — số liệu mốc CK 5%</caption>
+        <thead>
+          <tr>
+            <th>Dòng</th>
+            <th>Cách tính</th>
+            <th class="money">Số tiền (VNĐ)</th>
+            <th>Chiết khấu có trừ?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Giá bán chưa TSDĐ</strong></td>
+            <td>tra bảng giá</td>
+            <td class="money">21.265.260.000</td>
+            <td><strong>Có</strong> — đây là dòng duy nhất bị trừ</td>
+          </tr>
+          <tr>
+            <td>Tiền sử dụng đất</td>
+            <td>tra bảng giá</td>
+            <td class="money">615.695.000</td>
+            <td class="flat">Không bao giờ</td>
+          </tr>
+          <tr>
+            <td>VAT</td>
+            <td><code>10% × giá bán</code></td>
+            <td class="money">2.126.526.000</td>
+            <td>Tính lại theo giá mới</td>
+          </tr>
+          <tr>
+            <td>Quỹ bảo trì</td>
+            <td><code>0,5% × (giá bán + TSDĐ)</code></td>
+            <td class="money">109.405.000</td>
+            <td>Tính lại theo giá mới</td>
+          </tr>
+          <tr class="rowtotal">
+            <td>Tổng giá</td>
+            <td>cộng bốn dòng</td>
+            <td class="money">24.116.886.000</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <div class="callout__title">Hệ số khuếch đại 1,105</div>
+      <p>Vì VAT và quỹ bảo trì được tính lại, mỗi đồng trừ khỏi giá nhà làm tổng giá giảm <strong>1,105 đồng</strong> (<code>1 + 10% + 0,5%</code>). Nên chiết khấu 7,5% trên giá nhà thực ra kéo tổng giá xuống <strong>7,31%</strong> — chênh lệch này là thật, không phải sai số làm tròn.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Hai mốc, một chuỗi</h2>
+    <div class="prose">
+      <p>Hai chiết khấu không rơi cùng lúc, và cái sau <strong>tính trên giá đã giảm của cái trước</strong>. Đó là điểm quan trọng nhất của toàn bộ tài liệu này.</p>
+    </div>
+
+    <div class="chain">
+      <div class="stop stop--now">
+        <div class="stop__when">Hiện tại</div>
+        <div class="stop__label">Giá niêm yết<br/>mốc CK 5%</div>
+        <div class="stop__price">24.116.886.000</div>
+        <div class="stop__unit">VNĐ · tổng giá</div>
+      </div>
+
+      <div class="link">
+        <div class="link__op">× 92,5%</div>
+        <div class="link__arrow">&#8594;</div>
+        <div class="link__amt">&minus; 1.762.354.000</div>
+      </div>
+
+      <div class="stop">
+        <div class="stop__when">Khi ký HĐMB</div>
+        <div class="stop__label">Sau CK 7,5%<br/>(phụ lục)</div>
+        <div class="stop__price">22.354.532.000</div>
+        <div class="stop__unit">VNĐ · tổng giá</div>
+      </div>
+
+      <div class="link">
+        <div class="link__op">× 92%</div>
+        <div class="link__arrow">&#8594;</div>
+        <div class="link__amt">&minus; 1.738.861.000</div>
+      </div>
+
+      <div class="stop stop--end">
+        <div class="stop__when">Khi bàn giao nhà</div>
+        <div class="stop__label">Sau CK cho thuê 8%</div>
+        <div class="stop__price">20.615.671.000</div>
+        <div class="stop__unit">VNĐ · tổng giá</div>
+      </div>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Chi tiết từng dòng qua ba trạng thái giá</caption>
+        <thead>
+          <tr>
+            <th>Dòng</th>
+            <th class="money">Giá niêm yết</th>
+            <th class="money">Sau CK 7,5%</th>
+            <th class="money">Sau CK 8%</th>
+            <th>Ô trong sheet</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Giá bán chưa TSDĐ</td>
+            <td class="money">21.265.260.000</td>
+            <td class="money">19.670.370.000</td>
+            <td class="money">18.096.740.000</td>
+            <td class="cellref">G4 → G13 → I13</td>
+          </tr>
+          <tr>
+            <td>Tiền sử dụng đất</td>
+            <td class="money">615.695.000</td>
+            <td class="money flat">615.695.000</td>
+            <td class="money flat">615.695.000</td>
+            <td class="cellref">G5 → G14 → I14</td>
+          </tr>
+          <tr>
+            <td>VAT</td>
+            <td class="money">2.126.526.000</td>
+            <td class="money">1.967.037.000</td>
+            <td class="money">1.809.674.000</td>
+            <td class="cellref">G6 → G15 → I15</td>
+          </tr>
+          <tr>
+            <td>Quỹ bảo trì</td>
+            <td class="money">109.405.000</td>
+            <td class="money">101.430.000</td>
+            <td class="money">93.562.000</td>
+            <td class="cellref">G7 → G16 → I16</td>
+          </tr>
+          <tr class="rowtotal">
+            <td>Tổng giá</td>
+            <td class="money">24.116.886.000</td>
+            <td class="money">22.354.532.000</td>
+            <td class="money">20.615.671.000</td>
+            <td class="cellref">G8 → G17 → I17</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose">
+      <h3>Tiền giảm của mỗi mốc gồm ba phần</h3>
+      <p>Con số hiển thị cho khách là tổng của giá nhà giảm cộng phần VAT và quỹ bảo trì tụt theo.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Cấu thành tiền giảm từng mốc</caption>
+        <thead>
+          <tr>
+            <th>Thành phần</th>
+            <th class="money">CK 7,5% (phụ lục)</th>
+            <th class="money">CK cho thuê 8%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Giá nhà giảm</td><td class="money">1.594.890.000</td><td class="money">1.573.630.000</td></tr>
+          <tr><td>VAT giảm kéo theo</td><td class="money">159.489.000</td><td class="money">157.363.000</td></tr>
+          <tr><td>Quỹ bảo trì giảm kéo theo</td><td class="money">7.975.000</td><td class="money">7.868.000</td></tr>
+          <tr class="rowtotal">
+            <td>Tiền giảm ghi nhận</td>
+            <td class="money">1.762.354.000</td>
+            <td class="money">1.738.861.000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Vì sao không được cộng dồn</h2>
+    <div class="prose">
+      <p>Phản xạ tự nhiên là cộng hai phần trăm lại. Kết quả sai, và sai một khoản đủ lớn để thành vấn đề khi ký hợp đồng.</p>
+    </div>
+
+    <div class="formula">Nhân chuỗi (đúng)   0,925 × 0,92 = 0,851   →  giảm 14,90% giá nhà
+Cộng thẳng (sai)    7,5% + 8%    = 15,50%  →  giảm nhiều hơn 0,60%</div>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Đối chiếu trên số liệu mẫu</caption>
+        <thead>
+          <tr>
+            <th>Cách tính</th>
+            <th class="money">Tổng tiền giảm</th>
+            <th class="money">Tổng giá còn lại</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Nhân chuỗi</strong> — khớp sheet CK GD2 SH</td>
+            <td class="money">3.501.215.000</td>
+            <td class="money">20.615.671.000</td>
+          </tr>
+          <tr>
+            <td class="bad">Cộng dồn — mỗi CK tính lại từ giá gốc</td>
+            <td class="money bad">3.642.202.000</td>
+            <td class="money bad">20.474.684.000</td>
+          </tr>
+          <tr class="rowtotal">
+            <td>Chênh lệch</td>
+            <td class="money">140.987.000</td>
+            <td class="money">140.987.000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="callout__title">Hệ thống đã xử lý</div>
+      <p>Hệ thống tính nhân chuỗi cho toàn bộ nhóm chiết khấu đang chọn, không cộng dồn từng cái. Con số trên màn hình portal, trong file PDF và trong hồ sơ sản phẩm luôn là cùng một con số.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Thứ tự đổi số tiền từng dòng</h2>
+    <div class="prose">
+      <p>Hệ quả trực tiếp của nhân chuỗi: chiết khấu nào áp trước sẽ ăn phần lớn hơn. Tổng thì không đổi — chỉ cách chia giữa hai dòng đổi.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Cùng hai chiết khấu, đảo thứ tự</caption>
+        <thead>
+          <tr>
+            <th>Thứ tự áp dụng</th>
+            <th class="money">Dòng CK 7,5%</th>
+            <th class="money">Dòng CK cho thuê 8%</th>
+            <th class="money">Tổng</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CK 7,5% trước <span class="cellref">(đúng nghiệp vụ)</span></td>
+            <td class="money">1.762.354.000</td>
+            <td class="money">1.738.861.000</td>
+            <td class="money">3.501.215.000</td>
+          </tr>
+          <tr>
+            <td>CK 8% trước</td>
+            <td class="money">1.621.367.000</td>
+            <td class="money">1.879.848.000</td>
+            <td class="money">3.501.215.000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout--warn">
+      <div class="callout__title">Đừng đảo thứ tự</div>
+      <p>Thứ tự nghiệp vụ đúng là <strong>CK 7,5% trước, CK cho thuê 8% sau</strong>, vì mốc ký HĐMB đến trước mốc bàn giao nhà. Đổi trường <span class="field">Thứ tự</span> sẽ làm số tiền in trên phụ lục hợp đồng lệch khỏi số đã thoả thuận, dù tổng giá cuối vẫn đúng.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Cấu hình trong hệ thống</h2>
+    <div class="prose">
+      <p>Hai chiết khấu này đã được tạo sẵn khi cài đặt. Phần dưới dành cho khi cần sửa, hoặc khi tạo thêm một mốc chiết khấu mới.</p>
+    </div>
+
+    <ol class="steps">
+      <li>
+        <div class="steps__body">
+          <h3>Mở danh sách cấu hình</h3>
+          <p>Vào <span class="field">Bất động sản → Cấu hình → Cấu hình giảm giá</span>. Hai bản ghi sẵn có: <strong>CK 7,5% (phụ lục)</strong> và <strong>CK cho thuê 8%</strong>.</p>
+        </div>
+      </li>
+      <li>
+        <div class="steps__body">
+          <h3>Chọn đúng loại giảm giá</h3>
+          <p>Trường <span class="field">Loại giảm giá</span> phải là <strong>Công thức % tính lại tổng giá</strong>. Chỉ loại này mới trừ vào giá nhà rồi tính lại VAT và quỹ bảo trì. Ba loại còn lại (Phần trăm, Số tiền cố định, Công thức theo sản phẩm) trừ thẳng vào tổng và <strong>không</strong> tham gia nhân chuỗi.</p>
+        </div>
+      </li>
+      <li>
+        <div class="steps__body">
+          <h3>Nhập phần trăm</h3>
+          <p>Điền vào <span class="field">% giảm trên giá bán</span> — nhập <code>7.5</code> nghĩa là 7,5%. Trường <span class="field">Giá trị giảm</span> bị ẩn với loại này, để trống.</p>
+        </div>
+      </li>
+      <li>
+        <div class="steps__body">
+          <h3>Ghi mốc áp dụng</h3>
+          <p>Trường <span class="field">Mốc áp dụng</span> ghi thời điểm chiết khấu được ghi nhận: <strong>Đặt cọc</strong>, <strong>Ký HĐMB (phụ lục)</strong> hoặc <strong>Bàn giao nhà</strong>. Trường này để tra cứu và lọc — nó <em>không</em> quyết định thứ tự tính.</p>
+        </div>
+      </li>
+      <li>
+        <div class="steps__body">
+          <h3>Đặt thứ tự nhân chuỗi</h3>
+          <p>Trường <span class="field">Thứ tự</span> mới là cái quyết định chiết khấu nào áp trước — số nhỏ áp trước. CK 7,5% đang là <code>10</code>, CK cho thuê 8% là <code>20</code>. Giữ nguyên trừ khi nghiệp vụ thay đổi.</p>
+        </div>
+      </li>
+      <li>
+        <div class="steps__body">
+          <h3>Giới hạn phạm vi nếu cần</h3>
+          <p><span class="field">Áp dụng cho Danh mục</span> để trống nghĩa là áp cho mọi danh mục sản phẩm. Gán danh mục cụ thể nếu chiết khấu chỉ dành cho một loại hình.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Dùng trên màn hình khách</h2>
+    <ol class="steps">
+      <li>
+        <div class="steps__body">
+          <h3>Gán chiết khấu vào sản phẩm</h3>
+          <p>Trên form sản phẩm, thêm chiết khấu vào danh sách chương trình khả dụng. Chỉ những chiết khấu đã gán mới hiện ở màn hình khách.</p>
+        </div>
+      </li>
+      <li>
+        <div class="steps__body">
+          <h3>Tích chọn ở khối “Chương Trình Giảm Giá Có Thể Áp Dụng”</h3>
+          <p>Mỗi lần tích hoặc bỏ tích, hệ thống tính lại toàn bộ chuỗi và cập nhật <strong>Tiết kiệm tối đa</strong> cùng <strong>GIÁ CUỐI CÙNG SAU GIẢM GIÁ</strong>. Có một nhịp chờ ngắn vì con số do máy chủ tính — đây là chủ ý, để màn hình, PDF và hồ sơ sản phẩm không bao giờ lệch nhau.</p>
+        </div>
+      </li>
+      <li>
+        <div class="steps__body">
+          <h3>Xuất PDF hoặc ảnh</h3>
+          <p>File xuất ra liệt kê từng dòng chiết khấu kèm số tiền của riêng dòng đó, rồi <strong>GIÁ SAU CHIẾT KHẤU</strong>. Các số này khớp đúng bảng ở mục “Hai mốc, một chuỗi”.</p>
+        </div>
+      </li>
+    </ol>
+    <div class="callout callout--warn">
+      <div class="callout__title">Nếu số không cập nhật</div>
+      <p>Con số đứng im sau khi tích chọn nghĩa là yêu cầu tới máy chủ thất bại. Hệ thống giữ nguyên số cũ thay vì hiện số sai. Tải lại trang; nếu vẫn vậy, báo kỹ thuật kiểm tra log.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Đối chiếu lại với sheet CK GD2 SH</h2>
+    <div class="prose">
+      <p>Khi cần kiểm tra chéo, đây là bản đồ giữa công thức trong sheet và cách hệ thống tính.</p>
+    </div>
+    <div class="formula">CK 7,5%   G13 = ROUND(G4  × 92,5%, -4)     giá nhà, làm tròn bội 10.000
+          G14 = G5                        tiền sử dụng đất giữ nguyên
+          G15 = G13 × 10%                 VAT tính lại
+          G16 = ROUND((G13+G14) × 0,5%, -3)   quỹ bảo trì, bội 1.000
+          G19 = G8 − G17                  tiền giảm ghi nhận
+
+CK 8%     I13 = ROUND(G13 × 92%, -4)      lấy G13, KHÔNG lấy G4
+          I19 = G17 − I17                 đo so với mốc sau CK 7,5%</div>
+    <div class="prose">
+      <p>Hai điểm cần biết khi đọc sheet gốc: ô <code>G4</code> có một hằng số trừ thêm <span class="num">90.497.737</span> được giải ngược cho riêng mã <span class="num">F2.2.B.3.10</span>, nên cột “5%” thực tế giảm 5,271%; và hai cột mang nhãn 11%, 12% thực chất là 1%+10% và 2%+10% nhân chuỗi. Cả hai đặc thù này thuộc file Excel, hệ thống không sao chép lại.</p>
+    </div>
+  </section>
+
+  <footer>
+    Tài liệu nội bộ Hồng Hạc City. Mọi số liệu trong tài liệu là số minh hoạ theo mã sản phẩm <span class="num">F2.2.B.3.10</span> tại mốc CK 5%, dùng để đối chiếu cách tính — không phải báo giá.
+  </footer>
+
+</div>

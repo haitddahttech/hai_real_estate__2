@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Hai mốc chiết khấu lấy từ file tính giá của nghiệp vụ, sheet "CK GD2 SH".
+         Cả hai đều là loại "Công thức % tính lại tổng giá" (percent_recalc):
+         chỉ trừ vào giá bán chưa tiền sử dụng đất, TSDĐ giữ nguyên, còn VAT 10%
+         và quỹ bảo trì 0,5% được tính lại trên giá nhà mới.
+
+         Hai CK này NHÂN CHUỖI theo trường Thứ tự (sequence): CK cho thuê 8%
+         tính trên giá đã trừ 7,5%, cho ra 0,925 × 0,92 = 0,851 (giảm 14,90%)
+         chứ KHÔNG phải 7,5% + 8% = 15,5%. Đổi sequence sẽ đổi số tiền của
+         từng dòng, nhưng tổng tiền giảm không thay đổi.
+
+         product_categ_ids để trống = áp cho mọi danh mục. Gán danh mục cụ thể
+         nếu chỉ muốn áp cho một loại sản phẩm. -->
+
+    <!-- 1. Mốc ký HĐMB — chiết khấu ghi trong phụ lục hợp đồng -->
+    <record id="discount_ck_75_phu_luc" model="product.discount.config">
+        <field name="name">CK 7,5% (phụ lục)</field>
+        <field name="sequence">10</field>
+        <field name="discount_type">percent_recalc</field>
+        <field name="qty">7.5</field>
+        <field name="discount_value">0</field>
+        <field name="apply_stage">ky_hop_dong</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- 2. Mốc bàn giao nhà — chiết khấu cho thuê, tính trên giá đã trừ CK 7,5% -->
+    <record id="discount_ck_cho_thue_8" model="product.discount.config">
+        <field name="name">CK cho thuê 8%</field>
+        <field name="sequence">20</field>
+        <field name="discount_type">percent_recalc</field>
+        <field name="qty">8</field>
+        <field name="discount_value">0</field>
+        <field name="apply_stage">giao_nha</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

@@ -1441,8 +1441,6 @@
                             
                             // Initialize pricing logic
                             if (listPriceElement &amp;&amp; finalPriceElement) {
-                                const listPrice = parseFloat(listPriceElement.getAttribute('data-price'));
-                                
                                 function formatNumber(num) {
                                     return num.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
                                 }
@@ -1455,7 +1453,7 @@
                                         }
                                     });
                                     
-                                    fetch('/my/property/' + productId + '/save_discounts', {
+                                    return fetch('/my/property/' + productId + '/save_discounts', {
                                         method: 'POST',
                                         headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({
@@ -1463,40 +1461,40 @@
                                             method: 'call',
                                             params: { discount_ids: selectedIds }
                                         })
-                                    }).catch(error => console.error('Error saving discounts:', error));
+                                    }).then(response => response.json());
                                 }
                                 
-                                function calculatePrice() {
-                                    let totalDiscount = 0;
-                                    checkboxes.forEach(cb => {
-                                        if (cb.checked) {
-                                            const type = cb.getAttribute('data-type');
-                                            const value = parseFloat(cb.getAttribute('data-value'));
-                                            const computedAmount = parseFloat(cb.getAttribute('data-computed-amount') || '0');
-                                            
-                                            if (type === 'percent') {
-                                                totalDiscount += (listPrice * value / 100);
-                                            } else if (type === 'formula' || type === 'percent_recalc') {
-                                                // Server-computed: percent_recalc cũng phải dùng vì
-                                                // công thức tính lại VAT + quỹ bảo trì, không chỉ % đơn thuần
-                                                totalDiscount += computedAmount;
-                                            } else {
-                                                totalDiscount += value;
-                                            }
-                                        }
-                                    });
-                                    
-                                    const finalPrice = Math.max(0, listPrice - totalDiscount);
-                                    finalPriceElement.innerText = formatNumber(finalPrice);
-                                    savingsElement.innerText = formatNumber(totalDiscount);
-
-                                    // Đơn giá trung bình sau chiết khấu = giá cuối cùng / diện tích đất
-                                    if (finalPricePerM2Element &amp;&amp; productArea &gt; 0) {
-                                        finalPricePerM2Element.innerText = formatNumber(finalPrice / productArea);
+                                // Chiết khấu loại percent_recalc nhân chuỗi theo thứ tự (CK sau
+                                // tính trên giá đã giảm của CK trước) nên KHÔNG cộng dồn được ở
+                                // client: tiền giảm của một CK phụ thuộc những CK khác có được tích
+                                // hay không. Lấy số do server tính thay vì nhân bản công thức sang
+                                // JS — tránh trôi lệch với model.
+                                function applyServerPrices(result) {
+                                    if (!result || result.success !== true) {
+                                        console.error('Không lấy được giá sau chiết khấu từ server.');
+                                        return;
                                     }
+                                    // Thiếu khoá nào thì giữ nguyên số đang hiển thị, không ghi NaN/0.
+                                    if (typeof result.final_price === 'number') {
+                                        finalPriceElement.innerText = formatNumber(Math.max(0, result.final_price));
+                                    }
+                                    if (typeof result.total_discount === 'number') {
+                                        savingsElement.innerText = formatNumber(result.total_discount);
+                                    }
+                                    // Đơn giá trung bình sau chiết khấu = giá cuối cùng / diện tích đất
+                                    if (finalPricePerM2Element &amp;&amp; typeof result.price_per_m2 === 'number') {
+                                        finalPricePerM2Element.innerText = formatNumber(result.price_per_m2);
+                                    }
+                                }
 
-                                    saveSelectedDiscounts();
+                                function calculatePrice() {
+                                    // Link tải PDF/ảnh chỉ phụ thuộc danh sách CK đã tích, không phụ
+                                    // thuộc số tiền — cập nhật ngay để vẫn đúng nếu request lỗi.
                                     updateAllDownloadLinks();
+
+                                    saveSelectedDiscounts()
+                                        .then(data => applyServerPrices(data &amp;&amp; data.result))
+                                        .catch(error => console.error('Error saving discounts:', error));
                                 }
                                 
                                 checkboxes.forEach(cb => {

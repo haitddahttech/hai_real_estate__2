@@ -522,12 +522,16 @@
                        <!-- Discounts Section (Only if selected) -->
                         <div class="full-card" t-if="product.selected_discount_ids" style="margin-top: -5px; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0; background: #FFFDF9;">
                             <div class="card-title" style="color: #856404; font-size: 9px;">Ưu đãi &amp; Chiết khấu áp dụng</div>
+                            <!-- Chiết khấu loại percent_recalc nhân chuỗi theo sequence nên số tiền
+                                 của từng dòng phụ thuộc cả nhóm đang chọn: phải lấy map một lần cho
+                                 cả recordset rồi tra theo id, không gọi riêng từng dòng được. -->
+                            <t t-set="disc_amounts" t-value="product.selected_discount_ids.compute_discounts_for_product(product)[1]"/>
                             <table style="width: 100%; border-collapse: collapse;">
                                 <t t-foreach="product.selected_discount_ids.sorted('sequence')" t-as="discount">
                                     <tr>
                                         <td class="info-label" style="padding: 3px 0;"><t t-esc="discount.name"/></td>
                                         <td class="info-value text-right" style="color: #DC2626; padding: 3px 0;">
-                                            <t t-set="discount_amount" t-value="discount.compute_discount_for_product(product)"/>
+                                            <t t-set="discount_amount" t-value="disc_amounts.get(discount.id, 0)"/>
                                             - <t t-esc="'{:,.0f}'.format(discount_amount)"/> VNĐ
                                         </td>
                                     </tr>

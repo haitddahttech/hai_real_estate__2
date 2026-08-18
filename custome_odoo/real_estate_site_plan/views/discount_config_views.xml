@@ -23,6 +23,7 @@
                         </group>
                         <group>
                             <field name="sequence"/>
+                            <field name="apply_stage"/>
                             <field name="active" widget="boolean_toggle"/>
                             <field name="product_categ_ids" widget="many2many_tags" placeholder="Áp dụng tất cả nếu để trống"/>
                         </group>
@@ -41,6 +42,7 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="discount_type"/>
+                <field name="apply_stage" optional="show"/>
                 <field name="formula_type" optional="hide"/>
                 <field name="discount_value"/>
                 <field name="qty" string="% (Recalc)" optional="hide"/>

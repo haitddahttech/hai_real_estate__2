@@ -7,6 +7,11 @@ class ProductDiscountConfig(models.Model):
     _description = 'Cấu hình giảm giá'
     _order = 'sequence, name'
 
+    # Làm tròn bám theo đúng file Excel nguồn (sheet "CK GD2 SH"):
+    # giá nhà ROUND(...,-4), quỹ bảo trì ROUND(...,-3).
+    ROUND_SALE = -4    # giá nhà: bội 10.000
+    ROUND_MAINT = -3   # quỹ bảo trì: bội 1.000
+
     name = fields.Char(string='Tên chương trình', translate=True, required=True)
     sequence = fields.Integer(string='Thứ tự', default=10, help="Thứ tự hiển thị, số nhỏ hơn sẽ hiển thị trước")
     qty = fields.Float(string='% giảm trên giá bán', default=0,
@@ -28,6 +33,13 @@ class ProductDiscountConfig(models.Model):
     ], string='Loại công thức', default='management_fee',
         help="Chọn công thức tính chiết khấu theo sản phẩm")
     active = fields.Boolean(string='Đang hoạt động', default=True)
+    apply_stage = fields.Selection([
+        ('dat_coc',     'Đặt cọc'),
+        ('ky_hop_dong', 'Ký HĐMB (phụ lục)'),
+        ('giao_nha',    'Bàn giao nhà'),
+    ], string='Mốc áp dụng',
+        help="Thời điểm chiết khấu được ghi nhận. Chỉ để hiển thị/lọc, không ảnh "
+             "hưởng cách tính — thứ tự nhân chuỗi lấy theo trường Thứ tự.")
     product_categ_ids = fields.Many2many('product.category', string='Áp dụng cho Danh mục',
         help="Để trống nếu áp dụng cho tất cả danh mục")
 
@@ -66,7 +78,7 @@ class ProductDiscountConfig(models.Model):
 
     def _compute_percent_recalc(self, product):
         """Công thức % tính lại tổng giá:
-            Giá bán sau   = round(price_exclude_land_tax × (100-qty)/100, 4)
+            Giá bán sau   = round(price_exclude_land_tax × (100-qty)/100, -4)
             VAT sau       = 10% × Giá bán sau
             Quỹ BT sau    = round((Giá bán sau + land_tax) × 0.5%, -3)
             Tổng giá sau  = Giá bán sau + land_tax + VAT sau + Quỹ BT sau
@@ -80,8 +92,60 @@ class ProductDiscountConfig(models.Model):
         sale = product.price_exclude_land_tax or 0.0
         land = product.land_tax or 0.0
         list_price = product.list_price or 0.0
-        new_sale  = round(sale * (100.0 - q) / 100.0, 4)
+        new_sale  = round(sale * (100.0 - q) / 100.0, self.ROUND_SALE)
         new_vat   = 0.10 * new_sale
-        new_maint = round((new_sale + land) * 0.005, -3)        # làm tròn về bội 1000 VND
+        new_maint = round((new_sale + land) * 0.005, self.ROUND_MAINT)
         new_total = new_sale + land + new_vat + new_maint
         return list_price - new_total
+
+    def _chain_percent_recalc(self, product):
+        """Áp các CK loại percent_recalc theo chuỗi đúng như sheet "CK GD2 SH":
+        mỗi bước chỉ trừ vào giá nhà chưa TSDĐ rồi làm tròn bội 10.000; VAT 10%
+        và quỹ bảo trì 0,5% dựng lại từ giá nhà của bước đó. Tiền sử dụng đất
+        không bao giờ bị trừ.
+
+        Trả về (tổng tiền giảm, {discount_id: tiền giảm biên của riêng đợt đó}).
+        Phần biên phụ thuộc thứ tự: CK đứng sau tính trên giá đã giảm của CK
+        đứng trước, nên tổng thì cố định còn từng dòng thì đổi theo sequence.
+        """
+        land = product.land_tax or 0.0
+        list_price = product.list_price or 0.0
+
+        def total_at(sale):
+            maint = round((sale + land) * 0.005, self.ROUND_MAINT)
+            return sale + land + 0.10 * sale + maint
+
+        recs = self.filtered(
+            lambda d: d.discount_type == 'percent_recalc' and 0 < (d.qty or 0) < 100
+        ).sorted('sequence')
+        if not recs:
+            return 0.0, {}
+
+        sale = product.price_exclude_land_tax or 0.0
+        # Mốc đầu là tổng THẬT của sản phẩm (list_price) chứ không phải tổng
+        # dựng lại từ giá gốc, để tổng các phần biên luôn khớp đúng
+        # list_price - tổng cuối, không sinh sai số lẻ.
+        prev_total = list_price
+        marginal = {}
+        for discount in recs:
+            sale = round(sale * (100.0 - discount.qty) / 100.0, self.ROUND_SALE)
+            cur_total = total_at(sale)
+            marginal[discount.id] = prev_total - cur_total
+            prev_total = cur_total
+        return list_price - prev_total, marginal
+
+    def compute_discounts_for_product(self, product):
+        """Điểm vào cho cả nhóm chiết khấu đang chọn: loại percent_recalc nhân
+        chuỗi theo sequence, các loại khác (percent/amount/formula) cộng thẳng
+        vì không phụ thuộc thứ tự.
+
+        Trả về (tổng tiền giảm, {discount_id: tiền giảm}).
+        """
+        total, per_discount = self._chain_percent_recalc(product)
+        for discount in self:
+            if discount.discount_type == 'percent_recalc':
+                continue
+            amount = discount.compute_discount_for_product(product)
+            per_discount[discount.id] = amount
+            total += amount
+        return total, per_discount

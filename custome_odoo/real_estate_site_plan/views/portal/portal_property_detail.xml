@@ -720,187 +720,299 @@
                                             <!-- Tab 1: Payment Timeline -->
                                             <div class="tab-pane fade show active" id="timeline" role="tabpanel" aria-labelledby="timeline-tab">
                                                 <t t-if="product.payment_timeline_ids">
-                                                        <style>
-                                                            .timeline-header th {
-                                                                background-color: #ffd087 !important;
-                                                                border: 1px solid #dee2e6 !important;
-                                                                color: #1a1a1a !important;
-                                                                font-weight: 900 !important;
-                                                                vertical-align: middle;
-                                                            }
-                                                            .timeline-table td {
-                                                                border: 1px solid #dee2e6 !important;
-                                                                vertical-align: middle;
-                                                            }
-                                                            .bg-cyan-bank {
-                                                                background-color: #4dd0e1 !important;
-                                                            }
-                                                            .timeline-total {
-                                                                background-color: #fff9f0 !important;
-                                                                font-weight: bold;
-                                                                border-top: 2px solid #333 !important;
-                                                            }
-                                                        </style>
+                                                    <style>
+                                                        /* Bo cuc dong bo voi mau in PDF (reports/property_detail_template.xml).
+                                                           Dat ten rieng rp-* de khong dinh cac reset .table / .timeline-table
+                                                           dang co !important o dau trang. */
+                                                        .rp-timeline-section {
+                                                            background: #FFFFFF;
+                                                            border: 1px solid #FFE082;
+                                                            border-radius: 12px;
+                                                            padding: 20px;
+                                                        }
+                                                        .rp-timeline-title-area { margin-bottom: 15px; }
+                                                        .rp-timeline-title {
+                                                            display: block;
+                                                            color: #333;
+                                                            font-size: 1.05rem;
+                                                            font-weight: 700;
+                                                        }
+                                                        .rp-timeline-subtitle {
+                                                            display: block;
+                                                            color: #6c757d;
+                                                            font-size: 0.8rem;
+                                                            margin-top: 2px;
+                                                        }
+                                                        .rp-timeline-table {
+                                                            width: 100%;
+                                                            min-width: 820px;
+                                                            border-collapse: separate;
+                                                            border-spacing: 0;
+                                                            margin-bottom: 0;
+                                                        }
+                                                        .rp-timeline-table th {
+                                                            padding: 0.5rem 0.6rem;
+                                                            text-align: center;
+                                                            vertical-align: bottom;
+                                                            color: #6c757d;
+                                                            font-size: 0.7rem;
+                                                            font-weight: 600;
+                                                            text-transform: uppercase;
+                                                            background: transparent;
+                                                            border: 0;
+                                                        }
+                                                        .rp-timeline-table td {
+                                                            padding: 0.5rem 0.6rem;
+                                                            font-size: 0.82rem;
+                                                            vertical-align: middle;
+                                                            border: 0;
+                                                            border-bottom: 1px solid #F9ECC7;
+                                                        }
+                                                        .rp-timeline-table tbody tr:last-child td { border-bottom: 0; }
+                                                        .rp-row-hl { background-color: #f8f9fa; }
+                                                        .rp-bank-hl { background-color: #FFE082; }
+                                                        .rp-text-right { text-align: right; }
+                                                        .rp-bank-amount {
+                                                            display: block;
+                                                            text-align: right;
+                                                            color: #856404;
+                                                            font-weight: 700;
+                                                            font-size: 0.85rem;
+                                                        }
+                                                        .rp-bank-note {
+                                                            display: block;
+                                                            text-align: right;
+                                                            color: #6c757d;
+                                                            font-size: 0.72rem;
+                                                            margin-top: 2px;
+                                                        }
+                                                        .rp-total-footer {
+                                                            background: #FFE082;
+                                                            border-radius: 8px;
+                                                            padding: 12px 18px;
+                                                            margin-top: 10px;
+                                                            display: flex;
+                                                            align-items: center;
+                                                            flex-wrap: wrap;
+                                                            gap: 10px;
+                                                        }
+                                                        .rp-total-label {
+                                                            color: #856404;
+                                                            font-weight: 700;
+                                                            font-size: 0.9rem;
+                                                            text-transform: uppercase;
+                                                        }
+                                                        .rp-total-values {
+                                                            margin-left: auto;
+                                                            display: flex;
+                                                            align-items: center;
+                                                            flex-wrap: wrap;
+                                                            gap: 25px;
+                                                        }
+                                                        .rp-total-cap {
+                                                            display: block;
+                                                            color: #9A7B22;
+                                                            font-size: 0.68rem;
+                                                            text-transform: uppercase;
+                                                        }
+                                                        .rp-gold-text {
+                                                            color: #5A4100;
+                                                            font-weight: 800;
+                                                            font-size: 0.95rem;
+                                                        }
+                                                        .rp-percentage-badge {
+                                                            background: #856404;
+                                                            color: #FFF8E1;
+                                                            padding: 4px 12px;
+                                                            border-radius: 12px;
+                                                            font-size: 0.7rem;
+                                                            font-weight: 700;
+                                                        }
+                                                        @media (max-width: 768px) {
+                                                            .rp-timeline-section { padding: 12px; }
+                                                            .rp-timeline-table { min-width: 700px; }
+                                                            .rp-timeline-table td { font-size: 0.72rem; padding: 0.4rem; }
+                                                            .rp-timeline-table th { font-size: 0.62rem; padding: 0.4rem; }
+                                                            .rp-total-values { gap: 14px; }
+                                                        }
+                                                    </style>
+
+                                                    <t t-set="is_vn" t-value="request.env.lang == 'vi_VN' or not request.env.lang"/>
+                                                    <t t-set="rows" t-value="product.payment_timeline_ids"/>
+
+                                                    <div class="rp-timeline-section">
+                                                        <div class="rp-timeline-title-area">
+                                                            <span class="rp-timeline-title">Lịch thanh toán</span>
+                                                            <span class="rp-timeline-subtitle">Chi tiết từng đợt thanh toán cho sản phẩm <t t-esc="product.name"/></span>
+                                                        </div>
+
                                                         <div class="table-responsive">
-                                                            <table class="table table-borderless timeline-table text-center mb-0" style="font-size: 0.85rem; min-width: 900px;">
-                                                                <t t-set="is_vn" t-value="request.env.lang == 'vi_VN' or not request.env.lang"/>
-                                                                <thead class="timeline-header">
+                                                            <table class="rp-timeline-table">
+                                                                <thead>
                                                                     <tr>
-                                                                        <th rowspan="2" class="align-middle">Kỳ thanh toán</th>
-                                                                        <th rowspan="2" class="align-middle">Ngày thanh toán</th>
-                                                                        <th rowspan="2" class="align-middle">Số tiền thanh toán</th>
-                                                                        <th rowspan="2" class="align-middle">Tiền nhà</th>
-                                                                        <th rowspan="2" class="align-middle">VAT</th>
-                                                                        <th rowspan="2" class="align-middle bg-warning bg-opacity-15">TỔNG TIỀN</th>
+                                                                        <th style="width: 20%;">KỲ THANH TOÁN</th>
+                                                                        <th style="width: 12%;">NGÀY</th>
+                                                                        <th style="width: 20%;">MÔ TẢ</th>
+                                                                        <th style="width: 12%;">TIỀN NHÀ</th>
+                                                                        <th style="width: 10%;">VAT</th>
+                                                                        <th style="width: 12%;">TỔNG TIỀN</th>
                                                                         <t t-if="is_vn">
-                                                                            <th colspan="2" class="align-middle bg-warning bg-opacity-15">HỖ TRỢ NGÂN HÀNG</th>
+                                                                            <th style="width: 14%;">HỖ TRỢ<br/>NGÂN HÀNG</th>
                                                                         </t>
                                                                     </tr>
-                                                                    <t t-if="is_vn">
-                                                                        <tr>
-                                                                            <th style="width: 130px;">Số tiền</th>
-                                                                            <th style="width: 180px;">Ghi chú</th>
-                                                                        </tr>
-                                                                    </t>
                                                                 </thead>
                                                                 <tbody>
-                                                                    <t t-set="processed_groups" t-value="[]"/>
-                                                                    <t t-foreach="product.payment_timeline_ids" t-as="timeline">
-                                                                        <!-- Pre-compute group info once per group -->
-                                                                        <t t-set="has_group" t-value="bool(timeline.bank_group)"/>
-                                                                        <t t-set="is_first" t-value="has_group and timeline.bank_group not in processed_groups"/>
-                                                                        <t t-set="is_later" t-value="has_group and timeline.bank_group in processed_groups"/>
+                                                                    <!-- Gộp ô cột "Hỗ trợ ngân hàng" của hàng Quỹ bảo trì với hàng ngay
+                                                                         trước nó (CHỈ cột cuối cùng, các cột khác giữ nguyên).
+                                                                         Bỏ qua nếu Quỹ bảo trì đứng đầu bảng hoặc một trong hai hàng
+                                                                         đã thuộc bank_group (để không phá logic rowspan sẵn có). -->
+                                                                    <t t-set="qbt_rows" t-value="rows.filtered(lambda r: r.type == 'quy_bao_tri')"/>
+                                                                    <t t-set="qbt_idx" t-value="rows.ids.index(qbt_rows[0].id) if qbt_rows else -1"/>
+                                                                    <t t-set="merge_qbt" t-value="qbt_idx &gt; 0 and not rows[qbt_idx].bank_group and not rows[qbt_idx-1].bank_group"/>
 
-                                                                        <t t-if="is_first">
-                                                                            <t t-set="grp" t-value="product.payment_timeline_ids.filtered(lambda l: l.bank_group == timeline.bank_group)"/>
-                                                                            <t t-set="dummy" t-value="processed_groups.append(timeline.bank_group)"/>
-                                                                            <t t-set="grp_len" t-value="len(grp)"/>
-                                                                            <t t-set="grp_mt" t-value="grp[0].is_merge_title"/>
+                                                                    <t t-foreach="rows" t-as="timeline">
+                                                                        <t t-set="current_idx" t-value="rows.ids.index(timeline.id)"/>
+                                                                        <t t-set="is_first_in_group" t-value="False"/>
+                                                                        <t t-set="group_size" t-value="1"/>
+                                                                        <t t-set="grp_mt" t-value="False"/>
+
+                                                                        <!-- Highlight đồng bộ với mẫu in PDF -->
+                                                                        <t t-set="row_hl" t-value="timeline.type in ['ky_hop_dong', 'giao_nha']"/>
+                                                                        <t t-set="bank_hl" t-value="timeline.type in ['dat_coc', 'quy_bao_tri']"/>
+
+                                                                        <!-- Group detection -->
+                                                                        <t t-if="timeline.bank_group">
+                                                                            <t t-if="current_idx == 0 or rows[current_idx-1].bank_group != timeline.bank_group">
+                                                                                <t t-set="is_first_in_group" t-value="True"/>
+                                                                                <t t-set="group_size" t-value="0"/>
+                                                                                <t t-set="temp_rows" t-value="rows[current_idx:]"/>
+                                                                                <t t-set="stop_counting" t-value="False"/>
+                                                                                <t t-foreach="temp_rows" t-as="next_row">
+                                                                                    <t t-if="not stop_counting and next_row.bank_group == timeline.bank_group">
+                                                                                        <t t-set="group_size" t-value="group_size + 1"/>
+                                                                                    </t>
+                                                                                    <t t-else="">
+                                                                                        <t t-set="stop_counting" t-value="True"/>
+                                                                                    </t>
+                                                                                </t>
+                                                                                <t t-set="grp_mt" t-value="timeline.is_merge_title"/>
+                                                                            </t>
+                                                                        </t>
+                                                                        <t t-else="">
+                                                                            <t t-set="is_first_in_group" t-value="True"/>
+                                                                            <t t-set="group_size" t-value="1"/>
                                                                         </t>
 
-                                                                        <!-- 
-                                                                            SKIP subsequent rows ONLY when is_merge_title=True 
-                                                                            (all columns absorbed by rowspan)
-                                                                        -->
-                                                                        <t t-if="not (is_later and grp_mt)">
-                                                                        <tr t-att-class="'bg-light' if timeline.type in ['ky_hop_dong', 'giao_nha'] else ''">
-
-                                                                            <!-- === LEFT COLUMNS (6 cols) === -->
-                                                                            <t t-if="is_first and grp_mt">
-                                                                                <!-- MERGE TITLE MODE: all 6 left columns get rowspan -->
-                                                                                <td t-att-rowspan="grp_len" class="fw-bold align-middle">
-                                                                                    <t t-foreach="grp" t-as="gl">
-                                                                                        <t t-if="not gl_first"><br/></t>
-                                                                                        <t t-esc="gl.type_name or dict(gl._fields['type'].selection).get(gl.type, gl.type)"/>
+                                                                        <!-- Skip subsequent rows ONLY when is_merge_title=True -->
+                                                                        <t t-set="is_sub" t-value="timeline.bank_group and not is_first_in_group"/>
+                                                                        <t t-if="not (is_sub and grp_mt)">
+                                                                        <tr t-att-class="'rp-row-hl' if row_hl else ''">
+                                                                            <!-- LEFT COLUMNS -->
+                                                                            <t t-if="is_first_in_group and grp_mt">
+                                                                                <!-- MERGED TITLE MODE -->
+                                                                                <t t-set="grp_rows" t-value="rows[current_idx:current_idx+group_size]"/>
+                                                                                <td t-att-rowspan="group_size" style="font-weight: 600;">
+                                                                                    <t t-foreach="grp_rows" t-as="gr">
+                                                                                        <t t-if="not gr_first"><br/></t>
+                                                                                        <t t-esc="gr.type_name or dict(gr._fields['type'].selection).get(gr.type, gr.type)"/>
                                                                                     </t>
                                                                                 </td>
-                                                                                <td t-att-rowspan="grp_len" class="align-middle">
-                                                                                    <t t-if="grp[0].date" t-esc="grp[0].date.strftime('%d/%m/%Y')"/>
-                                                                                    <t t-if="len(grp) &gt; 1 and grp[-1].date">
-                                                                                        ~<br/><t t-esc="grp[-1].date.strftime('%d/%m/%Y')"/>
-                                                                                    </t>
+                                                                                <td t-att-rowspan="group_size" style="color: #343a40;">
+                                                                                    <t t-if="grp_rows[0].date" t-esc="grp_rows[0].date.strftime('%d/%m/%Y')"/>
+                                                                                    <t t-if="len(grp_rows) &gt; 1 and grp_rows[-1].date">~<br/><t t-esc="grp_rows[-1].date.strftime('%d/%m/%Y')"/></t>
                                                                                 </td>
-                                                                                <td t-att-rowspan="grp_len" class="align-middle">
-                                                                                    <t t-esc="grp[0].name"/>
+                                                                                <td t-att-rowspan="group_size" style="color: #343a40;">
+                                                                                    <t t-esc="grp_rows[0].name"/>
                                                                                 </td>
-                                                                                <td t-att-rowspan="grp_len" class="text-end align-middle">
-                                                                                    <t t-set="s_amt" t-value="sum(grp.mapped('amount'))"/>
-                                                                                    <t t-if="s_amt &gt; 0" t-esc="'{:,.0f}'.format(s_amt)"/>
+                                                                                <td t-att-rowspan="group_size" class="rp-text-right" style="color: #212529;">
+                                                                                    <t t-esc="'{:,.0f}'.format(sum(grp_rows.mapped('amount')))"/>
                                                                                 </td>
-                                                                                <td t-att-rowspan="grp_len" class="text-end align-middle">
-                                                                                    <t t-set="s_vat" t-value="sum(grp.mapped('vat_amount'))"/>
-                                                                                    <t t-if="s_vat &gt; 0" t-esc="'{:,.0f}'.format(s_vat)"/>
+                                                                                <td t-att-rowspan="group_size" class="rp-text-right" style="color: #495057;">
+                                                                                    <t t-set="sv" t-value="sum(grp_rows.mapped('vat_amount'))"/>
+                                                                                    <t t-if="sv &gt; 0" t-esc="'{:,.0f}'.format(sv)"/><t t-else="">-</t>
                                                                                 </td>
-                                                                                <td t-att-rowspan="grp_len" class="text-end fw-bold align-middle">
-                                                                                    <t t-set="s_tot" t-value="sum(grp.mapped('total_amount'))"/>
-                                                                                    <t t-if="s_tot &gt; 0" t-esc="'{:,.0f}'.format(s_tot)"/>
+                                                                                <td t-att-rowspan="group_size" class="rp-text-right" style="font-weight: 600;">
+                                                                                    <t t-esc="'{:,.0f}'.format(sum(grp_rows.mapped('total_amount')))"/>
                                                                                 </td>
                                                                             </t>
                                                                             <t t-else="">
-                                                                                <!-- NORMAL MODE: individual row -->
-                                                                                <td t-att-class="'fw-bold' if timeline.type in ['ky_hop_dong', 'giao_nha'] else ''">
+                                                                                <!-- NORMAL MODE -->
+                                                                                <td style="font-weight: 600;">
                                                                                     <t t-esc="timeline.type_name or dict(timeline._fields['type'].selection).get(timeline.type, timeline.type)"/>
                                                                                 </td>
-                                                                                <td>
-                                                                                    <t t-if="timeline.date">
-                                                                                        <t t-esc="timeline.date.strftime('%d/%m/%Y')"/>
-                                                                                    </t>
-                                                                                </td>
-                                                                                <td t-att-class="'fw-bold' if timeline.type in ['ky_hop_dong'] else ''">
-                                                                                    <t t-esc="timeline.name"/>
-                                                                                </td>
-                                                                                <td class="text-end">
-                                                                                    <t t-if="timeline.amount and timeline.amount &gt; 0">
-                                                                                        <t t-esc="'{:,.0f}'.format(timeline.amount)"/>
-                                                                                    </t>
-                                                                                </td>
-                                                                                <td class="text-end">
-                                                                                    <t t-if="timeline.vat_amount and timeline.vat_amount &gt; 0">
-                                                                                        <t t-esc="'{:,.0f}'.format(timeline.vat_amount)"/>
-                                                                                    </t>
-                                                                                </td>
-                                                                                <td class="text-end fw-bold">
-                                                                                    <t t-if="timeline.total_amount and timeline.total_amount &gt; 0">
-                                                                                        <t t-esc="'{:,.0f}'.format(timeline.total_amount)"/>
-                                                                                    </t>
-                                                                                </td>
+                                                                                <td style="color: #343a40;"><t t-if="timeline.date" t-esc="timeline.date.strftime('%d/%m/%Y')"/><t t-else="">---</t></td>
+                                                                                <td style="color: #343a40;"><t t-esc="timeline.name"/></td>
+                                                                                <td class="rp-text-right" style="color: #212529;"><t t-esc="'{:,.0f}'.format(timeline.amount)"/></td>
+                                                                                <td class="rp-text-right" style="color: #495057;"><t t-if="timeline.vat_amount &gt; 0" t-esc="'{:,.0f}'.format(timeline.vat_amount)"/><t t-else="">-</t></td>
+                                                                                <td class="rp-text-right" style="font-weight: 600;"><t t-esc="'{:,.0f}'.format(timeline.total_amount)"/></td>
                                                                             </t>
 
-                                                                            <!-- === BANK COLUMNS (2 cols) — always merge when grouped === -->
+                                                                            <!-- BANK COLUMN — always merge when grouped -->
                                                                             <t t-if="is_vn">
-                                                                                <t t-if="is_first">
-                                                                                    <!-- First in group: bank cells with rowspan -->
-                                                                                    <td t-att-rowspan="grp_len"
-                                                                                        t-att-class="'bg-cyan-bank' if timeline.type in ['dat_coc', 'quy_bao_tri'] else ''"
-                                                                                        class="text-end fw-bold align-middle">
-                                                                                        <t t-set="bank_total" t-value="sum(grp.mapped('bank_amount'))"/>
-                                                                                        <t t-if="bank_total &gt; 0">
-                                                                                            <t t-esc="'{:,.0f}'.format(bank_total)"/>
+                                                                                <t t-if="merge_qbt and current_idx == qbt_idx">
+                                                                                    <!-- Ô đã bị rowspan của hàng trước phủ → không render -->
+                                                                                </t>
+                                                                                <t t-elif="merge_qbt and current_idx == qbt_idx - 1">
+                                                                                    <!-- Ô gộp: hàng này + hàng Quỹ bảo trì -->
+                                                                                    <t t-set="qbt_pair" t-value="rows[current_idx:current_idx+2]"/>
+                                                                                    <t t-set="qbt_sum" t-value="sum(qbt_pair.mapped('bank_amount'))"/>
+                                                                                    <td rowspan="2" class="rp-bank-hl">
+                                                                                        <t t-if="qbt_sum &gt; 0">
+                                                                                            <span class="rp-bank-amount"><t t-esc="'{:,.0f}'.format(qbt_sum)"/></span>
                                                                                         </t>
-                                                                                    </td>
-                                                                                    <td t-att-rowspan="grp_len" class="align-middle fw-semibold text-danger">
-                                                                                        <t t-set="bank_note_val" t-value="', '.join([n for n in grp.mapped('bank_note') if n][:1])"/>
-                                                                                        <t t-esc="bank_note_val"/>
+                                                                                        <t t-else="">-</t>
                                                                                     </td>
                                                                                 </t>
-                                                                                <t t-elif="not has_group">
-                                                                                    <!-- No group: standalone bank cells -->
-                                                                                    <td t-att-class="'bg-cyan-bank' if timeline.type in ['dat_coc', 'quy_bao_tri'] else ''"
-                                                                                        class="text-end fw-bold align-middle">
+                                                                                <t t-elif="is_first_in_group and timeline.bank_group">
+                                                                                    <td t-att-rowspan="group_size" t-att-class="'rp-bank-hl' if bank_hl else ''">
+                                                                                        <t t-set="sum_bank" t-value="sum(rows[current_idx:current_idx+group_size].mapped('bank_amount'))"/>
+                                                                                        <t t-if="sum_bank &gt; 0">
+                                                                                            <span class="rp-bank-amount"><t t-esc="'{:,.0f}'.format(sum_bank)"/></span>
+                                                                                            <t t-set="group_note" t-value="', '.join([n for n in rows[current_idx:current_idx+group_size].mapped('bank_note') if n][:1])"/>
+                                                                                            <span class="rp-bank-note"><t t-esc="group_note"/></span>
+                                                                                        </t>
+                                                                                        <t t-else="">-</t>
+                                                                                    </td>
+                                                                                </t>
+                                                                                <t t-elif="not is_sub">
+                                                                                    <!-- Standalone bank cell -->
+                                                                                    <td t-att-class="'rp-bank-hl' if bank_hl else ''">
                                                                                         <t t-if="timeline.bank_amount and timeline.bank_amount &gt; 0">
-                                                                                            <t t-esc="'{:,.0f}'.format(timeline.bank_amount)"/>
+                                                                                            <span class="rp-bank-amount"><t t-esc="'{:,.0f}'.format(timeline.bank_amount)"/></span>
+                                                                                            <span class="rp-bank-note"><t t-esc="timeline.bank_note"/></span>
                                                                                         </t>
-                                                                                    </td>
-                                                                                    <td class="align-middle fw-semibold text-danger">
-                                                                                        <t t-esc="timeline.bank_note"/>
+                                                                                        <t t-else="">-</t>
                                                                                     </td>
                                                                                 </t>
-                                                                                <!-- is_later rows: bank cells covered by rowspan, no output -->
+                                                                                <!-- is_sub rows: bank cell covered by rowspan -->
                                                                             </t>
-
                                                                         </tr>
                                                                         </t>
                                                                     </t>
                                                                 </tbody>
-                                                                <t t-set="total_house" t-value="sum(product.payment_timeline_ids.mapped('amount'))"/>
-                                                                <t t-set="total_vat" t-value="sum(product.payment_timeline_ids.mapped('vat_amount'))"/>
-                                                                <t t-set="total_all" t-value="sum(product.payment_timeline_ids.mapped('total_amount'))"/>
-                                                                <t t-set="total_bank" t-value="sum(product.payment_timeline_ids.mapped('bank_amount'))"/>
-                                                                <t t-set="total_percent" t-value="100"/>
-                                                                <tfoot class="timeline-total">
-                                                                    <tr>
-                                                                        <td colspan="3" class="text-danger fw-bold text-uppercase">TỔNG GIÁ</td>
-                                                                        <td class="text-end"><t t-esc="'{:,.0f}'.format(total_house)"/></td>
-                                                                        <td class="text-end"><t t-esc="'{:,.0f}'.format(total_vat)"/></td>
-                                                                        <td class="text-end text-danger"><t t-esc="'{:,.0f}'.format(total_all)"/></td>
-                                                                        <t t-if="is_vn">
-                                                                            <td class="text-end"><t t-esc="'{:,.0f}'.format(total_bank)"/></td>
-                                                                            <td>100%</td>
-                                                                        </t>
-                                                                    </tr>
-                                                                </tfoot>
                                                             </table>
                                                         </div>
+
+                                                        <!-- Total Footer Bar -->
+                                                        <div class="rp-total-footer">
+                                                            <div class="rp-total-label">TỔNG CỘNG</div>
+                                                            <div class="rp-total-values">
+                                                                <div class="rp-total-val-item">
+                                                                    <span class="rp-total-cap">TIỀN NHÀ</span>
+                                                                    <span class="rp-gold-text"><t t-esc="'{:,.0f}'.format(sum(rows.mapped('amount')))"/></span>
+                                                                </div>
+                                                                <div class="rp-total-val-item">
+                                                                    <span class="rp-total-cap">THUẾ VAT</span>
+                                                                    <span class="rp-gold-text"><t t-esc="'{:,.0f}'.format(sum(rows.mapped('vat_amount')))"/></span>
+                                                                </div>
+                                                                <div class="rp-total-val-item">
+                                                                    <span class="rp-total-cap">TỔNG THANH TOÁN</span>
+                                                                    <span class="rp-gold-text" style="font-size: 1.05rem;"><t t-esc="'{:,.0f}'.format(sum(rows.mapped('total_amount')))"/></span>
+                                                                </div>
+                                                                <span class="rp-percentage-badge">100%</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </t>
                                                 <t t-else="">
                                                     <div class="text-center py-4 text-muted">

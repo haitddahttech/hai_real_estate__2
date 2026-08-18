@@ -228,6 +228,28 @@ class ProductTemplate(models.Model):
                 continue
             template._generate_timelines_for_product(product)
 
+    def refresh_payment_timeline_dates(self):
+        """Sản phẩm chưa gán ngày đặt cọc thì lịch thanh toán được neo tạm theo
+        ngày hôm nay (xem PaymentScheduleTemplate._generate_timelines_for_product).
+        Ngày đó chỉ đúng tại thời điểm sinh lịch, nên mỗi lần mở màn lịch thanh
+        toán ta sinh lại để 3 đợt đầu luôn bám ngày hiện tại.
+
+        Sản phẩm ĐÃ có deposit_date thì không đụng tới: lịch của nó đã cố định.
+        """
+        today = fields.Date.today()
+        for product in self:
+            if product.deposit_date:
+                continue
+            template = product._find_payment_schedule_template()
+            if not template:
+                continue
+            rows = product.payment_timeline_ids
+            # Đã sinh trong hôm nay rồi thì thôi, tránh unlink/create lại trên
+            # mỗi request. rows rỗng cũng rơi vào đây để sinh lịch lần đầu.
+            if rows and all(r.write_date and r.write_date.date() == today for r in rows):
+                continue
+            template._generate_timelines_for_product(product)
+
 
     @api.depends('site_plan_polygon_ids')
     def _compute_site_plan_polygon_id(self):

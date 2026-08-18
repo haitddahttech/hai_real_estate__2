@@ -157,7 +157,7 @@
                                 display: block;
                             }
                             .timeline-subtitle {
-                                color: #999;
+                                color: #6c757d;
                                 font-size: 8.5px;
                                 display: block;
                                 margin-top: 2px;
@@ -172,7 +172,7 @@
                                 padding: 5px 8px;
                                 text-align: center;
                                 vertical-align: bottom;
-                                color: #888;
+                                color: #6c757d;
                                 font-size: 8px;
                                 font-weight: 600;
                                 text-transform: uppercase;
@@ -207,7 +207,7 @@
                                 text-align: right;
                             }
                             .bank-note {
-                                color: #999;
+                                color: #6c757d;
                                 font-size: 8px;
                                 display: block;
                                 text-align: right;
@@ -227,10 +227,10 @@
                             .total-label { color: #856404; font-weight: bold; font-size: 11px; text-transform: uppercase; display: table-cell; vertical-align: middle; }
                             .total-values { text-align: right; display: table-cell; vertical-align: middle; }
                             .total-val-item { display: inline-block; margin-left: 25px; }
-                            .gold-text { color: #000; font-weight: 800; }
+                            .gold-text { color: #5A4100; font-weight: 800; }
                             .percentage-badge {
-                                background: #000;
-                                color: #FFE082;
+                                background: #856404;
+                                color: #FFF8E1;
                                 padding: 3px 10px;
                                 border-radius: 12px;
                                 font-size: 8px;
@@ -424,17 +424,17 @@
                                                         </t>
                                                     </span>
                                                 </td>
-                                                <td t-att-rowspan="group_size" style="color: #666; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
+                                                <td t-att-rowspan="group_size" style="color: #343a40; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
                                                     <t t-if="grp_rows[0].date" t-esc="grp_rows[0].date.strftime('%d/%m/%Y')"/>
                                                     <t t-if="len(grp_rows) &gt; 1 and grp_rows[-1].date">~<br/><t t-esc="grp_rows[-1].date.strftime('%d/%m/%Y')"/></t>
                                                 </td>
-                                                <td t-att-rowspan="group_size" style="color: #888; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
+                                                <td t-att-rowspan="group_size" style="color: #343a40; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
                                                     <t t-esc="grp_rows[0].name"/>
                                                 </td>
-                                                <td t-att-rowspan="group_size" class="text-right" style="color: #555; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
+                                                <td t-att-rowspan="group_size" class="text-right" style="color: #212529; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
                                                     <t t-esc="'{:,.0f}'.format(sum(grp_rows.mapped('amount')))"/>
                                                 </td>
-                                                <td t-att-rowspan="group_size" class="text-right" style="color: #999; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
+                                                <td t-att-rowspan="group_size" class="text-right" style="color: #495057; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
                                                     <t t-set="sv" t-value="sum(grp_rows.mapped('vat_amount'))"/>
                                                     <t t-if="sv > 0" t-esc="'{:,.0f}'.format(sv)"/><t t-else="">-</t>
                                                 </td>
@@ -449,10 +449,10 @@
                                                         <t t-esc="timeline.type_name or dict(timeline._fields['type'].selection).get(timeline.type, timeline.type)"/>
                                                     </span>
                                                 </td>
-                                                <td style="color: #666; border-bottom: 1px solid #F9ECC7 !important;"><t t-if="timeline.date" t-esc="timeline.date.strftime('%d/%m/%Y')"/><t t-else="">---</t></td>
-                                                <td style="color: #888; border-bottom: 1px solid #F9ECC7 !important;"><t t-esc="timeline.name"/></td>
-                                                <td class="text-right" style="color: #555; border-bottom: 1px solid #F9ECC7 !important;"><t t-esc="'{:,.0f}'.format(timeline.amount)"/></td>
-                                                <td class="text-right" style="color: #999; border-bottom: 1px solid #F9ECC7 !important;"><t t-if="timeline.vat_amount > 0" t-esc="'{:,.0f}'.format(timeline.vat_amount)"/><t t-else="">-</t></td>
+                                                <td style="color: #343a40; border-bottom: 1px solid #F9ECC7 !important;"><t t-if="timeline.date" t-esc="timeline.date.strftime('%d/%m/%Y')"/><t t-else="">---</t></td>
+                                                <td style="color: #343a40; border-bottom: 1px solid #F9ECC7 !important;"><t t-esc="timeline.name"/></td>
+                                                <td class="text-right" style="color: #212529; border-bottom: 1px solid #F9ECC7 !important;"><t t-esc="'{:,.0f}'.format(timeline.amount)"/></td>
+                                                <td class="text-right" style="color: #495057; border-bottom: 1px solid #F9ECC7 !important;"><t t-if="timeline.vat_amount > 0" t-esc="'{:,.0f}'.format(timeline.vat_amount)"/><t t-else="">-</t></td>
                                                 <td class="text-right" style="font-weight: 600; border-bottom: 1px solid #F9ECC7 !important;"><t t-esc="'{:,.0f}'.format(timeline.total_amount)"/></td>
                                             </t>
                                             
@@ -504,15 +504,15 @@
                                 <div class="total-label">TỔNG CỘNG</div>
                                 <div class="total-values">
                                     <div class="total-val-item">
-                                        <span class="info-label" style="display: block; text-align: left;">TIỀN NHÀ</span>
+                                        <span class="info-label" style="display: block; text-align: left; color: #9A7B22;">TIỀN NHÀ</span>
                                         <span class="gold-text"><t t-esc="'{:,.0f}'.format(sum(rows.mapped('amount')))"/></span>
                                     </div>
                                     <div class="total-val-item">
-                                        <span class="info-label" style="display: block; text-align: left;">THUẾ VAT</span>
+                                        <span class="info-label" style="display: block; text-align: left; color: #9A7B22;">THUẾ VAT</span>
                                         <span class="gold-text"><t t-esc="'{:,.0f}'.format(sum(rows.mapped('vat_amount')))"/></span>
                                     </div>
                                     <div class="total-val-item">
-                                        <span class="info-label" style="display: block; text-align: left;">TỔNG THANH TOÁN</span>
+                                        <span class="info-label" style="display: block; text-align: left; color: #9A7B22;">TỔNG THANH TOÁN</span>
                                         <span class="gold-text" style="font-size: 14px;"><t t-esc="'{:,.0f}'.format(sum(rows.mapped('total_amount')))"/></span>
                                     </div>
                                     <span class="percentage-badge">100%</span>

@@ -338,6 +338,19 @@ class SitePlanPortal(CustomerPortal):
             _logger.error(f"Error in portal_site_plan_detail for site plan {site_plan_id}: {e}")
             return request.redirect('/my')
 
+    def _refresh_property_timeline(self, product):
+        """Làm mới ngày lịch thanh toán trước khi render. Sản phẩm chưa gán
+        ngày đặt cọc được neo tạm theo hôm nay, nên phải sinh lại lúc mở màn
+        thay vì dùng lại ảnh chụp cũ. Lỗi ở đây không được làm hỏng trang:
+        chỉ log lại và hiển thị lịch đang có."""
+        try:
+            product.sudo().refresh_payment_timeline_dates()
+        except Exception as e:
+            _logger.error(
+                "Khong lam moi duoc lich thanh toan cho san pham %s: %s",
+                product.id, e,
+            )
+
     @http.route(['/my/property/<int:product_id>'], type='http', auth='user', website=True)
     def portal_property_detail(self, product_id, **kw):
         """View property detail"""
@@ -355,7 +368,9 @@ class SitePlanPortal(CustomerPortal):
             except Exception as access_error:
                 _logger.warning(f"Access denied for product {product_id}: {access_error}")
                 return request.redirect('/my')
-            
+
+            self._refresh_property_timeline(product)
+
             values = {
                 'product': product,
                 'page_name': 'property_detail',
@@ -397,7 +412,9 @@ class SitePlanPortal(CustomerPortal):
             except Exception as access_error:
                 _logger.warning(f"Access denied for PDF of product {product_id}: {access_error}")
                 return request.redirect('/my')
-            
+
+            self._refresh_property_timeline(product)
+
             # Get the report
             report = request.env['ir.actions.report'].sudo().search([
                 ('report_name', '=', 'real_estate_site_plan.report_property_detail_document')
@@ -454,7 +471,9 @@ class SitePlanPortal(CustomerPortal):
 
             # Check access rights
             product.sudo().check_access('read')
-            
+
+            self._refresh_property_timeline(product)
+
             # Get the report record
             report = request.env['ir.actions.report'].sudo().search([
                 ('report_name', '=', 'real_estate_site_plan.report_property_detail_document')

@@ -550,6 +550,16 @@ class SitePlanPortal(CustomerPortal):
                 'selected_discount_ids': [(6, 0, discount_ids)]  # Replace all with new selection
             })
 
+            # Chiết khấu trừ thẳng vào các đợt của lịch thanh toán nên đổi CK là
+            # phải dựng lại lịch, nếu không bảng lịch sẽ còn số của lần chọn trước.
+            try:
+                product.compute_payment_timeline()
+            except Exception as timeline_error:
+                _logger.error(
+                    "Khong dung lai duoc lich thanh toan cho san pham %s: %s",
+                    product_id, timeline_error
+                )
+
             payload = {
                 'success': True,
                 'message': 'Discounts saved successfully',

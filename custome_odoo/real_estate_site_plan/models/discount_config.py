@@ -34,12 +34,16 @@ class ProductDiscountConfig(models.Model):
         help="Chọn công thức tính chiết khấu theo sản phẩm")
     active = fields.Boolean(string='Đang hoạt động', default=True)
     apply_stage = fields.Selection([
-        ('dat_coc',     'Đặt cọc'),
-        ('ky_hop_dong', 'Ký HĐMB (phụ lục)'),
-        ('giao_nha',    'Bàn giao nhà'),
-    ], string='Mốc áp dụng',
-        help="Thời điểm chiết khấu được ghi nhận. Chỉ để hiển thị/lọc, không ảnh "
-             "hưởng cách tính — thứ tự nhân chuỗi lấy theo trường Thứ tự.")
+        ('ky_hop_dong', 'A — Trừ thẳng vào đợt Ký HĐMB'),
+        ('spread',      'B — Chia đều từ đợt 4 đến Bàn giao nhà'),
+        ('giao_nha',    'C — Trừ thẳng vào đợt Bàn giao nhà'),
+    ], string='Mốc áp dụng', default='ky_hop_dong', required=True,
+        help="Bắt buộc — vị trí trừ tiền chiết khấu trên LỊCH THANH TOÁN, mặc "
+             "định là loại A. Với CK '% tính lại tổng giá' thì số tiền trừ vào "
+             "đợt là phần giá nhà chưa TSDĐ bị cắt; với các loại còn lại là "
+             "nguyên số tiền của chiết khấu. Thứ tự nhân chuỗi (CK sau tính "
+             "trên giá đã trừ CK trước) vẫn lấy theo trường Thứ tự, không phụ "
+             "thuộc mốc áp dụng.")
     product_categ_ids = fields.Many2many('product.category', string='Áp dụng cho Danh mục',
         help="Để trống nếu áp dụng cho tất cả danh mục")
 
@@ -133,6 +137,88 @@ class ProductDiscountConfig(models.Model):
             marginal[discount.id] = prev_total - cur_total
             prev_total = cur_total
         return list_price - prev_total, marginal
+
+    # Mốc mặc định của mọi chiết khấu là loại A (trừ thẳng vào đợt Ký HĐMB).
+    # Trường apply_stage là bắt buộc, hằng số này chỉ còn là lưới an toàn cho
+    # bản ghi cũ hoặc dữ liệu ghi thẳng bằng SQL.
+    DEFAULT_APPLY_STAGE = 'ky_hop_dong'
+
+    def get_schedule_discount_context(self, product):
+        """Giá sau chiết khấu + tiền CK phân bổ theo mốc, dùng để dựng LỊCH THANH TOÁN.
+
+        Quy tắc đã chốt với nghiệp vụ:
+        - CK chỉ trừ vào GIÁ NHÀ CHƯA THUẾ SDĐ; tiền sử dụng đất không bao giờ bị trừ.
+        - CK nhân chuỗi theo Thứ tự: CK B tính trên giá đã trừ CK A, CK C trên giá
+          đã trừ CK B. Mỗi bước làm tròn giá nhà tới bội 10.000.
+        - SỐ TIỀN CK TRỪ VÀO ĐỢT = đúng phần giá nhà bị cắt của CK đó (không gồm
+          VAT, không gồm quỹ bảo trì).
+        - VAT và quỹ bảo trì KHÔNG bị trừ vào đợt nào mà được TÍNH LẠI từ giá mới
+          rồi đưa thẳng lên lịch: VAT = 10% × giá nhà mới,
+          Quỹ bảo trì = làm tròn((giá nhà mới + TSDĐ) × 0,5%, bội 1.000).
+        - MỌI loại CK đang chọn đều bị trừ vào lịch tại mốc của nó. Khác nhau ở
+          chỗ chỉ percent_recalc mới kéo theo VAT và quỹ bảo trì tính lại; các
+          loại percent/amount/formula chỉ trừ thẳng số tiền của nó, không đụng
+          tới giá nhà nên không làm đổi VAT hay quỹ bảo trì.
+
+        Trả về dict:
+            sale            giá nhà chưa TSDĐ sau các CK % tính lại
+            land            tiền sử dụng đất (không đổi)
+            price_incl      sale + land
+            other_cut       tổng CK loại trừ thẳng (không làm đổi giá nhà)
+            schedule_price  price_incl − other_cut — tổng cột "Tiền nhà" của lịch
+                            (chưa gồm dòng quỹ bảo trì)
+            vat             tổng VAT sau CK
+            maint           quỹ bảo trì sau CK
+            by_stage        {mốc: tổng tiền CK trừ vào mốc đó}
+            total_cut       tổng tiền CK trừ trên lịch (= tổng by_stage)
+        """
+        land = product.land_tax or 0.0
+        sale = product.price_exclude_land_tax or 0.0
+
+        recs = self.filtered(
+            lambda d: d.discount_type == 'percent_recalc' and 0 < (d.qty or 0) < 100
+        ).sorted('sequence')
+
+        by_stage = {}
+        for discount in recs:
+            new_sale = round(sale * (100.0 - discount.qty) / 100.0, self.ROUND_SALE)
+            stage = discount.apply_stage or self.DEFAULT_APPLY_STAGE
+            by_stage[stage] = by_stage.get(stage, 0.0) + (sale - new_sale)
+            sale = new_sale
+
+        if recs:
+            vat = 0.10 * sale
+            maint = round((sale + land) * 0.005, self.ROUND_MAINT)
+        else:
+            # Không có CK % tính lại -> giữ nguyên số liệu nhập tay của sản phẩm,
+            # không tự dựng lại VAT/quỹ bảo trì (tránh đổi lịch của hàng cũ).
+            vat = product.vat_tax or 0.0
+            maint = product.maintenance_fee or 0.0
+
+        # CK loại trừ thẳng: cộng nguyên số tiền vào mốc của nó. Không tính lại
+        # VAT/quỹ bảo trì vì các CK này không định nghĩa lại giá nhà.
+        other_cut = 0.0
+        for discount in self:
+            if discount.discount_type == 'percent_recalc':
+                continue
+            amount = discount.compute_discount_for_product(product) or 0.0
+            if not amount:
+                continue
+            stage = discount.apply_stage or self.DEFAULT_APPLY_STAGE
+            by_stage[stage] = by_stage.get(stage, 0.0) + amount
+            other_cut += amount
+
+        return {
+            'sale': sale,
+            'land': land,
+            'price_incl': sale + land,
+            'other_cut': other_cut,
+            'schedule_price': sale + land - other_cut,
+            'vat': vat,
+            'maint': maint,
+            'by_stage': by_stage,
+            'total_cut': sum(by_stage.values()),
+        }
 
     def compute_discounts_for_product(self, product):
         """Điểm vào cho cả nhóm chiết khấu đang chọn: loại percent_recalc nhân

@@ -217,7 +217,14 @@ class ProductTemplate(models.Model):
             ('active', '=', True),
         ], limit=1)
 
-    @api.onchange('deposit_date', 'price_include_land_tax', 'vat_tax', 'categ_id')
+    def _get_schedule_discount_context(self):
+        """Giá & tiền chiết khấu dùng để dựng lịch thanh toán của sản phẩm này.
+        Xem product.discount.config.get_schedule_discount_context()."""
+        self.ensure_one()
+        return self.selected_discount_ids.get_schedule_discount_context(self)
+
+    @api.onchange('deposit_date', 'price_include_land_tax', 'vat_tax', 'categ_id',
+                  'selected_discount_ids')
     def compute_payment_timeline(self):
         """Sinh lại lịch thanh toán dựa trên payment.schedule.template tương ứng
         với category của sản phẩm. Nếu không có template nào áp cho category này,

@@ -769,9 +769,17 @@
                                                             border-bottom: 1px solid #F9ECC7;
                                                         }
                                                         .rp-timeline-table tbody tr:last-child td { border-bottom: 0; }
-                                                        .rp-row-hl { background-color: #f8f9fa; }
+                                                        /* Hai moc quan trong nhat cua lich thanh toan (Ky HD, Giao nha):
+                                                           to nen vang nhat de noi bat, dam hon vien bang (#F9ECC7)
+                                                           nhung nhat hon o cot ngan hang (#FFE082) de khong tranh nhau. */
+                                                        .rp-row-hl { background-color: #FFF3CD; }
                                                         .rp-bank-hl { background-color: #FFE082; }
                                                         .rp-text-right { text-align: right; }
+                                                        .rp-bank-block--sep {
+                                                            border-top: 1px dashed #D9B65A;
+                                                            margin-top: 6px;
+                                                            padding-top: 6px;
+                                                        }
                                                         .rp-bank-amount {
                                                             display: block;
                                                             text-align: right;
@@ -868,7 +876,10 @@
                                                                          đã thuộc bank_group (để không phá logic rowspan sẵn có). -->
                                                                     <t t-set="qbt_rows" t-value="rows.filtered(lambda r: r.type == 'quy_bao_tri')"/>
                                                                     <t t-set="qbt_idx" t-value="rows.ids.index(qbt_rows[0].id) if qbt_rows else -1"/>
-                                                                    <t t-set="merge_qbt" t-value="qbt_idx &gt; 0 and not rows[qbt_idx].bank_group and not rows[qbt_idx-1].bank_group"/>
+                                                                    <!-- Lich nao da cau hinh "chia o NH" thi co che gop cung Quy bao tri
+                                                                         khong con can nua - tat di de hai co che khong tranh nhau. -->
+                                                                    <t t-set="has_bank_split" t-value="any(rows.mapped('bank_split_json'))"/>
+                                                                    <t t-set="merge_qbt" t-value="not has_bank_split and qbt_idx &gt; 0 and not rows[qbt_idx].bank_group and not rows[qbt_idx-1].bank_group"/>
 
                                                                     <t t-foreach="rows" t-as="timeline">
                                                                         <t t-set="current_idx" t-value="rows.ids.index(timeline.id)"/>
@@ -949,7 +960,22 @@
 
                                                                             <!-- BANK COLUMN — always merge when grouped -->
                                                                             <t t-if="is_vn">
-                                                                                <t t-if="merge_qbt and current_idx == qbt_idx">
+                                                                                <t t-if="timeline.bank_split_covered">
+                                                                                    <!-- O da bi rowspan cua hang tren phu -> khong render -->
+                                                                                </t>
+                                                                                <t t-elif="timeline.bank_split_json">
+                                                                                    <!-- O gop chia thanh nhieu khoi: moi khoi mot so tien + label -->
+                                                                                    <td t-att-rowspan="timeline.bank_split_size or 1"
+                                                                                        t-att-class="'rp-bank-hl' if bank_hl else ''">
+                                                                                        <t t-foreach="timeline.get_bank_split_blocks()" t-as="blk">
+                                                                                            <div t-att-class="'rp-bank-block' if blk_first else 'rp-bank-block rp-bank-block--sep'">
+                                                                                                <span class="rp-bank-amount"><t t-esc="'{:,.0f}'.format(blk['amount'])"/></span>
+                                                                                                <span t-if="blk['label']" class="rp-bank-note"><t t-esc="blk['label']"/></span>
+                                                                                            </div>
+                                                                                        </t>
+                                                                                    </td>
+                                                                                </t>
+                                                                                <t t-elif="merge_qbt and current_idx == qbt_idx">
                                                                                     <!-- Ô đã bị rowspan của hàng trước phủ → không render -->
                                                                                 </t>
                                                                                 <t t-elif="merge_qbt and current_idx == qbt_idx - 1">

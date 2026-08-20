@@ -429,7 +429,9 @@ class SitePlanPortal(CustomerPortal):
             if bank_id:
                 context['selected_bank_id'] = int(bank_id)
             
-            # Render the PDF
+            # Render the PDF. selected_bank_id đi theo context; template gọi
+            # product.get_selected_bank_account() để in đúng ngân hàng khách
+            # đang mở trên portal.
             pdf_content, _ = report.with_context(context)._render_qweb_pdf(
                 report_ref='real_estate_site_plan.report_property_detail_document', 
                 res_ids=product_id

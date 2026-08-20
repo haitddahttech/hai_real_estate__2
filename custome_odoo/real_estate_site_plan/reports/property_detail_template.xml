@@ -291,8 +291,11 @@
                             <div style="display: inline-block; vertical-align: top; width: 67%; white-space: normal; font-size: 9.5px;">
                                 <div style="background: #F9FAFB; border-radius: 6px; padding: 10px; border: 1px solid #E5E7EB;">
                                     <div class="card-title" style="margin-bottom: 6px;">Thông Tin Thanh Toán</div>
-                                    <t t-set="bank_accounts" t-value="product.get_available_bank_accounts()"/>
-                                    <t t-set="bank" t-value="bank_accounts.filtered(lambda a: a.id == env.context.get('selected_bank_id'))[:1] or bank_accounts[:1]"/>
+                                    <!-- CHỈ in đúng tài khoản ngân hàng khách đang xem trên portal.
+                                         `selected_bank_id` do controller truyền vào qua data; không có
+                                         thì get_selected_bank_account() rơi về tài khoản đầu tiên,
+                                         đúng bằng tab mặc định của portal. -->
+                                    <t t-set="bank" t-value="product.get_selected_bank_account()"/>
                                     <table style="width: 100%;">
                                         <tr>
                                             <td style="vertical-align: top;">
@@ -308,7 +311,7 @@
                                             </td>
                                             <!-- Cột QR bám sát kích thước ảnh (100px) thay vì chiếm 30% bề ngang,
                                                  tránh khoảng trống lớn giữa thông tin ngân hàng và mã QR -->
-                                            <td t-if="bank and bantk.payment_qr_code" style="vertical-align: top; width: 106px; text-align: right; padding-left: 12px;">
+                                            <td t-if="bank and bank.payment_qr_code" style="vertical-align: top; width: 106px; text-align: right; padding-left: 12px;">
                                                 <img t-att-src="image_data_uri(bank.payment_qr_code)" style="max-height: 100px; max-width: 100px; border: 1px solid #EEE; padding: 2px; background: white;"/>
                                             </td>
                                         </tr>
@@ -544,14 +547,32 @@
                                  cả recordset rồi tra theo id, không gọi riêng từng dòng được. -->
                             <t t-set="disc_amounts" t-value="product.selected_discount_ids.compute_discounts_for_product(product)[1]"/>
                             <table style="width: 100%; border-collapse: collapse;">
-                                <t t-foreach="product.selected_discount_ids.sorted('sequence')" t-as="discount">
+                                <t t-foreach="product.selected_discount_ids.group_by_stage()" t-as="disc_group">
+                                    <!-- Dòng kẻ ngang kèm tên loại, ngăn cách các nhóm CK A/B/C -->
                                     <tr>
-                                        <td class="info-label" style="padding: 3px 0;"><t t-esc="discount.name"/></td>
-                                        <td class="info-value text-right" style="color: #DC2626; padding: 3px 0;">
-                                            <t t-set="discount_amount" t-value="disc_amounts.get(discount.id, 0)"/>
-                                            - <t t-esc="'{:,.0f}'.format(discount_amount)"/> VNĐ
+                                        <td colspan="2"
+                                            t-attf-style="padding: #{'2px' if disc_group_first else '6px'} 0 3px 0;">
+                                            <!-- Kẻ ngang vẽ bằng div, KHÔNG dùng border của <td>: stylesheet
+                                                 của mẫu in có "td { border: hidden !important; }" nên border
+                                                 đặt thẳng trên ô sẽ bị nuốt mất. -->
+                                            <div style="border-top: 1px solid #B08D3F; font-size: 0; line-height: 0; margin-bottom: 5px;">&#160;</div>
+                                            <span style="display: inline-block; margin-right: 5px; padding: 0 4px; border-radius: 6px; background: #856404; color: #FFF; font-size: 7.5px; font-weight: 700;">
+                                                <t t-esc="disc_group['label']"/>
+                                            </span>
+                                            <span t-if="disc_group['hint']" style="color: #92400E; font-size: 7.5px; font-weight: 700; text-transform: uppercase;">
+                                                <t t-esc="disc_group['hint']"/>
+                                            </span>
                                         </td>
                                     </tr>
+                                    <t t-foreach="disc_group['discounts']" t-as="discount">
+                                        <tr>
+                                            <td class="info-label" style="padding: 3px 0 3px 10px;"><t t-esc="discount.name"/></td>
+                                            <td class="info-value text-right" style="color: #DC2626; padding: 3px 0;">
+                                                <t t-set="discount_amount" t-value="disc_amounts.get(discount.id, 0)"/>
+                                                - <t t-esc="'{:,.0f}'.format(discount_amount)"/> VNĐ
+                                            </td>
+                                        </tr>
+                                    </t>
                                 </t>
                             </table>
                             <div class="price-highlight-bar clearfix" style="margin-top: 8px; background: #FEF3C7; border-color: #FCD34D;">

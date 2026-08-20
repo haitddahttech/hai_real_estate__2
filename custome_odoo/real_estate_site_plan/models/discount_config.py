@@ -138,6 +138,58 @@ class ProductDiscountConfig(models.Model):
             prev_total = cur_total
         return list_price - prev_total, marginal
 
+    # Ký hiệu và mô tả ngắn của từng mốc — dùng chung cho portal, mẫu in và
+    # màn cấu hình để ba nơi không mô tả lệch nhau.
+    STAGE_CODE = {
+        'ky_hop_dong': 'A',
+        'spread': 'B',
+        'giao_nha': 'C',
+    }
+    STAGE_HINT = {
+        'ky_hop_dong': 'Trừ thẳng vào đợt Ký hợp đồng',
+        'spread': 'Chia đều từ đợt 4 đến đợt Bàn giao nhà',
+        'giao_nha': 'Trừ thẳng vào đợt Bàn giao nhà',
+    }
+    # Thứ tự hiển thị các nhóm: A -> B -> C, đúng trình tự tiền CK bị trừ trên lịch
+    STAGE_ORDER = ('ky_hop_dong', 'spread', 'giao_nha')
+
+    def group_by_stage(self):
+        """Gom chiết khấu thành các nhóm A/B/C để portal và mẫu in kẻ dòng
+        phân loại.
+
+        Trả về list dict theo thứ tự A -> B -> C, bỏ qua nhóm rỗng:
+            {'stage', 'code', 'hint', 'label', 'discounts'}
+
+        Chiết khấu mang mốc lạ (dữ liệu cũ chưa chạy migration) được dồn vào
+        một nhóm cuối không tên thay vì bị loại — mất dòng trên bảng giá thì
+        khách không đối chiếu được số tiền.
+        """
+        ordered = self.sorted('sequence')
+        groups = []
+        for stage in self.STAGE_ORDER:
+            discounts = ordered.filtered(lambda d: d.apply_stage == stage)
+            if not discounts:
+                continue
+            code = self.STAGE_CODE.get(stage, '')
+            hint = self.STAGE_HINT.get(stage, '')
+            groups.append({
+                'stage': stage,
+                'code': code,
+                'hint': hint,
+                'label': ('Chiết khấu %s' % code) if code else 'Chiết khấu',
+                'discounts': discounts,
+            })
+        others = ordered.filtered(lambda d: d.apply_stage not in self.STAGE_ORDER)
+        if others:
+            groups.append({
+                'stage': False,
+                'code': '',
+                'hint': '',
+                'label': 'Chiết khấu khác',
+                'discounts': others,
+            })
+        return groups
+
     # Mốc mặc định của mọi chiết khấu là loại A (trừ thẳng vào đợt Ký HĐMB).
     # Trường apply_stage là bắt buộc, hằng số này chỉ còn là lưới an toàn cho
     # bản ghi cũ hoặc dữ liệu ghi thẳng bằng SQL.

@@ -356,6 +356,28 @@ class ProductTemplate(models.Model):
             lambda b: not b.product_category_ids or categ in b.product_category_ids
         )
 
+    def get_selected_bank_account(self, bank_id=None):
+        """Tài khoản ngân hàng ĐANG HIỂN THỊ cho sản phẩm này.
+
+        Portal bày các tài khoản thành tab và mở tab đầu tiên; nút tải PDF/ảnh
+        đính kèm id của tab đang mở. Template in phải bám đúng quy tắc đó, nếu
+        không PDF sẽ in ngân hàng khác với cái khách đang xem — nên cả hai bên
+        dùng chung hàm này.
+
+        bank_id không hợp lệ (rỗng, đã tắt, không thuộc danh mục sản phẩm) thì
+        rơi về tài khoản đầu tiên, đúng bằng tab mặc định của portal.
+        """
+        self.ensure_one()
+        accounts = self.get_available_bank_accounts()
+        if bank_id is None:
+            # Template PDF/ảnh không truyền tay: controller đã nhét id vào context
+            bank_id = self.env.context.get('selected_bank_id')
+        if bank_id:
+            match = accounts.filtered(lambda b: b.id == int(bank_id))
+            if match:
+                return match[:1]
+        return accounts[:1]
+
     def get_available_discounts(self):
         """Trả về danh sách các discount config áp dụng được cho sản phẩm này"""
         self.ensure_one()

@@ -1361,7 +1361,8 @@
                                                              của website làm nhạt đi. -->
                                                         <div class="d-flex align-items-center px-1"
                                                              t-attf-style="border-top: 2px solid #ADB5BD; margin-top: #{'0.35rem' if disc_group_first else '1rem'}; padding-top: 0.55rem; margin-bottom: 0.15rem;">
-                                                            <span class="badge rounded-pill bg-dark bg-opacity-75 me-2" style="font-size: 0.7rem;">
+                                                            <span class="badge rounded-pill me-2"
+                                                                  style="font-size: 0.7rem; background-color: #FFC107; color: #4A3208;">
                                                                 <t t-esc="disc_group['label']"/>
                                                             </span>
                                                             <span t-if="disc_group['hint']" class="text-muted text-uppercase fw-semibold"

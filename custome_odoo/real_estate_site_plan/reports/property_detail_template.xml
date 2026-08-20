@@ -556,7 +556,7 @@
                                                  của mẫu in có "td { border: hidden !important; }" nên border
                                                  đặt thẳng trên ô sẽ bị nuốt mất. -->
                                             <div style="border-top: 1px solid #B08D3F; font-size: 0; line-height: 0; margin-bottom: 5px;">&#160;</div>
-                                            <span style="display: inline-block; margin-right: 5px; padding: 0 4px; border-radius: 6px; background: #856404; color: #FFF; font-size: 7.5px; font-weight: 700;">
+                                            <span style="display: inline-block; margin-right: 5px; padding: 0 4px; border-radius: 6px; background: #FFC107; color: #4A3208; font-size: 7.5px; font-weight: 700;">
                                                 <t t-esc="disc_group['label']"/>
                                             </span>
                                             <span t-if="disc_group['hint']" style="color: #92400E; font-size: 7.5px; font-weight: 700; text-transform: uppercase;">

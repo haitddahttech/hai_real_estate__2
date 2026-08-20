@@ -2,8 +2,13 @@
 
 from dateutil.relativedelta import relativedelta
 
+import json
+import logging
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
+
+_logger = logging.getLogger(__name__)
 
 
 class PaymentScheduleTemplate(models.Model):
@@ -127,6 +132,139 @@ class PaymentScheduleTemplate(models.Model):
             },
         }
 
+    # Vị trí trừ tiền CK trên lịch — chốt với nghiệp vụ:
+    #   ky_hop_dong (A) -> trừ thẳng vào đợt Ký hợp đồng
+    #   spread      (B) -> chia đều từ đợt kế tiếp (Đợt 4) đến đợt Bàn giao nhà
+    #   giao_nha    (C) -> trừ thẳng vào đợt Bàn giao nhà
+    ROUND_DISCOUNT_SPLIT = -3  # chia đều làm tròn bội 1.000, dư dồn vào đợt cuối
+
+    def _apply_schedule_discounts(self, vals_list, disc_ctx, currency):
+        """Trừ tiền chiết khấu vào các đợt của `vals_list` (sửa tại chỗ).
+
+        Với CK loại "% tính lại tổng giá": số tiền trừ chỉ là phần GIÁ NHÀ CHƯA
+        THUẾ SDĐ bị cắt — VAT và quỹ bảo trì đã được dựng lại theo giá mới ngay
+        khi sinh từng đợt nên không trừ lại ở đây (trừ nữa là trùng).
+        Với các loại CK còn lại: trừ thẳng nguyên số tiền của CK đó.
+
+        Nhờ vậy tổng lịch luôn khớp đúng final_price của sản phẩm.
+        """
+        by_stage = {k: v for k, v in (disc_ctx.get('by_stage') or {}).items() if v}
+        if not by_stage:
+            return
+
+        self._cut_discount_by_stage(vals_list, by_stage, currency)
+
+        # Tiền CK dồn vào một mốc có thể lớn hơn chính đợt đó (CK to, đợt nhỏ).
+        # Không tự động san sang đợt khác vì mốc là do nghiệp vụ chốt — chỉ ghi
+        # log để người cấu hình biết mà đổi mốc áp dụng.
+        for vals in (v[2] for v in vals_list):
+            if vals['amount'] < 0:
+                _logger.warning(
+                    "Lich thanh toan: dot '%s' bi am (%s) sau khi tru chiet khau %s "
+                    "- can xem lai Moc ap dung cua chuong trinh chiet khau.",
+                    vals.get('type_name') or vals.get('type'),
+                    vals['amount'], vals.get('discount_amount'),
+                )
+
+    def _cut_discount_by_stage(self, vals_list, by_stage, currency):
+        """Trừ từng khoản trong `by_stage` vào đúng đợt tương ứng."""
+        codes = [vals[2]['type'] for vals in vals_list]
+
+        def index_of(code):
+            return codes.index(code) if code in codes else -1
+
+        def cut(pos, amount):
+            if pos < 0 or not amount:
+                return
+            vals = vals_list[pos][2]
+            vals['amount'] = currency.round(vals['amount'] - amount)
+            vals['discount_amount'] = currency.round(vals.get('discount_amount', 0.0) + amount)
+
+        ky_idx = index_of('ky_hop_dong')
+        giao_idx = index_of('giao_nha')
+        # Mốc không tồn tại trên template thì dồn vào đợt Bàn giao nhà, cuối cùng
+        # mới đến đợt cuối bảng — cốt để tổng lịch không bị hụt tiền CK.
+        fallback_idx = giao_idx if giao_idx >= 0 else len(vals_list) - 1
+
+        for stage, amount in by_stage.items():
+            if stage == 'spread':
+                continue
+            pos = index_of(stage)
+            cut(pos if pos >= 0 else fallback_idx, amount)
+
+        spread_total = by_stage.get('spread') or 0.0
+        if not spread_total:
+            return
+
+        # Dải "từ đợt kế tiếp Ký HĐ đến hết đợt Bàn giao nhà". Các đợt bị gộp do
+        # quá hạn đã biến mất khỏi vals_list nên phần chia đều tự động rải trên
+        # đúng số đợt còn hiển thị.
+        start = ky_idx + 1 if ky_idx >= 0 else 0
+        end = giao_idx if giao_idx >= 0 else len(vals_list) - 1
+        targets = [
+            i for i in range(start, end + 1)
+            if 0 <= i < len(vals_list)
+            and vals_list[i][2]['type'] not in ('quy_bao_tri', 'thong_bao_so_hong')
+        ]
+        if not targets:
+            cut(fallback_idx, spread_total)
+            return
+
+        share = round(spread_total / len(targets), self.ROUND_DISCOUNT_SPLIT)
+        for i in targets[:-1]:
+            cut(i, share)
+        # Đợt cuối của dải gánh phần dư để tổng trừ đúng bằng tiền CK
+        cut(targets[-1], spread_total - share * (len(targets) - 1))
+
+    def _apply_bank_splits(self, vals_list, split_specs, bank_price_base,
+                           vat_base, maint_base, currency):
+        """Áp cấu hình "chia ô Hỗ trợ ngân hàng" lên các dòng lịch vừa sinh.
+
+        Mỗi khối ứng với ĐÚNG MỘT hàng của bảng lịch, đếm từ chính hàng mang
+        cấu hình trở xuống: "35:10" -> 2 khối -> ô gộp phủ 2 hàng (rowspan=2).
+        Tiền của khối thứ i:
+
+            giá nhà gồm TSDĐ × %i  +  VAT × %VAT_i
+            ( + quỹ bảo trì, nếu hàng tương ứng chính là đợt Quỹ bảo trì )
+
+        Số tiền này GHI ĐÈ bank_amount của từng hàng bị phủ — nhờ vậy tổng cột
+        ngân hàng vẫn cộng đúng dù trên bảng chúng hiển thị gộp thành một ô.
+        """
+        for idx, line in split_specs:
+            blocks = line._get_bank_split()
+            if not blocks:
+                continue
+
+            # Cuối bảng có thể không còn đủ hàng để phủ (đợt sau đã bị gộp vì
+            # quá hạn) — thu hẹp lại theo số hàng thực có, không tràn rowspan.
+            size = min(len(blocks), len(vals_list) - idx)
+            if size <= 0:
+                continue
+
+            payload = []
+            for offset in range(size):
+                share, vat_share, label = blocks[offset]
+                row = vals_list[idx + offset][2]
+                amount = currency.round(
+                    bank_price_base * share / 100.0
+                    + vat_base * vat_share / 100.0
+                )
+                # Quỹ bảo trì do khách nộp thẳng, cộng vào đúng khối của nó.
+                if row.get('type') == 'quy_bao_tri':
+                    amount += maint_base
+                row['bank_amount'] = amount
+                row['bank_split_covered'] = offset > 0
+                # Ô gộp của khối là nguồn duy nhất cho cả dải này: gỡ cờ nhóm
+                # bank_group để hai cơ chế rowspan không chồng lên nhau (nếu
+                # không, hàng bị phủ mà lại mở nhóm sẽ để lại lỗ trống ô).
+                row['bank_group'] = ''
+                row['is_merge_title'] = False
+                payload.append({'amount': amount, 'label': label})
+
+            head = vals_list[idx][2]
+            head['bank_split_json'] = json.dumps(payload)
+            head['bank_split_size'] = size
+
     def _generate_timelines_for_product(self, product):
         """Sinh lại payment_timeline_ids cho 1 product.template dựa trên line_ids
         của template hiện tại. Áp dụng logic gộp (is_mergeable) tương tự
@@ -142,6 +280,20 @@ class PaymentScheduleTemplate(models.Model):
         self.ensure_one()
         currency = self.env.company.currency_id
         company = self.env.company
+
+        # Giá & tiền CK dùng cho lịch. Lịch được dựng trên GIÁ GỐC (chưa CK),
+        # tiền CK chỉ bị trừ tại đúng các mốc đã chốt (xem _apply_schedule_discounts).
+        # Riêng VAT và quỹ bảo trì thì không trừ theo mốc mà lấy thẳng số đã
+        # tính lại theo giá sau CK.
+        disc_ctx = product._get_schedule_discount_context()
+        vat_base = disc_ctx['vat']
+        maint_base = disc_ctx['maint']
+        # Cột "Hỗ trợ ngân hàng" bám theo giá thực khách phải trả, nếu không tổng
+        # cột ngân hàng sẽ lệch với tổng tiền nhà sau CK.
+        bank_price_base = (
+            disc_ctx['schedule_price'] if disc_ctx['total_cut']
+            else product.price_include_land_tax
+        )
 
         deposit_date = product.deposit_date or fields.Date.today()
         if product.site_plan_polygon_ids:
@@ -162,10 +314,27 @@ class PaymentScheduleTemplate(models.Model):
         paid_amount = 0.0
         acc_amount = acc_vat = acc_bank = 0.0
         acc_share = 0.0  # % tích lũy cho mô tả "X% +VAT tương ứng"
+        # Hàng đợi nhãn đợt (code + tên) của các đợt mergeable đã đi qua.
+        # Khi 1 đợt bị gộp, nhãn của nó KHÔNG mất đi mà được đẩy xuống cho
+        # dòng kế tiếp, nên số đợt còn lại luôn liên tục từ đầu nhóm:
+        # 3-4-5-6, gộp 3 vào 4  ->  hiển thị 3-4-5 (không phải 4-5-6).
+        pending_labels = []
+        pending_group = None
         vals_list = []
+        # (index trong vals_list, line) cua nhung dot co cau hinh chia o ngan hang.
+        # Phai ghi lai index THAT vi cac dot qua han bi gop se bien mat khoi
+        # vals_list, khong the suy ra tu thu tu line_ids.
+        split_specs = []
 
         for line in self.line_ids.sorted('sequence'):
             line_share = (line.percentage or 0.0) if line.amount_type == 'percentage' else 0.0
+
+            # ---- LABEL QUEUE: chỉ dịch nhãn trong cùng 1 nhóm mergeable ----
+            line_group = line.group_merge if line.is_mergeable else None
+            if not line.is_mergeable or line_group != pending_group:
+                pending_labels = []
+                pending_group = line_group
+
             # ---- DATE ----
             if line.date_type == 'fixed':
                 line_date = line.fixed_date
@@ -184,7 +353,7 @@ class PaymentScheduleTemplate(models.Model):
                 if not amount and line.code == 'dat_coc':
                     amount = product.deposit or 0.0
                 elif not amount and line.code == 'quy_bao_tri':
-                    amount = product.maintenance_fee or 0.0
+                    amount = maint_base
             else:
                 amount = currency.round(
                     product.price_include_land_tax * (line.percentage or 0.0) / 100.0
@@ -198,16 +367,16 @@ class PaymentScheduleTemplate(models.Model):
 
             # ---- VAT ----
             vat_amount = currency.round(
-                product.vat_tax * (line.vat_share or 0.0) / 100.0
+                vat_base * (line.vat_share or 0.0) / 100.0
             ) if line.vat_share else 0.0
 
             # ---- BANK ----
             bank_amount = currency.round(
-                product.price_include_land_tax * (line.bank_share or 0.0) / 100.0
-                + product.vat_tax * (line.bank_vat_share or 0.0) / 100.0
+                bank_price_base * (line.bank_share or 0.0) / 100.0
+                + vat_base * (line.bank_vat_share or 0.0) / 100.0
             )
             if line.code == 'quy_bao_tri':
-                bank_amount += product.maintenance_fee or 0.0
+                bank_amount += maint_base
 
             # ---- MERGE (gộp dữ liệu theo ngày) ----
             if line.is_mergeable and line.is_merge_by_date and line_date:
@@ -217,6 +386,8 @@ class PaymentScheduleTemplate(models.Model):
                     acc_vat += vat_amount
                     acc_bank += bank_amount
                     acc_share += line_share
+                    # Giữ nhãn đợt bị gộp để dòng kế tiếp dùng lại
+                    pending_labels.append((line.code or '', line.name or ''))
                     continue  # khong tao record cho dot nay, gop vao dot ke
 
             # ---- NAME (mô tả "Số tiền thanh toán") ----
@@ -235,20 +406,30 @@ class PaymentScheduleTemplate(models.Model):
             else:
                 name_str = "%g%%" % (line.percentage or 0)
 
+            # ---- LABEL: dùng nhãn sớm nhất còn treo trong nhóm (nếu có) ----
+            if pending_labels:
+                row_code, row_name = pending_labels.pop(0)
+                pending_labels.append((line.code or '', line.name or ''))
+            else:
+                row_code, row_name = (line.code or ''), (line.name or '')
+
             # ---- CREATE record (cộng dồn tích lũy nếu có) ----
             vals_list.append((0, 0, {
                 'product_tmpl_id': product.id,
-                'type': line.code or '',
-                'type_name': line.name or '',
+                'type': row_code,
+                'type_name': row_name,
                 'date': line_date,
                 'name': name_str,
                 'amount': amount + acc_amount,
                 'vat_amount': vat_amount + acc_vat,
                 'bank_amount': bank_amount + acc_bank,
+                'discount_amount': 0.0,
                 'bank_note': line.note or '',
                 'bank_group': line.group_merge or '' if line.is_mergeable else '',
                 'is_merge_title': line.is_merge_title if line.is_mergeable else False,
             }))
+            if (line.bank_split_ratio or '').strip():
+                split_specs.append((len(vals_list) - 1, line))
             acc_amount = acc_vat = acc_bank = 0.0
             acc_share = 0.0
 
@@ -259,6 +440,14 @@ class PaymentScheduleTemplate(models.Model):
             last_vals['amount'] += acc_amount
             last_vals['vat_amount'] += acc_vat
             last_vals['bank_amount'] += acc_bank
+
+        # Chia ô "Hỗ trợ ngân hàng" thành nhiều khối theo cấu hình trên đợt
+        self._apply_bank_splits(
+            vals_list, split_specs, bank_price_base, vat_base, maint_base, currency,
+        )
+
+        # Trừ tiền chiết khấu vào đúng các mốc đã chốt
+        self._apply_schedule_discounts(vals_list, disc_ctx, currency)
 
         # Wipe & recreate
         product.payment_timeline_ids.unlink()
@@ -340,6 +529,30 @@ class PaymentScheduleTemplateLine(models.Model):
         digits=(7, 4),
         help='Phần trăm VAT được ngân hàng hỗ trợ ở đợt này.',
     )
+
+    # --- Chia ô "Hỗ trợ ngân hàng" thành nhiều khối ---
+    # Thay cho case đặc biệt merge_qbt (gộp cứng hàng Quỹ bảo trì với hàng ngay
+    # trước nó): khai báo thẳng trên đợt muốn gộp, mỗi khối ứng với đúng một
+    # hàng của bảng lịch tính từ hàng mang cấu hình trở xuống.
+    bank_split_ratio = fields.Char(
+        string='Tỷ lệ chia ô NH',
+        help='Chia ô "Hỗ trợ ngân hàng" của đợt này thành nhiều khối, ngăn nhau '
+             'bằng dấu ":". Mỗi số là % giá nhà bao gồm TSDĐ của khối đó.\n'
+             'Vd "35:10" -> 2 khối -> ô gộp phủ 2 hàng (rowspan=2).\n'
+             'Để trống = không chia, ô hiển thị như cũ theo "% NH (giá nhà)".',
+    )
+    bank_split_vat_ratio = fields.Char(
+        string='Tỷ lệ chia ô NH (VAT)',
+        help='% VAT của từng khối, phải cùng số phần với "Tỷ lệ chia ô NH". '
+             'Vd "40:10".\n'
+             'Để trống thì mỗi khối dùng luôn % giá nhà của chính nó.',
+    )
+    bank_split_label = fields.Char(
+        string='Label chia ô NH',
+        translate=True,
+        help='Chú thích hiển thị dưới số tiền của từng khối, ngăn nhau bằng ":". '
+             'Vd "NGÂN HÀNG 35%:KH 10%".',
+    )
     currency_id = fields.Many2one(
         related='template_id.currency_id',
         readonly=True,
@@ -382,6 +595,92 @@ class PaymentScheduleTemplateLine(models.Model):
         translate=True,
         help='Vd: "KH 20%", "NGÂN HÀNG 35%"...',
     )
+
+    # ------------------------------------------------------------------
+    # Chia ô "Hỗ trợ ngân hàng"
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _parse_split_numbers(raw):
+        """'35:10' -> [35.0, 10.0]. Chuỗi rỗng -> []. Sai định dạng -> ValueError."""
+        if not raw or not raw.strip():
+            return []
+        numbers = []
+        for chunk in raw.split(':'):
+            chunk = chunk.strip().replace(',', '.')
+            if not chunk:
+                raise ValueError(raw)
+            numbers.append(float(chunk))
+        return numbers
+
+    def _get_bank_split(self):
+        """Các khối của ô "Hỗ trợ ngân hàng" cho đợt này.
+
+        Trả về [(pct_gia_nha, pct_vat, label), ...], hoặc [] nếu đợt này không
+        cấu hình chia ô. Cấu hình sai định dạng cũng trả [] — ràng buộc
+        _check_bank_split đã chặn từ lúc lưu, ở đây chỉ cần không làm hỏng
+        việc sinh lịch.
+        """
+        self.ensure_one()
+        try:
+            shares = self._parse_split_numbers(self.bank_split_ratio)
+        except ValueError:
+            return []
+        if not shares:
+            return []
+
+        try:
+            vat_shares = self._parse_split_numbers(self.bank_split_vat_ratio)
+        except ValueError:
+            vat_shares = []
+        if not vat_shares:
+            # Để trống ô VAT: mỗi khối dùng luôn % giá nhà của chính nó.
+            vat_shares = list(shares)
+
+        labels = (self.bank_split_label or '').split(':')
+        return [
+            (
+                share,
+                vat_shares[i] if i < len(vat_shares) else share,
+                labels[i].strip() if i < len(labels) else '',
+            )
+            for i, share in enumerate(shares)
+        ]
+
+    @api.constrains('bank_split_ratio', 'bank_split_vat_ratio', 'bank_split_label')
+    def _check_bank_split(self):
+        for line in self:
+            if not (line.bank_split_ratio or '').strip():
+                continue
+            try:
+                shares = self._parse_split_numbers(line.bank_split_ratio)
+            except ValueError:
+                raise ValidationError(_(
+                    'Đợt "%(name)s": "Tỷ lệ chia ô NH" phải là các số ngăn nhau bằng '
+                    'dấu ":", ví dụ "35:10". Giá trị hiện tại: "%(val)s".'
+                ) % {'name': line.name, 'val': line.bank_split_ratio})
+
+            try:
+                vat_shares = self._parse_split_numbers(line.bank_split_vat_ratio)
+            except ValueError:
+                raise ValidationError(_(
+                    'Đợt "%(name)s": "Tỷ lệ chia ô NH (VAT)" phải là các số ngăn nhau '
+                    'bằng dấu ":", ví dụ "40:10". Giá trị hiện tại: "%(val)s".'
+                ) % {'name': line.name, 'val': line.bank_split_vat_ratio})
+
+            if vat_shares and len(vat_shares) != len(shares):
+                raise ValidationError(_(
+                    'Đợt "%(name)s": "Tỷ lệ chia ô NH (VAT)" có %(got)s phần nhưng '
+                    '"Tỷ lệ chia ô NH" có %(want)s phần — hai ô phải cùng số phần '
+                    '(hoặc để trống ô VAT).'
+                ) % {'name': line.name, 'got': len(vat_shares), 'want': len(shares)})
+
+            if line.bank_split_label:
+                labels = line.bank_split_label.split(':')
+                if len(labels) != len(shares):
+                    raise ValidationError(_(
+                        'Đợt "%(name)s": "Label chia ô NH" có %(got)s phần nhưng '
+                        '"Tỷ lệ chia ô NH" có %(want)s phần — hai ô phải cùng số phần.'
+                    ) % {'name': line.name, 'got': len(labels), 'want': len(shares)})
 
     @api.onchange('date_type')
     def _onchange_date_type(self):

@@ -42,7 +42,7 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="discount_type"/>
-                <field name="apply_stage" optional="show"/>
+                <field name="apply_stage"/>
                 <field name="formula_type" optional="hide"/>
                 <field name="discount_value"/>
                 <field name="qty" string="% (Recalc)" optional="hide"/>

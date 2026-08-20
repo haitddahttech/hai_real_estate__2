@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import json
+
 from odoo import models, fields, api
 
 
@@ -73,6 +75,13 @@ class PaymentTimeline(models.Model):
         required=True,
         default=lambda self: self.env.company.currency_id,
     )
+    discount_amount = fields.Monetary(
+        string='Chiết khấu trừ vào đợt',
+        currency_field='currency_id',
+        help='Phần tiền chiết khấu (chỉ tính trên giá nhà chưa thuế SDĐ) đã được '
+             'trừ khỏi cột "Tiền nhà" của đợt này. Chỉ để tra soát, cột Tiền nhà '
+             'hiển thị số đã trừ rồi.',
+    )
     bank_amount = fields.Monetary(
         string='Tiền ngân hàng hỗ trợ',
         currency_field='currency_id',
@@ -88,6 +97,42 @@ class PaymentTimeline(models.Model):
         string='Gộp tiêu đề',
         default=False,
     )
+
+    # --- Chia ô "Hỗ trợ ngân hàng" thành nhiều khối ---
+    # Sinh ra từ payment.schedule.template.line.bank_split_ratio, xem
+    # PaymentScheduleTemplate._apply_bank_splits.
+    bank_split_json = fields.Text(
+        string='Các khối ô ngân hàng',
+        help='JSON các khối của ô "Hỗ trợ ngân hàng": '
+             '[{"amount": 0.0, "label": "..."}, ...]. '
+             'Rỗng = ô hiển thị bình thường theo bank_amount.',
+    )
+    bank_split_size = fields.Integer(
+        string='Số hàng ô gộp phủ',
+        default=0,
+        help='rowspan của ô "Hỗ trợ ngân hàng" khi đợt này có chia khối.',
+    )
+    bank_split_covered = fields.Boolean(
+        string='Ô NH bị phủ',
+        default=False,
+        help='Hàng này nằm dưới ô gộp của một hàng phía trên nên không render '
+             'ô "Hỗ trợ ngân hàng" riêng.',
+    )
+
+    def get_bank_split_blocks(self):
+        """Danh sách khối của ô "Hỗ trợ ngân hàng", dùng trực tiếp trong QWeb.
+
+        Trả về [] nếu đợt này không chia ô (hoặc dữ liệu hỏng) để template chỉ
+        cần một phép kiểm tra duy nhất.
+        """
+        self.ensure_one()
+        if not self.bank_split_json:
+            return []
+        try:
+            blocks = json.loads(self.bank_split_json)
+        except (ValueError, TypeError):
+            return []
+        return blocks if isinstance(blocks, list) else []
 
     @api.depends('amount', 'vat_amount')
     @api.onchange('amount', 'vat_amount')

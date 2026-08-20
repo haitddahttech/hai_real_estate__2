@@ -12,7 +12,14 @@
          từng dòng, nhưng tổng tiền giảm không thay đổi.
 
          product_categ_ids để trống = áp cho mọi danh mục. Gán danh mục cụ thể
-         nếu chỉ muốn áp cho một loại sản phẩm. -->
+         nếu chỉ muốn áp cho một loại sản phẩm.
+
+         "Mốc áp dụng" (apply_stage) quyết định CK bị trừ ở đâu trên LỊCH THANH TOÁN:
+           ky_hop_dong (A) -> trừ thẳng vào đợt Ký hợp đồng
+           spread      (B) -> chia đều từ đợt 4 đến đợt Bàn giao nhà
+           giao_nha    (C) -> trừ thẳng vào đợt Bàn giao nhà
+         Số tiền trừ vào đợt chỉ là phần giá nhà chưa TSDĐ bị cắt; VAT và quỹ bảo
+         trì không trừ theo đợt mà được tính lại từ giá mới rồi đưa lên lịch. -->
 
     <!-- 1. Mốc ký HĐMB — chiết khấu ghi trong phụ lục hợp đồng -->
     <record id="discount_ck_75_phu_luc" model="product.discount.config">

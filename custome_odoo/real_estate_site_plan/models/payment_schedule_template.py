@@ -157,7 +157,7 @@ class PaymentScheduleTemplate(models.Model):
         # Tiền CK dồn vào một mốc có thể lớn hơn chính đợt đó (CK to, đợt nhỏ).
         # Không tự động san sang đợt khác vì mốc là do nghiệp vụ chốt — chỉ ghi
         # log để người cấu hình biết mà đổi mốc áp dụng.
-        for vals in (v[2] for v in vals_list):
+        for vals in vals_list:
             if vals['amount'] < 0:
                 _logger.warning(
                     "Lich thanh toan: dot '%s' bi am (%s) sau khi tru chiet khau %s "
@@ -168,7 +168,7 @@ class PaymentScheduleTemplate(models.Model):
 
     def _cut_discount_by_stage(self, vals_list, by_stage, currency):
         """Trừ từng khoản trong `by_stage` vào đúng đợt tương ứng."""
-        codes = [vals[2]['type'] for vals in vals_list]
+        codes = [vals['type'] for vals in vals_list]
 
         def index_of(code):
             return codes.index(code) if code in codes else -1
@@ -176,7 +176,7 @@ class PaymentScheduleTemplate(models.Model):
         def cut(pos, amount):
             if pos < 0 or not amount:
                 return
-            vals = vals_list[pos][2]
+            vals = vals_list[pos]
             vals['amount'] = currency.round(vals['amount'] - amount)
             vals['discount_amount'] = currency.round(vals.get('discount_amount', 0.0) + amount)
 
@@ -204,7 +204,7 @@ class PaymentScheduleTemplate(models.Model):
         targets = [
             i for i in range(start, end + 1)
             if 0 <= i < len(vals_list)
-            and vals_list[i][2]['type'] not in ('quy_bao_tri', 'thong_bao_so_hong')
+            and vals_list[i]['type'] not in ('quy_bao_tri', 'thong_bao_so_hong')
         ]
         if not targets:
             cut(fallback_idx, spread_total)
@@ -244,7 +244,7 @@ class PaymentScheduleTemplate(models.Model):
             payload = []
             for offset in range(size):
                 share, vat_share, label = blocks[offset]
-                row = vals_list[idx + offset][2]
+                row = vals_list[idx + offset]
                 amount = currency.round(
                     bank_price_base * share / 100.0
                     + vat_base * vat_share / 100.0
@@ -261,14 +261,27 @@ class PaymentScheduleTemplate(models.Model):
                 row['is_merge_title'] = False
                 payload.append({'amount': amount, 'label': label})
 
-            head = vals_list[idx][2]
+            head = vals_list[idx]
             head['bank_split_json'] = json.dumps(payload)
             head['bank_split_size'] = size
 
-    def _generate_timelines_for_product(self, product):
-        """Sinh lại payment_timeline_ids cho 1 product.template dựa trên line_ids
-        của template hiện tại. Áp dụng logic gộp (is_mergeable) tương tự
-        compute_payment_timeline cũ, nhưng đọc cấu hình từ template.
+    def _build_timeline_vals(self, product, discounts=None):
+        """Dựng danh sách vals của các đợt thanh toán — KHÔNG chạm cơ sở dữ liệu.
+
+        Đây là toàn bộ phần TÍNH của lịch thanh toán, tách khỏi phần GHI để
+        dùng được cho hai mục đích khác nhau:
+        - `_generate_timelines_for_product()` lấy kết quả rồi lưu vào DB (lịch
+          GỐC của sản phẩm, hiển thị ở màn backend).
+        - `product.template.get_display_timelines()` dựng bản ghi ẢO trong bộ
+          nhớ để portal và mẫu in hiển thị lịch ĐÃ ÁP chiết khấu người xem đang
+          tích, mà không ghi gì xuống DB — chiết khấu là mô phỏng lúc xem, không
+          phải trạng thái vĩnh viễn của sản phẩm.
+
+        `discounts` là recordset product.discount.config dùng để tính; để None
+        thì lấy chiết khấu đã lưu trên sản phẩm.
+
+        Áp dụng logic gộp (is_mergeable) tương tự compute_payment_timeline cũ,
+        nhưng đọc cấu hình từ template.
 
         Special-case theo `code` để giữ tương thích nghiệp vụ cũ:
         - dat_coc + fixed_amount=0    -> dùng product.deposit
@@ -285,7 +298,7 @@ class PaymentScheduleTemplate(models.Model):
         # tiền CK chỉ bị trừ tại đúng các mốc đã chốt (xem _apply_schedule_discounts).
         # Riêng VAT và quỹ bảo trì thì không trừ theo mốc mà lấy thẳng số đã
         # tính lại theo giá sau CK.
-        disc_ctx = product._get_schedule_discount_context()
+        disc_ctx = product._get_schedule_discount_context(discounts)
         vat_base = disc_ctx['vat']
         maint_base = disc_ctx['maint']
         # Cột "Hỗ trợ ngân hàng" bám theo giá thực khách phải trả, nếu không tổng
@@ -314,10 +327,11 @@ class PaymentScheduleTemplate(models.Model):
         paid_amount = 0.0
         acc_amount = acc_vat = acc_bank = 0.0
         acc_share = 0.0  # % tích lũy cho mô tả "X% +VAT tương ứng"
-        # Hàng đợi nhãn đợt (code + tên) của các đợt mergeable đã đi qua.
+        # Hàng đợi NHÃN HIỂN THỊ của các đợt mergeable đã đi qua.
         # Khi 1 đợt bị gộp, nhãn của nó KHÔNG mất đi mà được đẩy xuống cho
         # dòng kế tiếp, nên số đợt còn lại luôn liên tục từ đầu nhóm:
         # 3-4-5-6, gộp 3 vào 4  ->  hiển thị 3-4-5 (không phải 4-5-6).
+        # Hàng đợi này CHỈ ảnh hưởng type_name; cột `type` luôn giữ mã thật.
         pending_labels = []
         pending_group = None
         vals_list = []
@@ -406,17 +420,30 @@ class PaymentScheduleTemplate(models.Model):
             else:
                 name_str = "%g%%" % (line.percentage or 0)
 
-            # ---- LABEL: dùng nhãn sớm nhất còn treo trong nhóm (nếu có) ----
+            # ---- LABEL hiển thị: dùng nhãn sớm nhất còn treo trong nhóm ----
+            # CHỈ cái nhãn mới bị dịch, để số đợt còn lại liên tục từ đầu nhóm
+            # (3-4-5-6, gộp 3 vào 4 -> hiển thị 3-4-5). Cột `type` KHÔNG được
+            # dịch theo: nó là KHOÁ MÁY, dùng để tìm đợt Ký HĐ / Bàn giao nhà
+            # khi trừ tiền chiết khấu (_cut_discount_by_stage), để loại đợt
+            # Quỹ bảo trì khỏi dải chia đều, và để tô nền dòng trên bảng lịch.
+            # Dịch cả `type` thì một lịch có đợt bị gộp sẽ không còn dòng nào
+            # mang type 'ky_hop_dong', khiến CK mốc A rơi nhầm sang đợt Bàn
+            # giao nhà theo nhánh dự phòng.
             if pending_labels:
-                row_code, row_name = pending_labels.pop(0)
+                _shifted_code, row_name = pending_labels.pop(0)
                 pending_labels.append((line.code or '', line.name or ''))
             else:
-                row_code, row_name = (line.code or ''), (line.name or '')
+                row_name = line.name or ''
 
             # ---- CREATE record (cộng dồn tích lũy nếu có) ----
-            vals_list.append((0, 0, {
+            vals_list.append({
                 'product_tmpl_id': product.id,
-                'type': row_code,
+                # Bản ghi ẢO (.new) không được áp giá trị mặc định của trường,
+                # nên phải ghi tiền tệ ra đây — thiếu nó thì Monetary bỏ qua
+                # bước làm tròn và số trên portal lệch với số lưu trong DB.
+                'currency_id': currency.id,
+                # Mã THẬT của đợt này (khoá máy), không phải nhãn đã dịch.
+                'type': line.code or '',
                 'type_name': row_name,
                 'date': line_date,
                 'name': name_str,
@@ -427,7 +454,7 @@ class PaymentScheduleTemplate(models.Model):
                 'bank_note': line.note or '',
                 'bank_group': line.group_merge or '' if line.is_mergeable else '',
                 'is_merge_title': line.is_merge_title if line.is_mergeable else False,
-            }))
+            })
             if (line.bank_split_ratio or '').strip():
                 split_specs.append((len(vals_list) - 1, line))
             acc_amount = acc_vat = acc_bank = 0.0
@@ -436,7 +463,7 @@ class PaymentScheduleTemplate(models.Model):
         # Nếu vẫn còn tích lũy (toàn bộ trailing lines đều mergeable + quá hạn)
         # thì dồn vào dòng cuối cùng đã tạo
         if vals_list and (acc_amount or acc_vat or acc_bank):
-            last_vals = vals_list[-1][2]
+            last_vals = vals_list[-1]
             last_vals['amount'] += acc_amount
             last_vals['vat_amount'] += acc_vat
             last_vals['bank_amount'] += acc_bank
@@ -449,9 +476,19 @@ class PaymentScheduleTemplate(models.Model):
         # Trừ tiền chiết khấu vào đúng các mốc đã chốt
         self._apply_schedule_discounts(vals_list, disc_ctx, currency)
 
-        # Wipe & recreate
+        return vals_list
+
+    def _generate_timelines_for_product(self, product):
+        """Ghi lịch thanh toán GỐC của sản phẩm xuống DB (xoá rồi tạo lại).
+
+        Lịch lưu trong DB luôn là lịch theo chiết khấu ĐÃ LƯU trên sản phẩm —
+        thường là không có chiết khấu nào. Chiết khấu người xem tích trên portal
+        KHÔNG đi qua đây: chúng chỉ được dựng trong bộ nhớ lúc hiển thị (xem
+        product.template.get_display_timelines).
+        """
+        vals_list = self._build_timeline_vals(product)
         product.payment_timeline_ids.unlink()
-        product.write({'payment_timeline_ids': vals_list})
+        product.write({'payment_timeline_ids': [(0, 0, vals) for vals in vals_list]})
 
 
 class PaymentScheduleTemplateLine(models.Model):

@@ -240,6 +240,8 @@
                             
                             .clearfix:after { content: ""; display: table; clear: both; }
                             .text-right { text-align: right; }
+                            /* Cot NGAY: can giua ca tieu de lan noi dung cho thang cot. */
+                            .text-center { text-align: center; }
 
                             /* Card Thông Tin Cơ Bản: ép mọi giá trị nằm trên 1 dòng */
                             .basic-info-table td {
@@ -359,7 +361,7 @@
                                 <thead>
                                     <tr>
                                         <th style="width: 20%;">KỲ THANH TOÁN</th>
-                                        <th style="width: 12%;">NGÀY</th>
+                                        <th class="text-center" style="width: 12%;">NGÀY</th>
                                         <th style="width: 20%;">MÔ TẢ</th>
                                         <th style="width: 12%;">TIỀN NHÀ</th>
                                         <th style="width: 10%;">VAT</th>
@@ -368,21 +370,23 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <t t-set="rows" t-value="product.payment_timeline_ids"/>
+                                    <!-- Lịch dựng trong bộ nhớ theo chiết khấu khách đang xem trên portal
+                                         (controller nhét display_discount_ids vào context). -->
+                                    <t t-set="rows" t-value="product.get_display_timelines()"/>
 
                                     <!-- Gộp ô cột "Hỗ trợ ngân hàng" của hàng Quỹ bảo trì với hàng ngay
                                          trước nó (CHỈ cột cuối cùng, các cột khác giữ nguyên).
                                          Bỏ qua nếu Quỹ bảo trì đứng đầu bảng hoặc một trong hai hàng
                                          đã thuộc bank_group (để không phá logic rowspan sẵn có). -->
                                     <t t-set="qbt_rows" t-value="rows.filtered(lambda r: r.type == 'quy_bao_tri')"/>
-                                    <t t-set="qbt_idx" t-value="rows.ids.index(qbt_rows[0].id) if qbt_rows else -1"/>
+                                    <t t-set="qbt_idx" t-value="list(rows).index(qbt_rows[0]) if qbt_rows else -1"/>
                                     <!-- Lich nao da cau hinh "chia o NH" thi co che gop cung Quy bao tri
                                          khong con can nua - tat di de hai co che khong tranh nhau. -->
                                     <t t-set="has_bank_split" t-value="any(rows.mapped('bank_split_json'))"/>
                                     <t t-set="merge_qbt" t-value="not has_bank_split and qbt_idx &gt; 0 and not rows[qbt_idx].bank_group and not rows[qbt_idx-1].bank_group"/>
 
                                     <t t-foreach="rows" t-as="timeline">
-                                        <t t-set="current_idx" t-value="rows.ids.index(timeline.id)"/>
+                                        <t t-set="current_idx" t-value="timeline_index"/>
                                         <t t-set="is_first_in_group" t-value="False"/>
                                         <t t-set="group_size" t-value="1"/>
                                         <t t-set="grp_mt" t-value="False"/>
@@ -430,7 +434,7 @@
                                                         </t>
                                                     </span>
                                                 </td>
-                                                <td t-att-rowspan="group_size" style="color: #343a40; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
+                                                <td t-att-rowspan="group_size" class="text-center" style="color: #343a40; border-bottom: 1px solid #F9ECC7 !important; vertical-align: middle;">
                                                     <t t-if="grp_rows[0].date" t-esc="grp_rows[0].date.strftime('%d/%m/%Y')"/>
                                                     <t t-if="len(grp_rows) &gt; 1 and grp_rows[-1].date">~<br/><t t-esc="grp_rows[-1].date.strftime('%d/%m/%Y')"/></t>
                                                 </td>
@@ -455,7 +459,7 @@
                                                         <t t-esc="timeline.type_name or dict(timeline._fields['type'].selection).get(timeline.type, timeline.type)"/>
                                                     </span>
                                                 </td>
-                                                <td style="color: #343a40; border-bottom: 1px solid #F9ECC7 !important;"><t t-if="timeline.date" t-esc="timeline.date.strftime('%d/%m/%Y')"/><t t-else="">---</t></td>
+                                                <td class="text-center" style="color: #343a40; border-bottom: 1px solid #F9ECC7 !important;"><t t-if="timeline.date" t-esc="timeline.date.strftime('%d/%m/%Y')"/><t t-else="">---</t></td>
                                                 <td style="color: #343a40; border-bottom: 1px solid #F9ECC7 !important;"><t t-esc="timeline.name"/></td>
                                                 <td class="text-right" style="color: #212529; border-bottom: 1px solid #F9ECC7 !important;"><t t-esc="'{:,.0f}'.format(timeline.amount)"/></td>
                                                 <td class="text-right" style="color: #495057; border-bottom: 1px solid #F9ECC7 !important;"><t t-if="timeline.vat_amount > 0" t-esc="'{:,.0f}'.format(timeline.vat_amount)"/><t t-else="">-</t></td>
@@ -540,14 +544,16 @@
                             </div>
                         </div><!-- close timeline-section -->
                        <!-- Discounts Section (Only if selected) -->
-                        <div class="full-card" t-if="product.selected_discount_ids" style="margin-top: -5px; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0; background: #FFFDF9;">
+                        <t t-set="disc_prices" t-value="product.get_display_prices()"/>
+                        <t t-set="disc_selected" t-value="disc_prices['discounts']"/>
+                        <div class="full-card" t-if="disc_selected" style="margin-top: -5px; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0; background: #FFFDF9;">
                             <div class="card-title" style="color: #856404; font-size: 9px;">Ưu đãi &amp; Chiết khấu áp dụng</div>
-                            <!-- Chiết khấu loại percent_recalc nhân chuỗi theo sequence nên số tiền
-                                 của từng dòng phụ thuộc cả nhóm đang chọn: phải lấy map một lần cho
-                                 cả recordset rồi tra theo id, không gọi riêng từng dòng được. -->
-                            <t t-set="disc_amounts" t-value="product.selected_discount_ids.compute_discounts_for_product(product)[1]"/>
+                            <!-- CK loại percent_recalc cộng gộp trong cùng mốc rồi nhân chuỗi giữa
+                                 các mốc, nên số tiền của từng dòng phụ thuộc cả nhóm đang chọn: lấy
+                                 map một lần cho cả recordset rồi tra theo id. -->
+                            <t t-set="disc_amounts" t-value="disc_prices['amounts']"/>
                             <table style="width: 100%; border-collapse: collapse;">
-                                <t t-foreach="product.selected_discount_ids.group_by_stage()" t-as="disc_group">
+                                <t t-foreach="disc_selected.group_by_stage()" t-as="disc_group">
                                     <!-- Dòng kẻ ngang kèm tên loại, ngăn cách các nhóm CK A/B/C -->
                                     <tr>
                                         <td colspan="2"
@@ -578,7 +584,7 @@
                             <div class="price-highlight-bar clearfix" style="margin-top: 8px; background: #FEF3C7; border-color: #FCD34D;">
                                 <span class="price-label" style="color: #92400E;">GIÁ SAU CHIẾT KHẤU</span>
                                 <span class="price-value" style="color: #92400E; font-size: 20px;">
-                                    <t t-esc="'{:,.0f}'.format(product.final_price)"/> <small style="font-size: 9px; vertical-align: baseline;">VNĐ</small>
+                                    <t t-esc="'{:,.0f}'.format(disc_prices['final_price'])"/> <small style="font-size: 9px; vertical-align: baseline;">VNĐ</small>
                                 </span>
                                 <!-- Đơn giá trung bình sau chiết khấu = giá cuối cùng / diện tích đất
                                      (đồng bộ với màn chi tiết portal) -->
@@ -586,7 +592,7 @@
                                      style="clear: both; text-align: right; color: #92400E; font-size: 8.5px; padding-top: 3px;">
                                     Đơn giá trung bình sau chiết khấu:
                                     <span style="font-weight: 700;">
-                                        <t t-esc="'{:,.0f}'.format(product.final_price / product.area)"/> VNĐ/m²
+                                        <t t-esc="'{:,.0f}'.format(disc_prices['price_per_m2'])"/> VNĐ/m²
                                     </span>
                                 </div>
                             </div>

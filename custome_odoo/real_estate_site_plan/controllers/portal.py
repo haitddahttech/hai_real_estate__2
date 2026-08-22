@@ -338,18 +338,25 @@ class SitePlanPortal(CustomerPortal):
             _logger.error(f"Error in portal_site_plan_detail for site plan {site_plan_id}: {e}")
             return request.redirect('/my')
 
-    def _refresh_property_timeline(self, product):
-        """Làm mới ngày lịch thanh toán trước khi render. Sản phẩm chưa gán
-        ngày đặt cọc được neo tạm theo hôm nay, nên phải sinh lại lúc mở màn
-        thay vì dùng lại ảnh chụp cũ. Lỗi ở đây không được làm hỏng trang:
-        chỉ log lại và hiển thị lịch đang có."""
-        try:
-            product.sudo().refresh_payment_timeline_dates()
-        except Exception as e:
-            _logger.error(
-                "Khong lam moi duoc lich thanh toan cho san pham %s: %s",
-                product.id, e,
-            )
+    @staticmethod
+    def _parse_discount_ids(raw):
+        """Đọc danh sách id chiết khấu từ query string ("8,9") hoặc list JSON.
+
+        Chỉ làm việc tách chuỗi — việc lọc xem chiết khấu có áp được cho sản
+        phẩm hay không do product._resolve_display_discounts() lo, vì id đến từ
+        trình duyệt nên không tin được.
+        """
+        if not raw:
+            return []
+        if isinstance(raw, str):
+            raw = raw.split(',')
+        out = []
+        for item in raw:
+            try:
+                out.append(int(item))
+            except (TypeError, ValueError):
+                continue
+        return out
 
     @http.route(['/my/property/<int:product_id>'], type='http', auth='user', website=True)
     def portal_property_detail(self, product_id, **kw):
@@ -369,11 +376,15 @@ class SitePlanPortal(CustomerPortal):
                 _logger.warning(f"Access denied for product {product_id}: {access_error}")
                 return request.redirect('/my')
 
-            self._refresh_property_timeline(product)
-
+            # Chiết khấu là mô phỏng lúc xem: dựng lịch trong bộ nhớ theo các CK
+            # đính trong link, KHÔNG ghi gì lên sản phẩm.
+            discount_ids = self._parse_discount_ids(kw.get('discount_ids'))
             values = {
                 'product': product,
                 'page_name': 'property_detail',
+                'rows': product.get_display_timelines(discount_ids),
+                'prices': product.get_display_prices(discount_ids),
+                'selected_discount_ids': discount_ids,
             }
             return request.render('real_estate_site_plan.portal_property_detail', values)
         except Exception as e:
@@ -391,29 +402,18 @@ class SitePlanPortal(CustomerPortal):
                 _logger.warning(f"Product {product_id} not found for PDF download")
                 return request.redirect('/my')
             
-            # Handle discount_ids param to sync state before printing
-            # Always update to clear old selections if none selected
+            # Check access rights TRƯỚC khi làm bất cứ việc gì với sản phẩm.
+            # (check_access_rights/check_access_rule đã deprecated từ 18.0.)
             try:
-                d_ids = []
-                if kw.get('discount_ids'):
-                    d_ids = [int(x) for x in kw['discount_ids'].split(',') if x]
-                
-                # Update product discounts (clears if d_ids is empty)
-                product.sudo().write({
-                    'selected_discount_ids': [(6, 0, d_ids)]
-                })
-            except Exception as e:
-                _logger.error(f"Error applying discounts for PDF: {e}")
-            
-            # Check access rights
-            try:
-                product.check_access_rights('read')
-                product.check_access_rule('read')
+                product.check_access('read')
             except Exception as access_error:
                 _logger.warning(f"Access denied for PDF of product {product_id}: {access_error}")
                 return request.redirect('/my')
 
-            self._refresh_property_timeline(product)
+            # Chiết khấu chỉ đi vào context để mẫu in dựng số — KHÔNG ghi lên
+            # sản phẩm. Nhờ vậy hai người cùng tải PDF một căn với lựa chọn CK
+            # khác nhau không ghi đè của nhau.
+            d_ids = self._parse_discount_ids(kw.get('discount_ids'))
 
             # Get the report
             report = request.env['ir.actions.report'].sudo().search([
@@ -425,13 +425,13 @@ class SitePlanPortal(CustomerPortal):
                 return request.redirect('/my')
             
             # Prepare context for rendering
-            context = dict(request.env.context)
+            context = dict(request.env.context, display_discount_ids=d_ids)
             if bank_id:
                 context['selected_bank_id'] = int(bank_id)
             
-            # Render the PDF. selected_bank_id đi theo context; template gọi
-            # product.get_selected_bank_account() để in đúng ngân hàng khách
-            # đang mở trên portal.
+            # selected_bank_id và display_discount_ids đi theo context; template
+            # gọi product.get_selected_bank_account() và get_display_timelines()
+            # để in đúng ngân hàng + đúng chiết khấu khách đang xem trên portal.
             pdf_content, _ = report.with_context(context)._render_qweb_pdf(
                 report_ref='real_estate_site_plan.report_property_detail_document', 
                 res_ids=product_id
@@ -457,24 +457,16 @@ class SitePlanPortal(CustomerPortal):
             if not product.exists():
                 return request.redirect('/my')
             
-            # Handle discount_ids param to sync state before printing
-            # Always update to clear old selections if none selected
+            # Check access rights. KHÔNG dùng sudo() ở đây: sudo bỏ qua quyền
+            # nên phép kiểm tra sẽ luôn lọt.
             try:
-                d_ids = []
-                if kw.get('discount_ids'):
-                    d_ids = [int(x) for x in kw['discount_ids'].split(',') if x]
-                
-                # Update product discounts (clears if d_ids is empty)
-                product.sudo().write({
-                    'selected_discount_ids': [(6, 0, d_ids)]
-                })
-            except Exception as e:
-                _logger.error(f"Error applying discounts for Image: {e}")
+                product.check_access('read')
+            except Exception as access_error:
+                _logger.warning(f"Access denied for image of product {product_id}: {access_error}")
+                return request.redirect('/my')
 
-            # Check access rights
-            product.sudo().check_access('read')
-
-            self._refresh_property_timeline(product)
+            # Chiết khấu chỉ đi vào context, không ghi lên sản phẩm (xem route PDF).
+            d_ids = self._parse_discount_ids(kw.get('discount_ids'))
 
             # Get the report record
             report = request.env['ir.actions.report'].sudo().search([
@@ -485,7 +477,7 @@ class SitePlanPortal(CustomerPortal):
                 return request.redirect('/my')
             
             # Prepare context for rendering
-            context = dict(request.env.context)
+            context = dict(request.env.context, display_discount_ids=d_ids)
             if bank_id:
                 context['selected_bank_id'] = int(bank_id)
             
@@ -538,56 +530,61 @@ class SitePlanPortal(CustomerPortal):
             _logger.error(f"Error generating Image for product {product_id}: {e}")
             return request.redirect('/my')
 
-    @http.route(['/my/property/<int:product_id>/save_discounts'], type='jsonrpc', auth='user', methods=['POST'])
-    def save_selected_discounts(self, product_id, discount_ids=None, **kw):
-        """Save selected discounts to product"""
+    @http.route(['/my/property/<int:product_id>/discount-preview'],
+                type='jsonrpc', auth='user', methods=['POST'])
+    def property_discount_preview(self, product_id, discount_ids=None, **kw):
+        """Giá và lịch thanh toán theo các chiết khấu người xem đang tích.
+
+        CHỈ TÍNH — không ghi gì xuống cơ sở dữ liệu. Chiết khấu là mô phỏng của
+        riêng phiên xem này: hai người cùng mở một căn với lựa chọn khác nhau
+        không ảnh hưởng lẫn nhau, và bản ghi sản phẩm không bao giờ mang số của
+        một lần tích thử.
+
+        Trả về giá đã tính sẵn (client không tự cộng dồn được vì chiết khấu
+        cộng gộp trong cùng mốc rồi nhân chuỗi giữa các mốc) kèm HTML của bảng
+        lịch thanh toán để JS thay vào chỗ cũ.
+        """
         try:
-            product = request.env['product.template'].sudo().browse(product_id)
+            product = request.env['product.template'].browse(product_id)
             if not product.exists():
                 return {'success': False, 'error': 'Product not found'}
-            
-            # Update selected_discount_ids
-            discount_ids = discount_ids or []
-            product.write({
-                'selected_discount_ids': [(6, 0, discount_ids)]  # Replace all with new selection
-            })
-
-            # Chiết khấu trừ thẳng vào các đợt của lịch thanh toán nên đổi CK là
-            # phải dựng lại lịch, nếu không bảng lịch sẽ còn số của lần chọn trước.
             try:
-                product.compute_payment_timeline()
-            except Exception as timeline_error:
-                _logger.error(
-                    "Khong dung lai duoc lich thanh toan cho san pham %s: %s",
-                    product_id, timeline_error
-                )
+                product.check_access('read')
+            except Exception:
+                _logger.warning("Access denied for discount preview of product %s", product_id)
+                return {'success': False, 'error': 'Access denied'}
 
+            ids = self._parse_discount_ids(discount_ids)
+            prices = product.get_display_prices(ids)
             payload = {
                 'success': True,
-                'message': 'Discounts saved successfully',
-                'selected_count': len(discount_ids),
+                'selected_count': len(prices['discounts']),
+                'total_discount': prices['total_discount'],
+                'final_price': prices['final_price'],
+                'price_per_m2': prices['price_per_m2'],
+                'amounts': {str(k): v for k, v in prices['amounts'].items()},
             }
 
-            # Chiết khấu loại percent_recalc nhân chuỗi theo sequence nên client
-            # không cộng dồn từng dòng được — trả luôn số đã tính về cho JS dùng.
-            # Bọc riêng: tính lỗi thì vẫn coi như lưu thành công, chỉ thiếu các
-            # khoá bổ sung và client giữ nguyên số đang hiển thị.
+            # Bảng lịch render riêng: hỏng phần này thì client vẫn cập nhật được
+            # giá, chỉ giữ nguyên bảng cũ.
             try:
-                total_discount, per_discount = product.selected_discount_ids.compute_discounts_for_product(product)
-                payload.update({
-                    'total_discount': total_discount,
-                    'final_price': product.final_price,
-                    'price_per_m2': (product.final_price / product.area) if product.area else 0,
-                    'amounts': {str(k): v for k, v in per_discount.items()},
-                })
-            except Exception as calc_error:
+                payload['schedule_html'] = request.env['ir.qweb']._render(
+                    'real_estate_site_plan.portal_payment_schedule_table',
+                    {
+                        'product': product,
+                        'rows': product.get_display_timelines(ids),
+                        'request': request,
+                    },
+                )
+            except Exception as render_error:
                 _logger.error(
-                    "Khong tinh duoc chiet khau cho san pham %s: %s", product_id, calc_error
+                    "Khong render duoc bang lich thanh toan cho san pham %s: %s",
+                    product_id, render_error,
                 )
 
             return payload
         except Exception as e:
-            _logger.error(f"Error saving discounts: {str(e)}")
+            _logger.error("Error in discount preview for product %s: %s", product_id, e)
             return {'success': False, 'error': str(e)}
 
     @http.route(['/change_lang/<string:lang>'], type='http', auth='user', website=True)

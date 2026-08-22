@@ -6,10 +6,14 @@
          chỉ trừ vào giá bán chưa tiền sử dụng đất, TSDĐ giữ nguyên, còn VAT 10%
          và quỹ bảo trì 0,5% được tính lại trên giá nhà mới.
 
-         Hai CK này NHÂN CHUỖI theo trường Thứ tự (sequence): CK cho thuê 8%
-         tính trên giá đã trừ 7,5%, cho ra 0,925 × 0,92 = 0,851 (giảm 14,90%)
-         chứ KHÔNG phải 7,5% + 8% = 15,5%. Đổi sequence sẽ đổi số tiền của
-         từng dòng, nhưng tổng tiền giảm không thay đổi.
+         Hai CK này thuộc HAI MỐC KHÁC NHAU (A và C) nên NHÂN CHUỖI: CK cho
+         thuê 8% ở mốc C tính trên giá đã trừ 7,5% của mốc A, cho ra
+         0,925 × 0,92 = 0,851 (giảm 14,90%) chứ KHÔNG phải 7,5% + 8% = 15,5%.
+
+         Ngược lại, nhiều CK CÙNG MỘT MỐC thì CỘNG GỘP phần trăm: hai chương
+         trình 1% cùng ở mốc A = 2% trên cùng một giá, không phải 0,99 × 0,99.
+         Thứ tự nhân chuỗi luôn là A -> B -> C, không phụ thuộc sequence;
+         sequence chỉ dùng để xếp thứ tự hiển thị trong cùng một mốc.
 
          product_categ_ids để trống = áp cho mọi danh mục. Gán danh mục cụ thể
          nếu chỉ muốn áp cho một loại sản phẩm.

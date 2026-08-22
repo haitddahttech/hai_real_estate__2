@@ -41,9 +41,9 @@ class ProductDiscountConfig(models.Model):
         help="Bắt buộc — vị trí trừ tiền chiết khấu trên LỊCH THANH TOÁN, mặc "
              "định là loại A. Với CK '% tính lại tổng giá' thì số tiền trừ vào "
              "đợt là phần giá nhà chưa TSDĐ bị cắt; với các loại còn lại là "
-             "nguyên số tiền của chiết khấu. Thứ tự nhân chuỗi (CK sau tính "
-             "trên giá đã trừ CK trước) vẫn lấy theo trường Thứ tự, không phụ "
-             "thuộc mốc áp dụng.")
+             "nguyên số tiền của chiết khấu. Mốc áp dụng cũng quyết định cách "
+             "cộng hưởng của CK '% tính lại tổng giá': các CK CÙNG MỐC cộng gộp "
+             "phần trăm, còn GIỮA CÁC MỐC thì nhân chuỗi theo thứ tự A -> B -> C.")
     product_categ_ids = fields.Many2many('product.category', string='Áp dụng cho Danh mục',
         help="Để trống nếu áp dụng cho tất cả danh mục")
 
@@ -102,15 +102,50 @@ class ProductDiscountConfig(models.Model):
         new_total = new_sale + land + new_vat + new_maint
         return list_price - new_total
 
+    def _percent_recalc_stage_groups(self):
+        """Gom CK loại percent_recalc thành các NHÓM THEO MỐC, xếp theo A -> B -> C.
+
+        Quy tắc đã chốt với nghiệp vụ:
+        - CK CÙNG MỘT MỐC thì CỘNG GỘP phần trăm (hai CK 1% ở mốc A = 2% trên
+          cùng một giá), vì chúng là các chương trình độc lập, không cái nào
+          "đứng sau" cái nào.
+        - GIỮA CÁC MỐC mới NHÂN CHUỖI: tổng % của mốc B tính trên giá đã trừ
+          mốc A, mốc C tính trên giá đã trừ mốc B — đúng như sheet "CK GD2 SH"
+          (CK cho thuê 8% ở mốc C ăn trên giá đã trừ CK 7,5% ở mốc A).
+
+        Trả về list [(stage, recordset các CK của mốc đó)], bỏ qua mốc rỗng.
+        CK mang mốc lạ (dữ liệu cũ chưa chạy migration) gom vào một nhóm cuối
+        để không bị bỏ sót tiền.
+        """
+        recs = self.filtered(
+            lambda d: d.discount_type == 'percent_recalc' and 0 < (d.qty or 0) < 100
+        )
+        groups = []
+        for stage in self.STAGE_ORDER:
+            members = recs.filtered(lambda d: d.apply_stage == stage).sorted('sequence')
+            if members:
+                groups.append((stage, members))
+        others = recs.filtered(lambda d: d.apply_stage not in self.STAGE_ORDER)
+        if others:
+            groups.append((False, others.sorted('sequence')))
+        return groups
+
+    @staticmethod
+    def _group_percent(members):
+        """Tổng % của một nhóm CK cùng mốc, chặn trần 100% để giá nhà không âm."""
+        return min(sum(m.qty or 0.0 for m in members), 100.0)
+
     def _chain_percent_recalc(self, product):
-        """Áp các CK loại percent_recalc theo chuỗi đúng như sheet "CK GD2 SH":
-        mỗi bước chỉ trừ vào giá nhà chưa TSDĐ rồi làm tròn bội 10.000; VAT 10%
+        """Áp các CK loại percent_recalc: cộng gộp trong cùng mốc, nhân chuỗi
+        giữa các mốc theo thứ tự A -> B -> C (xem _percent_recalc_stage_groups).
+
+        Mỗi bước chỉ trừ vào giá nhà chưa TSDĐ rồi làm tròn bội 10.000; VAT 10%
         và quỹ bảo trì 0,5% dựng lại từ giá nhà của bước đó. Tiền sử dụng đất
         không bao giờ bị trừ.
 
-        Trả về (tổng tiền giảm, {discount_id: tiền giảm biên của riêng đợt đó}).
-        Phần biên phụ thuộc thứ tự: CK đứng sau tính trên giá đã giảm của CK
-        đứng trước, nên tổng thì cố định còn từng dòng thì đổi theo sequence.
+        Trả về (tổng tiền giảm, {discount_id: tiền giảm của riêng dòng đó}).
+        Tiền của cả nhóm được chia cho từng dòng theo tỉ lệ % của dòng, dòng
+        cuối nhóm gánh phần dư để tổng các dòng khớp đúng tiền của nhóm.
         """
         land = product.land_tax or 0.0
         list_price = product.list_price or 0.0
@@ -119,10 +154,8 @@ class ProductDiscountConfig(models.Model):
             maint = round((sale + land) * 0.005, self.ROUND_MAINT)
             return sale + land + 0.10 * sale + maint
 
-        recs = self.filtered(
-            lambda d: d.discount_type == 'percent_recalc' and 0 < (d.qty or 0) < 100
-        ).sorted('sequence')
-        if not recs:
+        groups = self._percent_recalc_stage_groups()
+        if not groups:
             return 0.0, {}
 
         sale = product.price_exclude_land_tax or 0.0
@@ -131,11 +164,23 @@ class ProductDiscountConfig(models.Model):
         # list_price - tổng cuối, không sinh sai số lẻ.
         prev_total = list_price
         marginal = {}
-        for discount in recs:
-            sale = round(sale * (100.0 - discount.qty) / 100.0, self.ROUND_SALE)
+        for _stage, members in groups:
+            pct = self._group_percent(members)
+            if pct <= 0:
+                continue
+            sale = round(sale * (100.0 - pct) / 100.0, self.ROUND_SALE)
             cur_total = total_at(sale)
-            marginal[discount.id] = prev_total - cur_total
+            group_amount = prev_total - cur_total
             prev_total = cur_total
+
+            # Chia tiền của nhóm cho từng dòng theo tỉ lệ % của dòng.
+            total_qty = sum(m.qty or 0.0 for m in members)
+            allocated = 0.0
+            for member in members[:-1]:
+                part = round(group_amount * (member.qty or 0.0) / total_qty)
+                marginal[member.id] = part
+                allocated += part
+            marginal[members[-1].id] = group_amount - allocated
         return list_price - prev_total, marginal
 
     # Ký hiệu và mô tả ngắn của từng mốc — dùng chung cho portal, mẫu in và
@@ -200,8 +245,10 @@ class ProductDiscountConfig(models.Model):
 
         Quy tắc đã chốt với nghiệp vụ:
         - CK chỉ trừ vào GIÁ NHÀ CHƯA THUẾ SDĐ; tiền sử dụng đất không bao giờ bị trừ.
-        - CK nhân chuỗi theo Thứ tự: CK B tính trên giá đã trừ CK A, CK C trên giá
-          đã trừ CK B. Mỗi bước làm tròn giá nhà tới bội 10.000.
+        - CK CÙNG MỐC thì cộng gộp % (hai CK 1% ở mốc A = 2% trên cùng một giá);
+          GIỮA CÁC MỐC mới nhân chuỗi theo thứ tự A -> B -> C: tổng % của mốc B
+          tính trên giá đã trừ mốc A, mốc C trên giá đã trừ mốc B. Mỗi bước làm
+          tròn giá nhà tới bội 10.000.
         - SỐ TIỀN CK TRỪ VÀO ĐỢT = đúng phần giá nhà bị cắt của CK đó (không gồm
           VAT, không gồm quỹ bảo trì).
         - VAT và quỹ bảo trì KHÔNG bị trừ vào đợt nào mà được TÍNH LẠI từ giá mới
@@ -227,18 +274,20 @@ class ProductDiscountConfig(models.Model):
         land = product.land_tax or 0.0
         sale = product.price_exclude_land_tax or 0.0
 
-        recs = self.filtered(
-            lambda d: d.discount_type == 'percent_recalc' and 0 < (d.qty or 0) < 100
-        ).sorted('sequence')
+        # Cộng gộp % trong cùng mốc, nhân chuỗi giữa các mốc A -> B -> C.
+        groups = self._percent_recalc_stage_groups()
 
         by_stage = {}
-        for discount in recs:
-            new_sale = round(sale * (100.0 - discount.qty) / 100.0, self.ROUND_SALE)
-            stage = discount.apply_stage or self.DEFAULT_APPLY_STAGE
-            by_stage[stage] = by_stage.get(stage, 0.0) + (sale - new_sale)
+        for stage, members in groups:
+            pct = self._group_percent(members)
+            if pct <= 0:
+                continue
+            new_sale = round(sale * (100.0 - pct) / 100.0, self.ROUND_SALE)
+            key = stage or self.DEFAULT_APPLY_STAGE
+            by_stage[key] = by_stage.get(key, 0.0) + (sale - new_sale)
             sale = new_sale
 
-        if recs:
+        if groups:
             vat = 0.10 * sale
             maint = round((sale + land) * 0.005, self.ROUND_MAINT)
         else:
@@ -273,9 +322,9 @@ class ProductDiscountConfig(models.Model):
         }
 
     def compute_discounts_for_product(self, product):
-        """Điểm vào cho cả nhóm chiết khấu đang chọn: loại percent_recalc nhân
-        chuỗi theo sequence, các loại khác (percent/amount/formula) cộng thẳng
-        vì không phụ thuộc thứ tự.
+        """Điểm vào cho cả nhóm chiết khấu đang chọn: loại percent_recalc cộng
+        gộp trong cùng mốc rồi nhân chuỗi giữa các mốc A -> B -> C, các loại
+        khác (percent/amount/formula) cộng thẳng vì không phụ thuộc thứ tự.
 
         Trả về (tổng tiền giảm, {discount_id: tiền giảm}).
         """

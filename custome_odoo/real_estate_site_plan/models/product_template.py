@@ -163,8 +163,11 @@ class ProductTemplate(models.Model):
         string='Giá cuối cùng',
         currency_field='currency_id',
         compute='_compute_final_price',
-        store=True,
-        help='Giá sau khi trừ các khoản giảm giá (mặc định bằng giá niêm yết)'
+        help='Giá sau khi trừ các khoản giảm giá đã lưu trên sản phẩm '
+             '(mặc định bằng giá niêm yết).\n'
+             'KHÔNG lưu vào DB: chiết khấu là mô phỏng lúc xem, giá hiển thị '
+             'trên portal và mẫu in được tính lại từ lựa chọn của người xem '
+             '(xem get_display_prices).'
     )
     
     price_per_m2 = fields.Monetary(
@@ -217,11 +220,19 @@ class ProductTemplate(models.Model):
             ('active', '=', True),
         ], limit=1)
 
-    def _get_schedule_discount_context(self):
+    def _get_schedule_discount_context(self, discounts=None):
         """Giá & tiền chiết khấu dùng để dựng lịch thanh toán của sản phẩm này.
+
+        `discounts` là recordset product.discount.config cần áp; để None thì lấy
+        chiết khấu đã lưu trên sản phẩm. Truyền tay vào để portal/mẫu in dựng
+        được lịch theo lựa chọn của NGƯỜI ĐANG XEM mà không phải ghi lựa chọn đó
+        lên sản phẩm.
+
         Xem product.discount.config.get_schedule_discount_context()."""
         self.ensure_one()
-        return self.selected_discount_ids.get_schedule_discount_context(self)
+        if discounts is None:
+            discounts = self.selected_discount_ids
+        return discounts.get_schedule_discount_context(self)
 
     @api.onchange('deposit_date', 'price_include_land_tax', 'vat_tax', 'categ_id',
                   'selected_discount_ids')
@@ -236,12 +247,16 @@ class ProductTemplate(models.Model):
             template._generate_timelines_for_product(product)
 
     def refresh_payment_timeline_dates(self):
-        """Sản phẩm chưa gán ngày đặt cọc thì lịch thanh toán được neo tạm theo
-        ngày hôm nay (xem PaymentScheduleTemplate._generate_timelines_for_product).
-        Ngày đó chỉ đúng tại thời điểm sinh lịch, nên mỗi lần mở màn lịch thanh
-        toán ta sinh lại để 3 đợt đầu luôn bám ngày hiện tại.
+        """Làm mới NGÀY của lịch thanh toán GỐC đang lưu trong DB.
 
+        Sản phẩm chưa gán ngày đặt cọc thì lịch được neo tạm theo ngày hôm nay,
+        nên số liệu lưu trong DB cũ dần. Hàm này sinh lại cho đúng ngày hiện tại.
         Sản phẩm ĐÃ có deposit_date thì không đụng tới: lịch của nó đã cố định.
+
+        KHÔNG dùng cho portal hay mẫu in nữa: hai nơi đó gọi
+        get_display_timelines(), vốn dựng lịch mới trong bộ nhớ ở mỗi lần render
+        nên luôn đúng ngày mà không phải ghi gì xuống DB. Giữ lại cho màn hình
+        backend / thao tác thủ công của nhân viên.
         """
         today = fields.Date.today()
         for product in self:
@@ -283,12 +298,13 @@ class ProductTemplate(models.Model):
     @api.depends('list_price', 'selected_discount_ids', 'selected_discount_ids.discount_type',
                  'selected_discount_ids.discount_value', 'selected_discount_ids.formula_type',
                  'selected_discount_ids.qty', 'selected_discount_ids.sequence',
+                 'selected_discount_ids.apply_stage',
                  'price_exclude_land_tax', 'land_tax',
                  'management_fee', 'maintenance_fee', 'area')
     def _compute_final_price(self):
         for product in self:
-            # Chiết khấu loại percent_recalc nhân chuỗi theo sequence (CK sau
-            # tính trên giá đã giảm của CK trước) nên không cộng dồn từng cái
+            # Chiết khấu loại percent_recalc cộng gộp % trong cùng mốc rồi
+            # nhân chuỗi giữa các mốc A -> B -> C, nên không cộng dồn từng cái
             # được — phải tính cả nhóm một lượt.
             total_discount, _ = product.selected_discount_ids.compute_discounts_for_product(product)
             product.final_price = product.list_price - total_discount
@@ -377,6 +393,79 @@ class ProductTemplate(models.Model):
             if match:
                 return match[:1]
         return accounts[:1]
+
+    # ------------------------------------------------------------------
+    # Chiết khấu là MÔ PHỎNG LÚC XEM, không phải trạng thái của sản phẩm
+    # ------------------------------------------------------------------
+    # Ba hàm dưới đây dựng giá và lịch thanh toán theo đúng những chiết khấu mà
+    # NGƯỜI ĐANG XEM tích trên portal (hoặc đính trong link tải PDF/ảnh), rồi
+    # trả về cho template hiển thị. Không hàm nào ghi xuống DB.
+    #
+    # Nhờ vậy hai người cùng mở một căn không ghi đè lựa chọn của nhau, và bản
+    # ghi sản phẩm không bao giờ mang số của một lần tích thử chiết khấu.
+
+    def _resolve_display_discounts(self, discount_ids):
+        """Lọc `discount_ids` (list id thô từ trình duyệt) xuống những chiết khấu
+        THẬT SỰ áp được cho sản phẩm này.
+
+        Bắt buộc lọc: id đến từ client nên không tin được — thiếu bước này thì
+        bất kỳ ai cũng dựng được bảng giá với chương trình chiết khấu không dành
+        cho căn đó. get_available_discounts() đã lo phần danh mục và cấu hình.
+        """
+        self.ensure_one()
+        Discount = self.env['product.discount.config']
+        if discount_ids is None:
+            # Mẫu in PDF/ảnh không truyền tay được: controller nhét danh sách
+            # vào context trước khi render.
+            discount_ids = self.env.context.get('display_discount_ids')
+        if not discount_ids:
+            return Discount
+        try:
+            wanted = {int(d) for d in discount_ids}
+        except (TypeError, ValueError):
+            return Discount
+        return self.get_available_discounts().filtered(lambda d: d.id in wanted)
+
+    def get_display_prices(self, discount_ids=None):
+        """Giá hiển thị theo các chiết khấu người xem đang tích.
+
+        Trả về dict: discounts, total_discount, final_price, price_per_m2,
+        amounts ({discount_id: tiền giảm của dòng đó}).
+        """
+        self.ensure_one()
+        discounts = self._resolve_display_discounts(discount_ids)
+        total_discount, per_discount = discounts.compute_discounts_for_product(self)
+        final_price = (self.list_price or 0.0) - total_discount
+        return {
+            'discounts': discounts,
+            'total_discount': total_discount,
+            'final_price': final_price,
+            'price_per_m2': (final_price / self.area) if self.area else 0.0,
+            'amounts': per_discount,
+        }
+
+    def get_display_timelines(self, discount_ids=None):
+        """Lịch thanh toán hiển thị, đã trừ chiết khấu người xem đang tích.
+
+        Trả về recordset payment.timeline ẢO (`.new()`) — chỉ tồn tại trong bộ
+        nhớ, không có bản ghi nào được tạo. Dùng `.new()` thay vì list dict để
+        template QWeb vẫn truy cập `.amount`, `.type_name`,
+        `.get_bank_split_blocks()`... y như với bản ghi thật.
+
+        Không có mẫu lịch cho danh mục của sản phẩm thì trả về lịch GỐC đang lưu
+        (nếu có), để trang không trống trơn.
+        """
+        self.ensure_one()
+        Timeline = self.env['payment.timeline']
+        template = self._find_payment_schedule_template()
+        if not template:
+            return self.payment_timeline_ids
+        discounts = self._resolve_display_discounts(discount_ids)
+        vals_list = template._build_timeline_vals(self, discounts)
+        if not vals_list:
+            return Timeline
+        # concat (không phải union) để giữ nguyên thứ tự đợt và không gộp trùng
+        return Timeline.concat(*[Timeline.new(vals) for vals in vals_list])
 
     def get_available_discounts(self):
         """Trả về danh sách các discount config áp dụng được cho sản phẩm này"""

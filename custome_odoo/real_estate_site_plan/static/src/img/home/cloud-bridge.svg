@@ -1,0 +1,197 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 360" width="1920" height="360" fill="none" preserveAspectRatio="none">
+  <!-- Hồng Hạc City — dải mây "cầu nối" đặt vắt qua ranh giới hai section,
+       mờ dần cả mép trên lẫn mép dưới nên xoá được đường cắt phẳng giữa chúng. -->
+  <defs>
+    <filter id="soft" x="-20%" y="-50%" width="140%" height="200%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="26%" stop-color="#ffffff" stop-opacity="0.92"/>
+      <stop offset="62%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.35"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#fade)" filter="url(#soft)">
+    <g opacity="0.9">
+      <ellipse cx="-116" cy="216" rx="61" ry="36"/>
+      <ellipse cx="-63" cy="217" rx="91" ry="54"/>
+      <ellipse cx="-10" cy="230" rx="87" ry="52"/>
+      <ellipse cx="44" cy="234" rx="79" ry="47"/>
+      <ellipse cx="97" cy="242" rx="91" ry="54"/>
+      <ellipse cx="150" cy="248" rx="100" ry="59"/>
+      <ellipse cx="203" cy="245" rx="85" ry="51"/>
+      <ellipse cx="256" cy="227" rx="69" ry="41"/>
+      <ellipse cx="310" cy="232" rx="66" ry="39"/>
+      <ellipse cx="363" cy="226" rx="80" ry="47"/>
+      <ellipse cx="416" cy="210" rx="81" ry="48"/>
+      <ellipse cx="-63" cy="193" rx="99" ry="84"/>
+      <ellipse cx="20" cy="186" rx="93" ry="79"/>
+      <ellipse cx="-21" cy="183" rx="60" ry="51"/>
+      <ellipse cx="338" cy="184" rx="107" ry="90"/>
+      <ellipse cx="-54" cy="166" rx="87" ry="74"/>
+      <ellipse cx="199" cy="159" rx="102" ry="86"/>
+      <ellipse cx="308" cy="165" rx="62" ry="52"/>
+    </g>
+    <g opacity="0.95">
+      <ellipse cx="198" cy="195" rx="82" ry="48"/>
+      <ellipse cx="262" cy="201" rx="91" ry="54"/>
+      <ellipse cx="327" cy="201" rx="72" ry="43"/>
+      <ellipse cx="391" cy="201" rx="99" ry="59"/>
+      <ellipse cx="456" cy="220" rx="102" ry="61"/>
+      <ellipse cx="520" cy="227" rx="114" ry="68"/>
+      <ellipse cx="584" cy="224" rx="115" ry="68"/>
+      <ellipse cx="649" cy="205" rx="82" ry="49"/>
+      <ellipse cx="713" cy="193" rx="73" ry="43"/>
+      <ellipse cx="778" cy="205" rx="109" ry="64"/>
+      <ellipse cx="842" cy="197" rx="69" ry="41"/>
+      <ellipse cx="609" cy="116" rx="123" ry="104"/>
+      <ellipse cx="606" cy="153" rx="105" ry="89"/>
+      <ellipse cx="475" cy="159" rx="128" ry="108"/>
+      <ellipse cx="377" cy="134" rx="113" ry="96"/>
+      <ellipse cx="619" cy="133" rx="94" ry="80"/>
+      <ellipse cx="778" cy="125" rx="79" ry="67"/>
+      <ellipse cx="623" cy="125" rx="124" ry="105"/>
+    </g>
+    <g opacity="0.9">
+      <ellipse cx="620" cy="221" rx="91" ry="54"/>
+      <ellipse cx="676" cy="227" rx="95" ry="56"/>
+      <ellipse cx="732" cy="239" rx="94" ry="56"/>
+      <ellipse cx="788" cy="234" rx="73" ry="43"/>
+      <ellipse cx="844" cy="235" rx="77" ry="46"/>
+      <ellipse cx="900" cy="253" rx="75" ry="45"/>
+      <ellipse cx="956" cy="240" rx="96" ry="57"/>
+      <ellipse cx="1012" cy="233" rx="80" ry="48"/>
+      <ellipse cx="1068" cy="229" rx="91" ry="54"/>
+      <ellipse cx="1124" cy="222" rx="99" ry="59"/>
+      <ellipse cx="1180" cy="226" rx="83" ry="49"/>
+      <ellipse cx="925" cy="178" rx="112" ry="95"/>
+      <ellipse cx="1089" cy="195" rx="58" ry="49"/>
+      <ellipse cx="943" cy="201" rx="93" ry="79"/>
+      <ellipse cx="906" cy="186" rx="67" ry="56"/>
+      <ellipse cx="1009" cy="193" rx="61" ry="51"/>
+      <ellipse cx="905" cy="183" rx="77" ry="65"/>
+      <ellipse cx="987" cy="200" rx="108" ry="91"/>
+    </g>
+    <g opacity="0.95">
+      <ellipse cx="982" cy="181" rx="67" ry="40"/>
+      <ellipse cx="1044" cy="199" rx="92" ry="55"/>
+      <ellipse cx="1105" cy="204" rx="109" ry="65"/>
+      <ellipse cx="1167" cy="198" rx="101" ry="60"/>
+      <ellipse cx="1228" cy="204" rx="117" ry="70"/>
+      <ellipse cx="1290" cy="218" rx="92" ry="55"/>
+      <ellipse cx="1352" cy="208" rx="107" ry="63"/>
+      <ellipse cx="1413" cy="197" rx="81" ry="48"/>
+      <ellipse cx="1475" cy="196" rx="72" ry="42"/>
+      <ellipse cx="1536" cy="191" rx="107" ry="63"/>
+      <ellipse cx="1598" cy="193" rx="63" ry="37"/>
+      <ellipse cx="1462" cy="147" rx="106" ry="90"/>
+      <ellipse cx="1040" cy="150" rx="74" ry="63"/>
+      <ellipse cx="1450" cy="125" rx="85" ry="72"/>
+      <ellipse cx="1117" cy="156" rx="76" ry="65"/>
+      <ellipse cx="1487" cy="136" rx="72" ry="61"/>
+      <ellipse cx="1372" cy="137" rx="64" ry="54"/>
+      <ellipse cx="1461" cy="122" rx="64" ry="54"/>
+    </g>
+    <g opacity="0.88">
+      <ellipse cx="1410" cy="224" rx="83" ry="49"/>
+      <ellipse cx="1466" cy="222" rx="66" ry="39"/>
+      <ellipse cx="1522" cy="230" rx="87" ry="52"/>
+      <ellipse cx="1578" cy="238" rx="88" ry="52"/>
+      <ellipse cx="1634" cy="241" rx="103" ry="61"/>
+      <ellipse cx="1690" cy="239" rx="81" ry="48"/>
+      <ellipse cx="1746" cy="239" rx="105" ry="62"/>
+      <ellipse cx="1802" cy="241" rx="104" ry="62"/>
+      <ellipse cx="1858" cy="228" rx="93" ry="55"/>
+      <ellipse cx="1914" cy="216" rx="75" ry="44"/>
+      <ellipse cx="1970" cy="210" rx="88" ry="52"/>
+      <ellipse cx="1930" cy="182" rx="99" ry="84"/>
+      <ellipse cx="1629" cy="188" rx="61" ry="52"/>
+      <ellipse cx="1628" cy="165" rx="106" ry="89"/>
+      <ellipse cx="1533" cy="155" rx="62" ry="52"/>
+      <ellipse cx="1855" cy="163" rx="108" ry="91"/>
+      <ellipse cx="1600" cy="191" rx="68" ry="57"/>
+      <ellipse cx="1883" cy="198" rx="106" ry="90"/>
+    </g>
+    <g opacity="0.7">
+      <ellipse cx="134" cy="267" rx="63" ry="37"/>
+      <ellipse cx="173" cy="274" rx="69" ry="41"/>
+      <ellipse cx="212" cy="269" rx="69" ry="41"/>
+      <ellipse cx="252" cy="280" rx="57" ry="34"/>
+      <ellipse cx="291" cy="275" rx="78" ry="46"/>
+      <ellipse cx="330" cy="283" rx="69" ry="41"/>
+      <ellipse cx="369" cy="285" rx="64" ry="38"/>
+      <ellipse cx="408" cy="272" rx="68" ry="40"/>
+      <ellipse cx="448" cy="273" rx="52" ry="31"/>
+      <ellipse cx="487" cy="271" rx="67" ry="40"/>
+      <ellipse cx="526" cy="261" rx="61" ry="36"/>
+      <ellipse cx="415" cy="233" rx="47" ry="40"/>
+      <ellipse cx="385" cy="225" rx="50" ry="42"/>
+      <ellipse cx="449" cy="224" rx="43" ry="37"/>
+      <ellipse cx="446" cy="251" rx="52" ry="44"/>
+      <ellipse cx="298" cy="234" rx="69" ry="59"/>
+      <ellipse cx="166" cy="238" rx="49" ry="41"/>
+      <ellipse cx="474" cy="229" rx="77" ry="65"/>
+    </g>
+    <g opacity="0.7">
+      <ellipse cx="880" cy="270" rx="60" ry="36"/>
+      <ellipse cx="922" cy="267" rx="50" ry="30"/>
+      <ellipse cx="964" cy="275" rx="58" ry="35"/>
+      <ellipse cx="1006" cy="277" rx="63" ry="38"/>
+      <ellipse cx="1048" cy="280" rx="72" ry="43"/>
+      <ellipse cx="1090" cy="297" rx="86" ry="51"/>
+      <ellipse cx="1132" cy="288" rx="87" ry="51"/>
+      <ellipse cx="1174" cy="286" rx="71" ry="42"/>
+      <ellipse cx="1216" cy="278" rx="49" ry="29"/>
+      <ellipse cx="1258" cy="280" rx="71" ry="42"/>
+      <ellipse cx="1300" cy="275" rx="61" ry="36"/>
+      <ellipse cx="1203" cy="254" rx="84" ry="71"/>
+      <ellipse cx="1187" cy="217" rx="83" ry="70"/>
+      <ellipse cx="1114" cy="234" rx="61" ry="52"/>
+      <ellipse cx="1007" cy="218" rx="69" ry="58"/>
+      <ellipse cx="1132" cy="220" rx="82" ry="69"/>
+      <ellipse cx="1235" cy="250" rx="65" ry="55"/>
+      <ellipse cx="1049" cy="235" rx="58" ry="49"/>
+    </g>
+    <g opacity="0.6">
+      <ellipse cx="1712" cy="259" rx="54" ry="32"/>
+      <ellipse cx="1746" cy="261" rx="48" ry="28"/>
+      <ellipse cx="1779" cy="260" rx="55" ry="33"/>
+      <ellipse cx="1813" cy="260" rx="44" ry="26"/>
+      <ellipse cx="1846" cy="272" rx="49" ry="29"/>
+      <ellipse cx="1880" cy="266" rx="58" ry="34"/>
+      <ellipse cx="1914" cy="261" rx="56" ry="33"/>
+      <ellipse cx="1947" cy="259" rx="62" ry="37"/>
+      <ellipse cx="1981" cy="255" rx="58" ry="34"/>
+      <ellipse cx="2014" cy="254" rx="55" ry="32"/>
+      <ellipse cx="2048" cy="257" rx="55" ry="33"/>
+      <ellipse cx="1786" cy="241" rx="39" ry="33"/>
+      <ellipse cx="1837" cy="210" rx="51" ry="43"/>
+      <ellipse cx="1760" cy="228" rx="66" ry="56"/>
+      <ellipse cx="1961" cy="230" rx="37" ry="31"/>
+      <ellipse cx="2020" cy="222" rx="66" ry="56"/>
+      <ellipse cx="1778" cy="220" rx="66" ry="56"/>
+      <ellipse cx="1951" cy="216" rx="50" ry="42"/>
+    </g>
+    <g opacity="0.6">
+      <ellipse cx="-168" cy="259" rx="39" ry="23"/>
+      <ellipse cx="-134" cy="258" rx="37" ry="22"/>
+      <ellipse cx="-101" cy="265" rx="48" ry="28"/>
+      <ellipse cx="-67" cy="266" rx="52" ry="31"/>
+      <ellipse cx="-34" cy="269" rx="52" ry="31"/>
+      <ellipse cx="0" cy="277" rx="48" ry="28"/>
+      <ellipse cx="34" cy="266" rx="54" ry="32"/>
+      <ellipse cx="67" cy="265" rx="52" ry="31"/>
+      <ellipse cx="101" cy="269" rx="62" ry="37"/>
+      <ellipse cx="134" cy="265" rx="58" ry="34"/>
+      <ellipse cx="168" cy="255" rx="41" ry="24"/>
+      <ellipse cx="-112" cy="224" rx="43" ry="36"/>
+      <ellipse cx="-75" cy="226" rx="66" ry="56"/>
+      <ellipse cx="4" cy="243" rx="52" ry="44"/>
+      <ellipse cx="72" cy="236" rx="54" ry="46"/>
+      <ellipse cx="122" cy="234" rx="51" ry="43"/>
+      <ellipse cx="-78" cy="218" rx="49" ry="41"/>
+      <ellipse cx="-27" cy="219" rx="66" ry="56"/>
+    </g>
+  </g>
+</svg>

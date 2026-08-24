@@ -94,6 +94,42 @@
                         </div>
                     </section>
 
+                    <!-- Dải mây nối hai section (tham chiếu: container mây 555a717 của web mẫu):
+                         vắt qua ranh giới nên xoá đường cắt phẳng giữa hai nền khác màu. -->
+                    <div class="hh-cloudbridge hh-cloudbridge--before" aria-hidden="true"/>
+
+                    <!-- ============ 1.55) PHỐI CẢNH SHOPHOUSE — mây trôi parallax ============
+                         Lấy cảm hứng từ website chính thức Hồng Hạc City: dải phối cảnh nằm sát
+                         đáy màn hình, hai lớp mây trôi ngược chiều và dịch nhẹ theo cuộn.
+                         Tiến độ cuộn do home_animations.js ghi vào biến CSS hh-sky-p. -->
+                    <section id="hh-skyline" class="hh-section-full hh-skyline hh-snap">
+                        <span class="hh-skyline__cloud hh-skyline__cloud--far" aria-hidden="true"/>
+                        <span class="hh-skyline__cloud hh-skyline__cloud--near" aria-hidden="true"/>
+
+                        <div class="hh-skyline__sky">
+                            <div class="hh-skyline__head reveal hh-stagger">
+                                <span class="hh-feature__eyebrow">Phú Mỹ Hưng &amp; Nomura</span>
+                                <p class="hh-skyline__kicker">Nhà phố thương mại</p>
+                                <h2 class="hh-skyline__title">Chuẩn Mực Sống Mới</h2>
+                            </div>
+                        </div>
+
+                        <div class="hh-skyline__scene">
+                            <picture class="hh-skyline__pic">
+                                <!-- Bản tách nền (WEBP có kênh alpha) để dãy nhà nổi trên nền trời
+                                     và mây chạy phía sau; trình duyệt cũ rơi về ảnh JPG nguyên bản. -->
+                                <source type="image/webp"
+                                        srcset="/real_estate_site_plan/static/src/img/home/skyline-shophouse-cutout.webp"/>
+                                <img class="hh-skyline__img" loading="lazy" decoding="async"
+                                     width="1920" height="822"
+                                     src="/real_estate_site_plan/static/src/img/home/skyline-shophouse.jpg"
+                                     alt="Phối cảnh dãy shophouse Hồng Hạc City"/>
+                            </picture>
+                        </div>
+                    </section>
+
+                    <div class="hh-cloudbridge hh-cloudbridge--after" aria-hidden="true"/>
+
                     <!-- ============ 1.6) KẾT NỐI VÙNG — dải mốc khoảng cách ============
                          Dữ liệu: HOME_CONNECTIVITY trong controllers/portal.py.
                          Dựng bằng HTML/CSS thật (không dùng ảnh infographic tĩnh). -->

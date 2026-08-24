@@ -27,3 +27,17 @@ Ghi chú:
 - Ảnh card từng DỰ ÁN không đặt ở đây — set ở field "Ảnh đại diện" (cover_image)
   của từng site.plan trong backend Odoo (khuyến nghị 1200x900).
 - Sau khi thả file, chỉ cần reload trang (không cần update module).
+
+Ảnh ĐÃ CÓ SẴN trong repo (không cần upload, chỉ thay khi muốn đổi):
+  skyline-shophouse-cutout.webp — dải phối cảnh shophouse ĐÃ TÁCH NỀN TRỜI
+      (WEBP có kênh alpha, 1920x822). Đây là ảnh thực sự hiển thị ở section
+      "Chuẩn Mực Sống Mới" (ngay sau Bản Đồ Liên Kết Vùng): dãy nhà bay lên khi
+      cuộn tới, mây chạy phía sau và lọt qua khe giữa các căn.
+  skyline-shophouse.jpg — bản gốc còn nền trời, chỉ dùng làm dự phòng cho trình
+      duyệt không đọc được WEBP.
+      Thay ảnh khác: nhớ tách nền trời (giữ nguyên tỉ lệ ~2.34:1) và chỉnh
+      gradient trời ở mục .hh-skyline trong home.scss cho hợp tông ảnh mới.
+  cloud-layer.svg — dải mây lặp ngang TRONG section đó (1920x300, nền trong suốt).
+  cloud-bridge.svg — dải mây "cầu nối" đặt vắt qua ranh giới với section trên và
+      section dưới (class .hh-cloudbridge), xoá đường cắt phẳng giữa hai nền màu.
+  map-bg.png / map-pin.png — nền và ghim của bản đồ liên kết vùng.

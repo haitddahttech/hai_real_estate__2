@@ -129,6 +129,236 @@
 }
 
 // -------------------------------------------------------------
+// Dải mây "cầu nối" giữa hai section (mô phỏng container mây 555a717 của web
+// tham khảo: nền mây kéo lên đè lên section trước bằng margin âm).
+// Đặt như phần tử anh em NẰM NGOÀI section (section có overflow:hidden nên
+// không cho tràn ra), margin âm hai đầu bằng nửa chiều cao → không cộng thêm
+// chiều cao vào luồng, snap của trang giữ nguyên.
+// -------------------------------------------------------------
+.hh-cloudbridge {
+    --hh-bridge-h: clamp(5rem, 13vh, 12rem);
+    position: relative;
+    z-index: 5; // nổi trên cả hai section kề bên
+    width: 100%;
+    height: var(--hh-bridge-h);
+    margin: calc(var(--hh-bridge-h) / -2) 0;
+    pointer-events: none;
+    background-image: url("/real_estate_site_plan/static/src/img/home/cloud-bridge.svg");
+    background-repeat: no-repeat;
+    background-position: center center;
+    // SVG khai báo preserveAspectRatio="none" nên kéo giãn vừa khít dải,
+    // giữ được cả hai mép mờ dù dải cao hay thấp.
+    background-size: 100% 100%;
+}
+
+// Dải phía trên: mây tan dần lên nền kem, dày ở mép dưới nơi bầu trời bắt đầu.
+.hh-cloudbridge--before {
+    z-index: 6;
+}
+
+// Dải phía dưới: lật ngược để mép mây dày liếm vào chân cảnh rồi tan xuống nền
+// kem. Chỉ cho ~1/3 dải đè lên section trên (chừa thảm cỏ và dòng ghi chú ảnh),
+// tổng hai margin vẫn bằng -1 lần chiều cao nên không đội thêm chiều cao trang.
+.hh-cloudbridge--after {
+    transform: scaleY(-1);
+    margin-top: calc(var(--hh-bridge-h) * -0.34);
+    margin-bottom: calc(var(--hh-bridge-h) * -0.66);
+}
+
+// -------------------------------------------------------------
+// 1.55) PHỐI CẢNH SHOPHOUSE — dãy nhà tách nền "bay lên", mây trôi phía sau
+// Ảnh đã tách nền (WEBP alpha) nên bầu trời chính là gradient của section,
+// lấy đúng dải màu trời trong ảnh gốc (đậm trên cao → mờ sương ở chân trời).
+// Hai lớp mây lặp ngang trôi ngược chiều nằm DƯỚI dãy nhà nên thấy mây chạy
+// sau mái và lọt qua khe giữa các căn.
+// Chuyển động: dãy nhà bay lên + hiện dần khi section lọt khung nhìn (.reveal),
+// sau đó tiếp tục trôi lên theo tiến độ cuộn (biến --hh-sky-p do
+// home_animations.js ghi vào section).
+// -------------------------------------------------------------
+.hh-skyline {
+    --hh-sky-p: 0; // 0 khi section vừa vào khung nhìn → 1 khi sắp rời đi
+    // Tiến độ "bay lên" của dãy nhà (0 = còn dưới đáy màn hình, 1 = vào trọn).
+    // Mặc định 1 để trang vẫn hiển thị đúng nếu JS không chạy.
+    --hh-sky-in: 1;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0; // ảnh tràn viền
+    background:
+        // Lớp 1: hoà từ nền kem của section phía trên sang trời trong ~90px đầu,
+        // để ranh giới hai section không còn là một vạch ngang.
+        linear-gradient(
+            180deg,
+            var(--hh-secondary, #fffaea) 0,
+            rgba(255, 250, 234, 0) 90px
+        ),
+        // Lớp 2: bầu trời (lấy dải màu trời của ảnh gốc).
+        linear-gradient(
+            180deg,
+            #93bfda 0%,
+            #b2d6ea 24%,
+            #d2e8ef 50%,
+            #dceff2 100%
+        );
+}
+
+// Vùng trời chứa chữ: chiếm phần còn lại phía trên dãy nhà.
+.hh-skyline__sky {
+    position: relative;
+    z-index: 7; // trên cả dải mây cầu nối (z-index 6) để chữ luôn sắc nét
+    width: 100%;
+    flex: 1 1 auto;
+    // Luôn chừa một dải trời tối thiểu (kể cả màn hình rất rộng/thấp) và đệm
+    // trên để chữ không chui xuống dưới thanh điều hướng cố định.
+    min-height: clamp(7rem, 14vh, 13rem);
+    padding-top: clamp(2rem, 4.5vh, 4rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; // chữ nằm giữa dải trời
+}
+
+.hh-skyline__cloud {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 62%;
+    z-index: 1; // dưới dãy nhà (z-index 2) → mây chạy sau mái
+    pointer-events: none;
+    background-image: url("/real_estate_site_plan/static/src/img/home/cloud-layer.svg");
+    background-repeat: repeat-x;
+    background-position: 0 0;
+    // Nhạt dần xuống dưới cho giống lớp sương chân trời.
+    -webkit-mask-image: linear-gradient(180deg, #000 55%, rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(180deg, #000 55%, rgba(0, 0, 0, 0) 100%);
+    will-change: transform;
+    transition: transform 0.25s linear;
+}
+
+// Mỗi vòng lặp dịch đúng 1 tile → nối liền mạch, không lộ mối ghép.
+.hh-skyline__cloud--far {
+    top: 0;
+    opacity: 0.5;
+    background-size: 2100px auto;
+    animation: hhCloudDriftFar 150s linear infinite;
+    transform: translate3d(calc(var(--hh-sky-p) * -70px), 0, 0);
+}
+
+.hh-skyline__cloud--near {
+    top: 5%;
+    opacity: 0.85;
+    background-size: 1500px auto;
+    animation: hhCloudDriftNear 95s linear infinite;
+    transform: translate3d(calc(var(--hh-sky-p) * 110px), 0, 0);
+}
+
+@keyframes hhCloudDriftFar {
+    from { background-position-x: 0; }
+    to   { background-position-x: 2100px; }
+}
+@keyframes hhCloudDriftNear {
+    from { background-position-x: 0; }
+    to   { background-position-x: -1500px; }
+}
+
+.hh-skyline__head {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    width: 100%;
+    max-width: 900px;
+    padding: 0 1rem;
+}
+
+.hh-skyline__kicker {
+    font-family: var(--hh-font-primary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--hh-primary);
+    font-size: clamp(0.95rem, 1.6vw, 1.35rem);
+    margin: 0 0 0.35rem;
+}
+
+.hh-skyline__title {
+    font-family: var(--hh-font-display);
+    text-transform: uppercase;
+    color: var(--hh-primary);
+    letter-spacing: 0.02em;
+    font-size: clamp(1.7rem, 4vw, 3.2rem);
+    line-height: 1.12;
+    margin: 0;
+    text-shadow: 0 2px 18px rgba(255, 255, 255, 0.65);
+}
+
+// Khung ngoài: dãy nhà bay lên THEO CUỘN — cuộn xuống thì dâng lên và rõ dần,
+// cuộn ngược lên thì hạ xuống và mờ đi (biến --hh-sky-in do JS ghi mỗi khung hình).
+// (Parallax theo cả section nằm ở .hh-skyline__pic để hai transform không đè nhau.)
+.hh-skyline__scene {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    margin-top: auto;
+    opacity: var(--hh-sky-in);
+    transform: translate3d(0, calc((1 - var(--hh-sky-in)) * 340px), 0);
+    // Chỉ làm mượt giữa các bước cuộn, không phải animation tự chạy.
+    transition: opacity 0.18s linear, transform 0.18s linear;
+    will-change: opacity, transform;
+}
+
+// Khung trong: trôi lên tiếp theo tiến độ cuộn (+42px lúc mới vào → -28px lúc
+// sắp rời đi) và mang theo dải cỏ nối dài bên dưới nên lúc nhấc lên không hở nền.
+.hh-skyline__pic {
+    display: block;
+    position: relative;
+    transform: translate3d(0, calc((0.6 - var(--hh-sky-p)) * 70px), 0);
+    transition: transform 0.25s linear;
+    will-change: transform;
+}
+
+.hh-skyline__pic::after {
+    content: "";
+    position: absolute;
+    top: 99.5%; // chồng nhẹ để không lộ vạch nối
+    left: 0;
+    right: 0;
+    height: 6rem;
+    background: #2f4a11; // đúng màu thảm cỏ ở mép dưới ảnh
+}
+
+.hh-skyline__img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+@media (max-width: 767.98px) {
+    .hh-skyline__head { margin-bottom: 4vh; }
+    // Giữ dãy nhà đủ lớn để đọc được chi tiết trên màn hình hẹp (tràn hai bên).
+    .hh-skyline__scene {
+        width: 180vw;
+        margin-left: -40vw;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hh-skyline__cloud {
+        animation: none;
+        transform: none;
+        transition: none;
+    }
+    .hh-skyline__scene {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+    .hh-skyline__pic {
+        transform: none;
+        transition: none;
+    }
+}
+
+// -------------------------------------------------------------
 // 1.6) KẾT NỐI VÙNG — dải mốc khoảng cách
 // Dựng hoàn toàn bằng HTML/CSS (thay ảnh infographic tĩnh) nên chữ vẫn
 // chọn/dịch/SEO được và sắc nét ở mọi mật độ điểm ảnh.

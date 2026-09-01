@@ -358,6 +358,18 @@ class SitePlanPortal(CustomerPortal):
                 continue
         return out
 
+    @staticmethod
+    def _parse_schedule_mode(raw):
+        """Chế độ xem bảng lịch: 'original' (lịch gốc) hoặc 'discounted'.
+
+        Giá trị lạ đều rơi về 'discounted' — đây là chế độ mặc định, đúng với
+        cách trang hoạt động trước khi có tuỳ chọn này.
+        """
+        Product = request.env['product.template']
+        if raw == Product.SCHEDULE_MODE_ORIGINAL:
+            return Product.SCHEDULE_MODE_ORIGINAL
+        return Product.SCHEDULE_MODE_DISCOUNTED
+
     @http.route(['/my/property/<int:product_id>'], type='http', auth='user', website=True)
     def portal_property_detail(self, product_id, **kw):
         """View property detail"""
@@ -379,12 +391,14 @@ class SitePlanPortal(CustomerPortal):
             # Chiết khấu là mô phỏng lúc xem: dựng lịch trong bộ nhớ theo các CK
             # đính trong link, KHÔNG ghi gì lên sản phẩm.
             discount_ids = self._parse_discount_ids(kw.get('discount_ids'))
+            schedule_mode = self._parse_schedule_mode(kw.get('schedule_mode'))
             values = {
                 'product': product,
                 'page_name': 'property_detail',
-                'rows': product.get_display_timelines(discount_ids),
+                'rows': product.get_display_timelines(discount_ids, schedule_mode),
                 'prices': product.get_display_prices(discount_ids),
                 'selected_discount_ids': discount_ids,
+                'schedule_mode': schedule_mode,
             }
             return request.render('real_estate_site_plan.portal_property_detail', values)
         except Exception as e:
@@ -414,6 +428,7 @@ class SitePlanPortal(CustomerPortal):
             # sản phẩm. Nhờ vậy hai người cùng tải PDF một căn với lựa chọn CK
             # khác nhau không ghi đè của nhau.
             d_ids = self._parse_discount_ids(kw.get('discount_ids'))
+            schedule_mode = self._parse_schedule_mode(kw.get('schedule_mode'))
 
             # Get the report
             report = request.env['ir.actions.report'].sudo().search([
@@ -425,7 +440,8 @@ class SitePlanPortal(CustomerPortal):
                 return request.redirect('/my')
             
             # Prepare context for rendering
-            context = dict(request.env.context, display_discount_ids=d_ids)
+            context = dict(request.env.context, display_discount_ids=d_ids,
+                           display_schedule_mode=schedule_mode)
             if bank_id:
                 context['selected_bank_id'] = int(bank_id)
             
@@ -467,6 +483,7 @@ class SitePlanPortal(CustomerPortal):
 
             # Chiết khấu chỉ đi vào context, không ghi lên sản phẩm (xem route PDF).
             d_ids = self._parse_discount_ids(kw.get('discount_ids'))
+            schedule_mode = self._parse_schedule_mode(kw.get('schedule_mode'))
 
             # Get the report record
             report = request.env['ir.actions.report'].sudo().search([
@@ -477,7 +494,8 @@ class SitePlanPortal(CustomerPortal):
                 return request.redirect('/my')
             
             # Prepare context for rendering
-            context = dict(request.env.context, display_discount_ids=d_ids)
+            context = dict(request.env.context, display_discount_ids=d_ids,
+                           display_schedule_mode=schedule_mode)
             if bank_id:
                 context['selected_bank_id'] = int(bank_id)
             
@@ -532,7 +550,8 @@ class SitePlanPortal(CustomerPortal):
 
     @http.route(['/my/property/<int:product_id>/discount-preview'],
                 type='jsonrpc', auth='user', methods=['POST'])
-    def property_discount_preview(self, product_id, discount_ids=None, **kw):
+    def property_discount_preview(self, product_id, discount_ids=None,
+                                  schedule_mode=None, **kw):
         """Giá và lịch thanh toán theo các chiết khấu người xem đang tích.
 
         CHỈ TÍNH — không ghi gì xuống cơ sở dữ liệu. Chiết khấu là mô phỏng của
@@ -555,6 +574,7 @@ class SitePlanPortal(CustomerPortal):
                 return {'success': False, 'error': 'Access denied'}
 
             ids = self._parse_discount_ids(discount_ids)
+            mode = self._parse_schedule_mode(schedule_mode)
             prices = product.get_display_prices(ids)
             payload = {
                 'success': True,
@@ -572,7 +592,8 @@ class SitePlanPortal(CustomerPortal):
                     'real_estate_site_plan.portal_payment_schedule_table',
                     {
                         'product': product,
-                        'rows': product.get_display_timelines(ids),
+                        'rows': product.get_display_timelines(ids, mode),
+                        'schedule_mode': mode,
                         'request': request,
                     },
                 )

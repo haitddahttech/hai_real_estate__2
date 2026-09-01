@@ -28,3 +28,4 @@ access_payment_schedule_template_line_portal,payment.schedule.template.line.port
 access_payment_schedule_template_line_user,payment.schedule.template.line.user,model_payment_schedule_template_line,base.group_user,1,0,0,0
 access_payment_schedule_template_line_system,payment.schedule.template.line.system,model_payment_schedule_template_line,base.group_system,1,1,1,1
 access_product_price_import_wizard_user,product.price.import.wizard.user,model_product_price_import_wizard,base.group_user,1,1,1,1
+access_product_category_portal,product.category.portal,product.model_product_category,base.group_portal,1,0,0,0

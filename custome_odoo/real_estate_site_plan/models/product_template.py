@@ -444,8 +444,30 @@ class ProductTemplate(models.Model):
             'amounts': per_discount,
         }
 
-    def get_display_timelines(self, discount_ids=None):
+    # Hai chế độ xem lịch thanh toán. Người xem tự chọn trên portal; lựa chọn đó
+    # đi kèm link tải nên PDF/ảnh in ra đúng bảng đang xem trên màn hình.
+    SCHEDULE_MODE_ORIGINAL = 'original'      # lịch gốc, chưa trừ chiết khấu nào
+    SCHEDULE_MODE_DISCOUNTED = 'discounted'  # lịch đã trừ chiết khấu đang tích
+
+    def _resolve_schedule_discounts(self, discount_ids=None, schedule_mode=None):
+        """Chiết khấu dùng để dựng BẢNG LỊCH THANH TOÁN.
+
+        Khác với khối giá: người xem có thể đang tích chiết khấu để xem giá,
+        nhưng vẫn muốn nhìn lịch GỐC. Chế độ 'original' trả về recordset rỗng
+        nên lịch dựng ra không bị trừ đồng nào.
+        """
+        self.ensure_one()
+        if schedule_mode is None:
+            # Mẫu in PDF/ảnh không truyền tay được: controller nhét vào context.
+            schedule_mode = self.env.context.get('display_schedule_mode')
+        if schedule_mode == self.SCHEDULE_MODE_ORIGINAL:
+            return self.env['product.discount.config']
+        return self._resolve_display_discounts(discount_ids)
+
+    def get_display_timelines(self, discount_ids=None, schedule_mode=None):
         """Lịch thanh toán hiển thị, đã trừ chiết khấu người xem đang tích.
+
+        `schedule_mode='original'` thì dựng lịch GỐC, bỏ qua mọi chiết khấu.
 
         Trả về recordset payment.timeline ẢO (`.new()`) — chỉ tồn tại trong bộ
         nhớ, không có bản ghi nào được tạo. Dùng `.new()` thay vì list dict để
@@ -460,7 +482,7 @@ class ProductTemplate(models.Model):
         template = self._find_payment_schedule_template()
         if not template:
             return self.payment_timeline_ids
-        discounts = self._resolve_display_discounts(discount_ids)
+        discounts = self._resolve_schedule_discounts(discount_ids, schedule_mode)
         vals_list = template._build_timeline_vals(self, discounts)
         if not vals_list:
             return Timeline

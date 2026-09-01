@@ -134,6 +134,15 @@
                 <field name="sequence" widget="handle"/>
                 <field name="real_estate_color" widget="color"/>
             </xpath>
+            <!-- Booklet dùng chung cho mọi sản phẩm thuộc danh mục — hiện ở tab
+                 "BOOKLET" trên trang chi tiết sản phẩm của portal. -->
+            <xpath expr="//sheet" position="inside">
+                <group string="Booklet (hiển thị trên portal)">
+                    <field name="booklet_attachment_ids" widget="many2many_binary"
+                           nolabel="1"
+                           string="Tài liệu booklet"/>
+                </group>
+            </xpath>
         </field>
     </record>
 

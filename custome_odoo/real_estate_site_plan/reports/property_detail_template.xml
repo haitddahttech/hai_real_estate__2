@@ -353,8 +353,16 @@
                         <!-- Timeline Section (Web Style) -->
                         <div class="timeline-section">
                             <div class="timeline-title-area">
-                                <span class="timeline-title">Lịch thanh toán</span>
-                                <span class="timeline-subtitle">Chi tiết từng đợt thanh toán cho sản phẩm <t t-esc="product.name"/></span>
+                                <!-- Chế độ xem do người dùng chọn trên portal, đi kèm link tải
+                                     (controller nhét display_schedule_mode vào context). -->
+                                <t t-set="is_original_schedule"
+                                   t-value="product.env.context.get('display_schedule_mode') == 'original'"/>
+                                <span class="timeline-title">Lịch thanh toán<t t-if="is_original_schedule"> (gốc)</t></span>
+                                <span class="timeline-subtitle">
+                                    Chi tiết từng đợt thanh toán cho sản phẩm <t t-esc="product.name"/>
+                                    <t t-if="is_original_schedule"> — chưa trừ chiết khấu</t>
+                                    <t t-else=""> — đã trừ chiết khấu đang chọn</t>
+                                </span>
                             </div>
                             
                             <table class="timeline-table">

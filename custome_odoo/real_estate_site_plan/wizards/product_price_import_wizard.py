@@ -123,16 +123,18 @@ class ProductPriceImportWizard(models.TransientModel):
             ('HƯỚNG DẪN CẬP NHẬT GIÁ', True, 14),
             ('', False, 11),
             ('1. Cột A (Mã căn) là KHOÁ — KHÔNG đổi.', False, 11),
-            ('2. Chỉ nhập trực tiếp vào các cột B, C, F, G, H, I:', False, 11),
+            ('2. Chỉ nhập trực tiếp vào các cột B, C, F, G:', False, 11),
             ('     B  — Diện tích đất (m²)', False, 11),
             ('     C  — Diện tích xây dựng (m²)', False, 11),
             ('     F  — Giá nhà (Chưa bao gồm TSDĐ)', False, 11),
             ('     G  — Giá trị TSDĐ', False, 11),
-            ('     H  — Thuế VAT', False, 11),
-            ('     I  — Qũy bảo trì', False, 11),
             ('', False, 11),
             ('3. Cột E (Tổng giá) và J (Giá bao gồm TSDĐ) là CÔNG THỨC Excel — tự tính.', False, 11),
-            ('4. Cột D (Giá bán) và K (Đơn giá TB) — Odoo sẽ tự tính lại sau khi import.', False, 11),
+            ('4. Các cột D, H, I, K — Odoo tự tính, nhập vào KHÔNG có tác dụng:', False, 11),
+            ('     H  — Thuế VAT       = 10% × Giá nhà chưa TSDĐ', False, 11),
+            ('     I  — Qũy bảo trì    = 0,5% × Giá nhà gồm TSDĐ (làm tròn nghìn)', False, 11),
+            ('     D  — Giá bán        = Giá gồm TSDĐ + VAT + Quỹ bảo trì', False, 11),
+            ('     K  — Đơn giá TB     = Giá bán / Diện tích đất', False, 11),
             ('5. Xoá các dòng KHÔNG cần cập nhật để tránh ghi đè không mong muốn.', False, 11),
         ]
         for i, (txt, bold, sz) in enumerate(lines, start=1):
@@ -200,13 +202,13 @@ class ProductPriceImportWizard(models.TransientModel):
             code = str(code_val).strip()
 
             try:
+                # Cot H (VAT) va I (Quy bao tri) trong file chi de doi chieu:
+                # hai gia tri nay duoc tinh tu dong tu gia nha chua TSDD.
                 vals = {
                     'area': self._to_float(ws.cell(row_idx, 2).value),
                     'construction_area': self._to_float(ws.cell(row_idx, 3).value),
                     'price_exclude_land_tax': self._to_float(ws.cell(row_idx, 6).value),
                     'land_tax': self._to_float(ws.cell(row_idx, 7).value),
-                    'vat_tax': self._to_float(ws.cell(row_idx, 8).value),
-                    'maintenance_fee': self._to_float(ws.cell(row_idx, 9).value),
                 }
 
                 product = Product.search([('name', '=', code)], limit=1)

@@ -3,6 +3,37 @@
 from odoo import models, fields, api
 
 
+# ---------------------------------------------------------------------------
+# Quy tac gia bat dong san
+#
+# Chi co 2 truong nhap tay: price_exclude_land_tax va land_tax.
+# Moi truong con lai deu suy ra tu day:
+#
+#   price_include_land_tax = price_exclude_land_tax + land_tax
+#   vat_tax                = price_exclude_land_tax x VAT_RATE
+#   maintenance_fee        = round(price_include_land_tax x MAINTENANCE_RATE, -3)
+#   list_price             = price_include_land_tax + vat_tax + maintenance_fee
+#   price_per_m2           = list_price / area
+#
+# Hai ty le duoi day cung duoc product.discount.config dung lai cho loai chiet
+# khau 'percent_recalc' (dung lai thap gia sau khi giam %), nen de o mot cho.
+# ---------------------------------------------------------------------------
+VAT_RATE = 0.10
+MAINTENANCE_RATE = 0.005
+MAINTENANCE_ROUNDING = -3  # lam tron quy bao tri ve boi 1.000 dong
+
+
+def compute_vat_tax(price_exclude_land_tax):
+    """VAT = 10% gia nha chua bao gom thue su dung dat."""
+    return (price_exclude_land_tax or 0.0) * VAT_RATE
+
+
+def compute_maintenance_fee(price_include_land_tax):
+    """Quy bao tri = 0,5% gia nha da bao gom thue SDD, lam tron toi nghin dong."""
+    return round((price_include_land_tax or 0.0) * MAINTENANCE_RATE,
+                 MAINTENANCE_ROUNDING)
+
+
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
@@ -109,22 +140,34 @@ class ProductTemplate(models.Model):
     price_exclude_land_tax = fields.Monetary(
         string='Giá nhà chưa bao gồm thuế SDĐ',
         currency_field='currency_id',
-        help='Giá trị nhà không bao gồm thuế sử dụng đất (tự động tính từ giá bao gồm thuế)'
+        help='TRƯỜNG NHẬP CHÍNH. VAT, quỹ bảo trì, giá bao gồm TSDĐ và giá niêm yết '
+             'đều được tính tự động từ trường này.'
     )
 
     land_tax = fields.Monetary(
         string='Thuế sử dụng đất',
         currency_field='currency_id',
+        help='Nhập tay — thuế SDĐ không suy ra được từ giá nhà (tỷ lệ khác nhau theo lô).'
     )
 
     vat_tax = fields.Monetary(
         string='Thuế VAT',
         currency_field='currency_id',
+        compute='_compute_vat_tax',
+        store=True,
+        readonly=False,
+        help='= 10% x Giá nhà chưa bao gồm thuế SDĐ. Vẫn sửa tay được khi cần, '
+             'nhưng sẽ bị tính lại nếu giá nhà chưa TSDĐ thay đổi.'
     )
 
     maintenance_fee = fields.Monetary(
         string='Quỹ bảo trì',
         currency_field='currency_id',
+        compute='_compute_maintenance_fee',
+        store=True,
+        readonly=False,
+        help='= 0,5% x Giá nhà bao gồm thuế SDĐ, làm tròn tới nghìn đồng. '
+             'Vẫn sửa tay được, nhưng sẽ bị tính lại khi giá nhà thay đổi.'
     )
 
     management_fee = fields.Monetary(
@@ -135,7 +178,7 @@ class ProductTemplate(models.Model):
     price_include_land_tax = fields.Monetary(
         string='Giá nhà bao gồm thuế SDĐ',
         currency_field='currency_id',
-        help='Giá trị nhà bao gồm thuế sử dụng đất (trường chính - nhập trực tiếp)',
+        help='= Giá nhà chưa bao gồm thuế SDĐ + Thuế sử dụng đất (tự động tính).',
         compute='_compute_price_include_land_tax',
         store=True,
     )
@@ -290,33 +333,94 @@ class ProductTemplate(models.Model):
     @api.depends('price_exclude_land_tax', 'land_tax')
     def _compute_price_include_land_tax(self):
         for product in self:
-            product.price_include_land_tax = product.price_exclude_land_tax + product.land_tax
-        self.compute_list_price()
+            product.price_include_land_tax = (
+                product.price_exclude_land_tax + product.land_tax
+            )
 
-    # @api.depends('price_include_land_tax')
-    # def _inverse_price_exclude_land_tax(self):
-    #     for product in self:
-    #         product.sudo().write({
-    #             'price_exclude_land_tax':product.price_include_land_tax - product.land_tax
-    #         })
-
-    @api.depends('price_include_land_tax', 'vat_tax', 'maintenance_fee')
-    def compute_list_price(self):
+    @api.depends('price_exclude_land_tax')
+    def _compute_vat_tax(self):
         for product in self:
-            product.list_price = product.price_include_land_tax + product.vat_tax + product.maintenance_fee
+            product.vat_tax = compute_vat_tax(product.price_exclude_land_tax)
+
+    @api.depends('price_include_land_tax')
+    def _compute_maintenance_fee(self):
+        for product in self:
+            product.maintenance_fee = compute_maintenance_fee(
+                product.price_include_land_tax
+            )
+
+    # ------------------------------------------------------------------
+    # Giá niêm yết (list_price)
+    #
+    # list_price là field gốc của Odoo, dùng cho MỌI sản phẩm chứ không riêng
+    # BĐS, nên không chuyển sang compute được — làm vậy sẽ ghi 0 đè lên giá bán
+    # của sản phẩm thường. Thay vào đó đồng bộ có điều kiện trong create/write,
+    # chỉ chạm tới sản phẩm thực sự có nhập giá BĐS.
+    # ------------------------------------------------------------------
+    _REAL_ESTATE_PRICE_INPUTS = (
+        'price_exclude_land_tax', 'land_tax', 'vat_tax', 'maintenance_fee',
+    )
+
+    def _has_real_estate_pricing(self):
+        self.ensure_one()
+        return bool(self.price_exclude_land_tax or self.land_tax)
+
+    def _get_real_estate_list_price(self):
+        self.ensure_one()
+        return (
+            self.price_include_land_tax + self.vat_tax + self.maintenance_fee
+        )
+
+    def _sync_real_estate_list_price(self):
+        """Ghi lại list_price = Giá gồm TSDĐ + VAT + Quỹ bảo trì.
+
+        Chỉ ghi khi giá trị thực sự lệch. Lần write lồng bên trong chỉ chứa
+        'list_price' — không nằm trong _REAL_ESTATE_PRICE_INPUTS — nên không
+        kích hoạt lại hàm này, không có đệ quy.
+        """
+        for product in self:
+            if not product._has_real_estate_pricing():
+                continue
+            new_price = product._get_real_estate_list_price()
+            currency = product.currency_id
+            if currency:
+                changed = currency.compare_amounts(product.list_price, new_price) != 0
+            else:
+                changed = product.list_price != new_price
+            if changed:
+                product.write({'list_price': new_price})
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        products = super().create(vals_list)
+        products._sync_real_estate_list_price()
+        return products
+
+    def write(self, vals):
+        res = super().write(vals)
+        if any(field in vals for field in self._REAL_ESTATE_PRICE_INPUTS):
+            self._sync_real_estate_list_price()
+        return res
+
+    @api.onchange('price_exclude_land_tax', 'land_tax', 'vat_tax', 'maintenance_fee')
+    def _onchange_real_estate_list_price(self):
+        """Cập nhật giá niêm yết ngay trên form, trước khi bấm lưu."""
+        for product in self:
+            if product._has_real_estate_pricing():
+                product.list_price = product._get_real_estate_list_price()
 
     def action_recalculate_prices(self):
-        """Action to manually recalculate prices (land tax, list price, avg price) for selected products"""
+        """Tính lại toàn bộ giá theo đúng công thức chuẩn.
+
+        Dùng cho dữ liệu cũ, hoặc khi VAT / quỹ bảo trì đã bị sửa tay và cần
+        đưa về lại công thức.
+        """
         for product in self:
-            # Recompute price include land tax
-            product.price_include_land_tax = product.price_exclude_land_tax + product.land_tax
-            # Recompute list price
-            product.list_price = product.price_include_land_tax + product.vat_tax + product.maintenance_fee
-            # Recompute avg price per m2
-            if product.area and product.area > 0:
-                product.price_per_m2 = product.list_price / product.area
-            else:
-                product.price_per_m2 = 0.0
+            product.vat_tax = compute_vat_tax(product.price_exclude_land_tax)
+            product.maintenance_fee = compute_maintenance_fee(
+                product.price_include_land_tax
+            )
+        self._sync_real_estate_list_price()
 
     def get_available_discounts(self):
         """Trả về danh sách các discount config áp dụng được cho sản phẩm này"""

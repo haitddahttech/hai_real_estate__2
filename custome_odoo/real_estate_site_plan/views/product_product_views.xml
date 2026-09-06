@@ -71,23 +71,24 @@
                             <field name="real_estate_color" widget="color" string="Màu sắc"/>
                         </group>
                         <group string="Diện tích và Giá">
-                            <field name="area" force_save="1" on_change="1"/>
-                            <field name="construction_area" force_save="1" on_change="1"/>
-                            <field name="list_price" force_save="1" on_change="1"/>
-                            <field name="deposit" force_save="1" on_change="1"/>
-                            <field name="price_per_m2" readonly="1" force_save="1"/>
+                            <field name="area"/>
+                            <field name="construction_area"/>
+                            <field name="list_price"
+                                   readonly="price_exclude_land_tax != 0 or land_tax != 0"/>
+                            <field name="deposit"/>
+                            <field name="price_per_m2" readonly="1"/>
                         </group>
                     </group>
                     <group string="Chi tiết Thuế và Phí">
                         <group>
-                            <field name="price_exclude_land_tax" force_save="1" on_change="1"/>
-                            <field name="land_tax" force_save="1" on_change="1"/>
-                            <field name="price_include_land_tax" readonly="1" force_save="1" on_change="1"/>
+                            <field name="price_exclude_land_tax"/>
+                            <field name="land_tax"/>
+                            <field name="price_include_land_tax" readonly="1"/>
                         </group>
                         <group>
-                            <field name="vat_tax" readonly="0" force_save="1" on_change="1"/>
-                            <field name="maintenance_fee" force_save="1" on_change="1"/>
-                            <field name="management_fee" force_save="1"/>
+                            <field name="vat_tax"/>
+                            <field name="maintenance_fee"/>
+                            <field name="management_fee"/>
                         </group>
                     </group>
                     <group string="Lịch thanh toán">

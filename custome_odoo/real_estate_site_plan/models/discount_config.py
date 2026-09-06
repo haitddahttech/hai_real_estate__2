@@ -2,6 +2,9 @@
 
 from odoo import models, fields, api
 
+from .product_template import compute_maintenance_fee, compute_vat_tax
+
+
 class ProductDiscountConfig(models.Model):
     _name = 'product.discount.config'
     _description = 'Cấu hình giảm giá'
@@ -80,8 +83,10 @@ class ProductDiscountConfig(models.Model):
         sale = product.price_exclude_land_tax or 0.0
         land = product.land_tax or 0.0
         list_price = product.list_price or 0.0
+        # Dùng chung helper với product.template để hai nơi không bao giờ lệch
+        # tỷ lệ (10% VAT / 0,5% quỹ bảo trì, làm tròn về bội 1.000 VND).
         new_sale  = round(sale * (100.0 - q) / 100.0, 4)
-        new_vat   = 0.10 * new_sale
-        new_maint = round((new_sale + land) * 0.005, -3)        # làm tròn về bội 1000 VND
+        new_vat   = compute_vat_tax(new_sale)
+        new_maint = compute_maintenance_fee(new_sale + land)
         new_total = new_sale + land + new_vat + new_maint
         return list_price - new_total

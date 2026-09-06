@@ -2,6 +2,13 @@
 
 from odoo import models, fields, api
 
+from .product_template import (
+    MAINTENANCE_ROUNDING,
+    compute_maintenance_fee,
+    compute_vat_tax,
+)
+
+
 class ProductDiscountConfig(models.Model):
     _name = 'product.discount.config'
     _description = 'Cấu hình giảm giá'
@@ -9,8 +16,11 @@ class ProductDiscountConfig(models.Model):
 
     # Làm tròn bám theo đúng file Excel nguồn (sheet "CK GD2 SH"):
     # giá nhà ROUND(...,-4), quỹ bảo trì ROUND(...,-3).
-    ROUND_SALE = -4    # giá nhà: bội 10.000
-    ROUND_MAINT = -3   # quỹ bảo trì: bội 1.000
+    ROUND_SALE = -4                      # giá nhà: bội 10.000
+    ROUND_MAINT = MAINTENANCE_ROUNDING   # quỹ bảo trì: bội 1.000
+    # Tỷ lệ VAT 10% và quỹ bảo trì 0,5% KHÔNG viết lại ở đây: mọi chỗ dựng lại
+    # tháp giá đều gọi compute_vat_tax / compute_maintenance_fee của
+    # product_template, để giá sản phẩm và giá sau chiết khấu không lệch nhau.
 
     name = fields.Char(string='Tên chương trình', translate=True, required=True)
     sequence = fields.Integer(string='Thứ tự', default=10, help="Thứ tự hiển thị, số nhỏ hơn sẽ hiển thị trước")
@@ -97,8 +107,8 @@ class ProductDiscountConfig(models.Model):
         land = product.land_tax or 0.0
         list_price = product.list_price or 0.0
         new_sale  = round(sale * (100.0 - q) / 100.0, self.ROUND_SALE)
-        new_vat   = 0.10 * new_sale
-        new_maint = round((new_sale + land) * 0.005, self.ROUND_MAINT)
+        new_vat   = compute_vat_tax(new_sale)
+        new_maint = compute_maintenance_fee(new_sale + land)
         new_total = new_sale + land + new_vat + new_maint
         return list_price - new_total
 
@@ -151,8 +161,8 @@ class ProductDiscountConfig(models.Model):
         list_price = product.list_price or 0.0
 
         def total_at(sale):
-            maint = round((sale + land) * 0.005, self.ROUND_MAINT)
-            return sale + land + 0.10 * sale + maint
+            maint = compute_maintenance_fee(sale + land)
+            return sale + land + compute_vat_tax(sale) + maint
 
         groups = self._percent_recalc_stage_groups()
         if not groups:
@@ -288,8 +298,8 @@ class ProductDiscountConfig(models.Model):
             sale = new_sale
 
         if groups:
-            vat = 0.10 * sale
-            maint = round((sale + land) * 0.005, self.ROUND_MAINT)
+            vat = compute_vat_tax(sale)
+            maint = compute_maintenance_fee(sale + land)
         else:
             # Không có CK % tính lại -> giữ nguyên số liệu nhập tay của sản phẩm,
             # không tự dựng lại VAT/quỹ bảo trì (tránh đổi lịch của hàng cũ).

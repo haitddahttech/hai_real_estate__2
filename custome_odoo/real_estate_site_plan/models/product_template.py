@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, Command
 
 
 # ---------------------------------------------------------------------------
@@ -282,14 +282,34 @@ class ProductTemplate(models.Model):
     @api.onchange('deposit_date', 'price_include_land_tax', 'vat_tax', 'categ_id',
                   'selected_discount_ids')
     def compute_payment_timeline(self):
-        """Sinh lại lịch thanh toán dựa trên payment.schedule.template tương ứng
-        với category của sản phẩm. Nếu không có template nào áp cho category này,
-        giữ nguyên lịch hiện tại (không xoá, không sinh mới)."""
+        """Dựng lại lịch thanh toán để xem trước NGAY TRÊN FORM, chưa lưu.
+
+        Không có mẫu lịch cho danh mục của sản phẩm thì giữ nguyên lịch hiện tại
+        (không xoá, không sinh mới).
+
+        BẮT BUỘC gán qua chính field bằng Command, KHÔNG được gọi
+        _generate_timelines_for_product() ở đây. Hàm đó dùng unlink() + write(),
+        hai thao tác này flush và invalidate cache ngay giữa chừng onchange, làm
+        MẤT giá trị người dùng vừa gõ: bản ghi ảo rơi về số đang lưu trong DB
+        nên ô nhập nhảy về giá trị cũ khi click ra ngoài. Gán qua field chỉ đụng
+        cache của bản ghi ảo, đúng bản chất của onchange.
+
+        Lịch xem trước này được LƯU khi người dùng bấm lưu form (client gửi
+        lên đúng các lệnh o2m ở trên). Các đường ghi từ code — wizard import,
+        nút "Cập nhật lịch thanh toán" — vẫn gọi thẳng
+        _generate_timelines_for_product() như cũ.
+        """
         for product in self:
             template = product._find_payment_schedule_template()
             if not template:
                 continue
-            template._generate_timelines_for_product(product)
+            vals_list = template._build_timeline_vals(product)
+            product.payment_timeline_ids = [Command.clear()] + [
+                Command.create({
+                    k: v for k, v in vals.items() if k != 'product_tmpl_id'
+                })
+                for vals in vals_list
+            ]
 
     def refresh_payment_timeline_dates(self):
         """Làm mới NGÀY của lịch thanh toán GỐC đang lưu trong DB.

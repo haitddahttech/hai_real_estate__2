@@ -98,6 +98,22 @@ class PaymentTimeline(models.Model):
         default=False,
     )
 
+    # --- Cờ sao chép từ payment.schedule.template.line lúc sinh lịch ---
+    # Bảng lịch (portal + PDF) chỉ đọc 3 cờ này, không tự suy theo mã đợt nữa.
+    is_handover = fields.Boolean(
+        string='Là đợt bàn giao nhà',
+        default=False,
+        help='Đợt Bàn giao nhà của lịch, dùng làm mốc trừ chiết khấu.',
+    )
+    highlight_row = fields.Boolean(
+        string='Tô nền cả dòng',
+        default=False,
+    )
+    highlight_bank_cell = fields.Boolean(
+        string='Tô nền ô Hỗ trợ ngân hàng',
+        default=False,
+    )
+
     # --- Chia ô "Hỗ trợ ngân hàng" thành nhiều khối ---
     # Sinh ra từ payment.schedule.template.line.bank_split_ratio, xem
     # PaymentScheduleTemplate._apply_bank_splits.

@@ -214,12 +214,35 @@
                                 margin-top: 2px;
                             }
                             
+                            /* Hai the "Thong Tin Co Ban" / "Thong Tin Thanh Toan": dung chung
+                               MOT HANG cua bang nen wkhtmltopdf tu keo hai o cao bang nhau
+                               (inline-block + height:100% khong an trong wkhtmltopdf).
+                               Vien/nen dat thang tren o td, kem !important de thang rule
+                               `td { border: hidden !important; }` khai bao o tren. */
+                            .eq-card-row {
+                                width: 100%;
+                                table-layout: fixed;
+                                border-collapse: separate;
+                                border-spacing: 0;
+                                margin: 0 0 6px 0;
+                                page-break-inside: avoid !important;
+                            }
+                            .eq-card {
+                                background: #F9FAFB !important;
+                                border: 1px solid #E5E7EB !important;
+                                border-radius: 6px;
+                                padding: 10px !important;
+                                vertical-align: top !important;
+                            }
+                            /* O ngan cach giua hai the, thay cho margin-right cua ban inline-block */
+                            .eq-card-gap { width: 8px; padding: 0 !important; }
+
                             /* Total Bar */
                             .total-footer {
                                 background: #FFE082;
                                 border-radius: 8px;
-                                padding: 10px 15px;
-                                margin-top: 8px;
+                                padding: 5px 14px;
+                                margin-top: 6px;
                                 display: table;
                                 width: 100%;
                                 box-sizing: border-box;
@@ -227,6 +250,10 @@
                             .total-label { color: #856404; font-weight: bold; font-size: 11px; text-transform: uppercase; display: table-cell; vertical-align: middle; }
                             .total-values { text-align: right; display: table-cell; vertical-align: middle; }
                             .total-val-item { display: inline-block; margin-left: 25px; }
+                            /* Dai tong cong thap lai: bo padding 4px cua .info-label dung chung va
+                               siet line-height de hai dong (nhan + so) khong doi cao dai. */
+                            .total-footer .info-label { padding: 0 !important; font-size: 7.5px; line-height: 1.1; }
+                            .total-footer .gold-text { line-height: 1.15; }
                             .gold-text { color: #5A4100; font-weight: 800; }
                             .percentage-badge {
                                 background: #856404;
@@ -271,10 +298,11 @@
                         </div>
                         
                         <!-- Lề trái/phải bằng 0 để thẳng hàng với .full-card và .timeline-section bên dưới -->
-                        <div style="margin: 0 0 6px 0; white-space: nowrap; font-size: 0;">
+                        <table class="eq-card-row">
+                            <tr>
                             <!-- Card 1: Thông Tin Cơ Bản -->
-                            <div style="display: inline-block; vertical-align: top; width: 32%; margin-right: 1%; white-space: normal; font-size: 9.5px;">
-                                <div style="background: #F9FAFB; border-radius: 6px; padding: 10px; border: 1px solid #E5E7EB; height: 100%;">
+                            <td class="eq-card" style="width: 32%;">
+                                <div style="font-size: 9.5px;">
                                     <div class="card-title" style="margin-bottom: 6px;">Thông Tin Cơ Bản</div>
                                     <table class="info-table basic-info-table" style="width: 100%; table-layout: auto;">
                                         <tr><td class="info-label">Loại hình</td><td class="info-value">
@@ -288,10 +316,13 @@
                                         <tr><td class="info-label">Phí quản lý</td><td class="info-value"><t t-esc="'{:,.0f}'.format(product.management_fee or 0)"/> VNĐ/m²</td></tr>
                                     </table>
                                 </div>
-                            </div>
+                            </td>
+                            <td class="eq-card-gap"/>
                             <!-- Card 2: Thông Tin Thanh Toán -->
-                            <div style="display: inline-block; vertical-align: top; width: 67%; white-space: normal; font-size: 9.5px;">
-                                <div style="background: #F9FAFB; border-radius: 6px; padding: 10px; border: 1px solid #E5E7EB;">
+                            <!-- Khong dat width: o nay an het phan con lai, tranh tong
+                                 32% + 8px + 67% vuot qua be ngang bang. -->
+                            <td class="eq-card">
+                                <div style="font-size: 9.5px;">
                                     <div class="card-title" style="margin-bottom: 6px;">Thông Tin Thanh Toán</div>
                                     <!-- CHỈ in đúng tài khoản ngân hàng khách đang xem trên portal.
                                          `selected_bank_id` do controller truyền vào qua data; không có
@@ -319,9 +350,10 @@
                                         </tr>
                                     </table>
                                 </div>
-                            </div>
-                        </div>
-                        
+                            </td>
+                            </tr>
+                        </table>
+
                         <!-- Financial Box -->
                         <div class="full-card">
                             <div class="card-title">Thông Tin Tài Chính (Dự kiến)</div>
@@ -399,9 +431,10 @@
                                         <t t-set="group_size" t-value="1"/>
                                         <t t-set="grp_mt" t-value="False"/>
 
-                                        <!-- Highlight đồng bộ với màn hình chi tiết portal -->
-                                        <t t-set="row_hl" t-value="timeline.type in ['ky_hop_dong', 'giao_nha']"/>
-                                        <t t-set="bank_hl" t-value="timeline.type in ['dat_coc', 'quy_bao_tri']"/>
+                                        <!-- Tô nền theo cờ cấu hình trên payment.schedule.template.line
+                                             (highlight_row / highlight_bank_cell), đồng bộ với portal. -->
+                                        <t t-set="row_hl" t-value="timeline.highlight_row"/>
+                                        <t t-set="bank_hl" t-value="timeline.highlight_bank_cell"/>
 
                                         <!-- Group detection -->
                                         <t t-if="timeline.bank_group">
@@ -480,7 +513,8 @@
                                             </t>
                                             <t t-elif="timeline.bank_split_json">
                                                 <!-- O gop chia thanh nhieu khoi: moi khoi mot so tien + label -->
-                                                <td t-att-rowspan="timeline.bank_split_size or 1" t-att-style="'vertical-align: middle; border-bottom: 1px solid #F9ECC7 !important;' + (' background-color: #FFE082;' if bank_hl else '')">
+                                                <t t-set="split_rows" t-value="rows[current_idx:current_idx + (timeline.bank_split_size or 1)]"/>
+                                                <td t-att-rowspan="timeline.bank_split_size or 1" t-att-style="'vertical-align: middle; border-bottom: 1px solid #F9ECC7 !important;' + (' background-color: #FFE082;' if any(split_rows.mapped('highlight_bank_cell')) else '')">
                                                     <t t-foreach="timeline.get_bank_split_blocks()" t-as="blk">
                                                         <div t-att-style="'' if blk_first else 'border-top: 1px dashed #C9A227; margin-top: 4px; padding-top: 4px;'">
                                                             <span class="bank-amount"><t t-esc="'{:,.0f}'.format(blk['amount'])"/></span>
@@ -496,7 +530,7 @@
                                                 <!-- Ô gộp: hàng này + hàng Quỹ bảo trì -->
                                                 <t t-set="qbt_pair" t-value="rows[current_idx:current_idx+2]"/>
                                                 <t t-set="qbt_sum" t-value="sum(qbt_pair.mapped('bank_amount'))"/>
-                                                <td rowspan="2" style="vertical-align: middle; border-bottom: 1px solid #F9ECC7 !important; background-color: #FFE082;">
+                                                <td rowspan="2" t-att-style="'vertical-align: middle; border-bottom: 1px solid #F9ECC7 !important;' + (' background-color: #FFE082;' if any(qbt_pair.mapped('highlight_bank_cell')) else '')">
                                                     <t t-if="qbt_sum > 0">
                                                         <span class="bank-amount"><t t-esc="'{:,.0f}'.format(qbt_sum)"/></span>
                                                     </t>
@@ -504,7 +538,7 @@
                                                 </td>
                                             </t>
                                             <t t-elif="is_first_in_group and timeline.bank_group">
-                                                <td t-att-rowspan="group_size" t-att-style="'vertical-align: middle; border-bottom: 1px solid #F9ECC7 !important;' + (' background-color: #FFE082;' if bank_hl else '')">
+                                                <td t-att-rowspan="group_size" t-att-style="'vertical-align: middle; border-bottom: 1px solid #F9ECC7 !important;' + (' background-color: #FFE082;' if any(rows[current_idx:current_idx+group_size].mapped('highlight_bank_cell')) else '')">
                                                     <t t-set="sum_bank" t-value="sum(rows[current_idx:current_idx+group_size].mapped('bank_amount'))"/>
                                                     <t t-if="sum_bank > 0">
                                                         <span class="bank-amount"><t t-esc="'{:,.0f}'.format(sum_bank)"/></span>
@@ -545,7 +579,7 @@
                                     </div>
                                     <div class="total-val-item">
                                         <span class="info-label" style="display: block; text-align: left; color: #9A7B22;">TỔNG THANH TOÁN</span>
-                                        <span class="gold-text" style="font-size: 14px;"><t t-esc="'{:,.0f}'.format(sum(rows.mapped('total_amount')))"/></span>
+                                        <span class="gold-text" style="font-size: 12px;"><t t-esc="'{:,.0f}'.format(sum(rows.mapped('total_amount')))"/></span>
                                     </div>
                                     <span class="percentage-badge">100%</span>
                                 </div>

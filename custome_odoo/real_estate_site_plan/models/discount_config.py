@@ -44,9 +44,9 @@ class ProductDiscountConfig(models.Model):
         help="Chọn công thức tính chiết khấu theo sản phẩm")
     active = fields.Boolean(string='Đang hoạt động', default=True)
     apply_stage = fields.Selection([
-        ('ky_hop_dong', 'A — Trừ thẳng vào đợt Ký HĐMB'),
-        ('spread',      'B — Chia đều từ đợt 4 đến Bàn giao nhà'),
-        ('giao_nha',    'C — Trừ thẳng vào đợt Bàn giao nhà'),
+        ('ky_hop_dong', 'A — CK tại thời điểm ký HĐMB'),
+        ('spread',      'B — CK sau khi ký HĐMB (Phụ lục)'),
+        ('giao_nha',    'C — CK tại thời điểm Bàn Giao Nhà'),
     ], string='Mốc áp dụng', default='ky_hop_dong', required=True,
         help="Bắt buộc — vị trí trừ tiền chiết khấu trên LỊCH THANH TOÁN, mặc "
              "định là loại A. Với CK '% tính lại tổng giá' thì số tiền trừ vào "
@@ -201,9 +201,9 @@ class ProductDiscountConfig(models.Model):
         'giao_nha': 'C',
     }
     STAGE_HINT = {
-        'ky_hop_dong': 'Trừ thẳng vào đợt Ký hợp đồng',
-        'spread': 'Chia đều từ đợt 4 đến đợt Bàn giao nhà',
-        'giao_nha': 'Trừ thẳng vào đợt Bàn giao nhà',
+        'ky_hop_dong': 'CK tại thời điểm ký HĐMB',
+        'spread': 'CK sau khi ký HĐMB (Phụ lục)',
+        'giao_nha': 'CK tại thời điểm Bàn Giao Nhà',
     }
     # Thứ tự hiển thị các nhóm: A -> B -> C, đúng trình tự tiền CK bị trừ trên lịch
     STAGE_ORDER = ('ky_hop_dong', 'spread', 'giao_nha')

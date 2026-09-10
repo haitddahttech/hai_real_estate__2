@@ -93,6 +93,9 @@
                                     <field name="is_merge_by_date" widget="boolean_toggle" invisible="not is_mergeable"/>
                                     <field name="is_merge_title" widget="boolean_toggle" invisible="not is_mergeable"/>
                                     <field name="note" optional="show"/>
+                                    <field name="is_handover" widget="boolean_toggle" optional="show"/>
+                                    <field name="highlight_row" widget="boolean_toggle" optional="show"/>
+                                    <field name="highlight_bank_cell" widget="boolean_toggle" optional="show"/>
                                 </list>
                             </field>
                         </page>

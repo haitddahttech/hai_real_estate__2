@@ -138,6 +138,12 @@ class PaymentScheduleTemplate(models.Model):
     #   giao_nha    (C) -> trừ thẳng vào đợt Bàn giao nhà
     ROUND_DISCOUNT_SPLIT = -3  # chia đều làm tròn bội 1.000, dư dồn vào đợt cuối
 
+    # Cách tô nền CŨ (hardcode theo mã đợt), chỉ dùng cho mẫu lịch chưa tick cờ
+    # highlight_row / highlight_bank_cell nào — xem legacy_hl trong
+    # _build_timeline_vals.
+    LEGACY_HIGHLIGHT_ROW_CODES = ('ky_hop_dong', 'giao_nha')
+    LEGACY_HIGHLIGHT_BANK_CODES = ('dat_coc', 'quy_bao_tri')
+
     def _apply_schedule_discounts(self, vals_list, disc_ctx, currency):
         """Trừ tiền chiết khấu vào các đợt của `vals_list` (sửa tại chỗ).
 
@@ -181,7 +187,12 @@ class PaymentScheduleTemplate(models.Model):
             vals['discount_amount'] = currency.round(vals.get('discount_amount', 0.0) + amount)
 
         ky_idx = index_of('ky_hop_dong')
-        giao_idx = index_of('giao_nha')
+        # Đợt Bàn giao nhà: ưu tiên cờ "Là đợt bàn giao nhà" trên mẫu lịch, chỉ
+        # khi không mẫu nào tick mới dò theo mã 'giao_nha' như trước.
+        handover_positions = [
+            i for i, vals in enumerate(vals_list) if vals.get('is_handover')
+        ]
+        giao_idx = handover_positions[0] if handover_positions else index_of('giao_nha')
         # Mốc không tồn tại trên template thì dồn vào đợt Bàn giao nhà, cuối cùng
         # mới đến đợt cuối bảng — cốt để tổng lịch không bị hụt tiền CK.
         fallback_idx = giao_idx if giao_idx >= 0 else len(vals_list) - 1
@@ -189,7 +200,9 @@ class PaymentScheduleTemplate(models.Model):
         for stage, amount in by_stage.items():
             if stage == 'spread':
                 continue
-            pos = index_of(stage)
+            # Mốc C của chương trình CK trỏ tới đợt Bàn giao nhà -> dùng chính
+            # đợt đã đánh dấu ở trên, không dò lại theo mã.
+            pos = giao_idx if stage == 'giao_nha' else index_of(stage)
             cut(pos if pos >= 0 else fallback_idx, amount)
 
         spread_total = by_stage.get('spread') or 0.0
@@ -324,8 +337,19 @@ class PaymentScheduleTemplate(models.Model):
 
         early_codes = ('dat_coc', 'trong_3_ngay', 'ky_hop_dong')
 
+        # Lịch cũ (dựng trước khi có 3 cờ is_handover / highlight_*) chưa tick ô
+        # nào -> giữ nguyên cách tô nền cứng theo mã đợt như trước để bảng không
+        # đột ngột mất highlight sau khi nâng cấp. Chỉ cần tick 1 ô bất kỳ trên
+        # mẫu lịch là toàn bộ việc tô nền chuyển sang chạy theo cấu hình.
+        legacy_hl = not any(
+            l.highlight_row or l.highlight_bank_cell for l in self.line_ids
+        )
+
         paid_amount = 0.0
         acc_amount = acc_vat = acc_bank = 0.0
+        # Cờ của các đợt bị gộp: dồn sang đợt kế tiếp cùng với tiền, nếu không
+        # một đợt Bàn giao nhà quá hạn bị gộp sẽ làm lịch mất mốc bàn giao.
+        acc_handover = acc_hl_row = acc_hl_bank = False
         acc_share = 0.0  # % tích lũy cho mô tả "X% +VAT tương ứng"
         # Hàng đợi NHÃN HIỂN THỊ của các đợt mergeable đã đi qua.
         # Khi 1 đợt bị gộp, nhãn của nó KHÔNG mất đi mà được đẩy xuống cho
@@ -392,6 +416,15 @@ class PaymentScheduleTemplate(models.Model):
             if line.code == 'quy_bao_tri':
                 bank_amount += maint_base
 
+            # ---- CỜ HIỂN THỊ / MỐC BÀN GIAO ----
+            line_handover = line.is_handover or (legacy_hl and line.code == 'giao_nha')
+            line_hl_row = line.highlight_row or (
+                legacy_hl and line.code in self.LEGACY_HIGHLIGHT_ROW_CODES
+            )
+            line_hl_bank = line.highlight_bank_cell or (
+                legacy_hl and line.code in self.LEGACY_HIGHLIGHT_BANK_CODES
+            )
+
             # ---- MERGE (gộp dữ liệu theo ngày) ----
             if line.is_mergeable and line.is_merge_by_date and line_date:
                 days_gap = (line_date - today_marker).days
@@ -400,6 +433,9 @@ class PaymentScheduleTemplate(models.Model):
                     acc_vat += vat_amount
                     acc_bank += bank_amount
                     acc_share += line_share
+                    acc_handover = acc_handover or line_handover
+                    acc_hl_row = acc_hl_row or line_hl_row
+                    acc_hl_bank = acc_hl_bank or line_hl_bank
                     # Giữ nhãn đợt bị gộp để dòng kế tiếp dùng lại
                     pending_labels.append((line.code or '', line.name or ''))
                     continue  # khong tao record cho dot nay, gop vao dot ke
@@ -454,19 +490,29 @@ class PaymentScheduleTemplate(models.Model):
                 'bank_note': line.note or '',
                 'bank_group': line.group_merge or '' if line.is_mergeable else '',
                 'is_merge_title': line.is_merge_title if line.is_mergeable else False,
+                'is_handover': line_handover or acc_handover,
+                'highlight_row': line_hl_row or acc_hl_row,
+                'highlight_bank_cell': line_hl_bank or acc_hl_bank,
             })
             if (line.bank_split_ratio or '').strip():
                 split_specs.append((len(vals_list) - 1, line))
             acc_amount = acc_vat = acc_bank = 0.0
+            acc_handover = acc_hl_row = acc_hl_bank = False
             acc_share = 0.0
 
         # Nếu vẫn còn tích lũy (toàn bộ trailing lines đều mergeable + quá hạn)
         # thì dồn vào dòng cuối cùng đã tạo
-        if vals_list and (acc_amount or acc_vat or acc_bank):
+        if vals_list and (acc_amount or acc_vat or acc_bank
+                          or acc_handover or acc_hl_row or acc_hl_bank):
             last_vals = vals_list[-1]
             last_vals['amount'] += acc_amount
             last_vals['vat_amount'] += acc_vat
             last_vals['bank_amount'] += acc_bank
+            last_vals['is_handover'] = last_vals['is_handover'] or acc_handover
+            last_vals['highlight_row'] = last_vals['highlight_row'] or acc_hl_row
+            last_vals['highlight_bank_cell'] = (
+                last_vals['highlight_bank_cell'] or acc_hl_bank
+            )
 
         # Chia ô "Hỗ trợ ngân hàng" thành nhiều khối theo cấu hình trên đợt
         self._apply_bank_splits(
@@ -631,6 +677,27 @@ class PaymentScheduleTemplateLine(models.Model):
         string='Ghi chú',
         translate=True,
         help='Vd: "KH 20%", "NGÂN HÀNG 35%"...',
+    )
+
+    # --- Đợt bàn giao nhà + tô nền trên bảng lịch thanh toán ---
+    is_handover = fields.Boolean(
+        string='Là đợt bàn giao nhà',
+        default=False,
+        help='Đánh dấu đợt Bàn giao nhà của lịch này. Dùng làm mốc trừ chiết khấu '
+             '(mốc C "CK tại thời điểm Bàn Giao Nhà" và điểm cuối của dải chia đều) '
+             'thay cho việc dò theo mã "giao_nha".',
+    )
+    highlight_row = fields.Boolean(
+        string='Tô nền cả dòng',
+        default=False,
+        help='Tô nền vàng nhạt toàn bộ dòng của đợt này trên bảng lịch thanh toán '
+             '(portal và bản in PDF).',
+    )
+    highlight_bank_cell = fields.Boolean(
+        string='Tô nền ô Hỗ trợ ngân hàng',
+        default=False,
+        help='Tô nền vàng đậm ô cuối dòng — cột "Hỗ trợ ngân hàng" — của đợt này '
+             'trên bảng lịch thanh toán.',
     )
 
     # ------------------------------------------------------------------

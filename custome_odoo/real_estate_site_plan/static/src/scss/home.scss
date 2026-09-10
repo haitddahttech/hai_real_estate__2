@@ -10,7 +10,7 @@
 }
 
 // -------------------------------------------------------------
-// 1.5) BẢN ĐỒ VỊ TRÍ (image map interactive)
+// 1.6) BẢN ĐỒ VỊ TRÍ (image map interactive)
 // -------------------------------------------------------------
 .hh-map {
     background: var(--hh-secondary, #fffaea);
@@ -166,7 +166,7 @@
 }
 
 // -------------------------------------------------------------
-// 1.55) PHỐI CẢNH SHOPHOUSE — dãy nhà tách nền "bay lên", mây trôi phía sau
+// 1.5) PHỐI CẢNH SHOPHOUSE — dãy nhà tách nền "bay lên", mây trôi phía sau
 // Ảnh đã tách nền (WEBP alpha) nên bầu trời chính là gradient của section,
 // lấy đúng dải màu trời trong ảnh gốc (đậm trên cao → mờ sương ở chân trời).
 // Hai lớp mây lặp ngang trôi ngược chiều nằm DƯỚI dãy nhà nên thấy mây chạy
@@ -184,22 +184,16 @@
     justify-content: flex-start;
     align-items: center;
     padding: 0; // ảnh tràn viền
-    background:
-        // Lớp 1: hoà từ nền kem của section phía trên sang trời trong ~90px đầu,
-        // để ranh giới hai section không còn là một vạch ngang.
-        linear-gradient(
-            180deg,
-            var(--hh-secondary, #fffaea) 0,
-            rgba(255, 250, 234, 0) 90px
-        ),
-        // Lớp 2: bầu trời (lấy dải màu trời của ảnh gốc).
-        linear-gradient(
-            180deg,
-            #93bfda 0%,
-            #b2d6ea 24%,
-            #d2e8ef 50%,
-            #dceff2 100%
-        );
+    // Section nằm ngay dưới hero video (không còn nền kem ở trên) nên trời bắt
+    // đầu luôn từ mép trên: đậm trên cao → mờ sương ở chân trời, đúng dải màu
+    // trời của ảnh gốc.
+    background: linear-gradient(
+        180deg,
+        #93bfda 0%,
+        #b2d6ea 24%,
+        #d2e8ef 50%,
+        #dceff2 100%
+    );
 }
 
 // Vùng trời chứa chữ: chiếm phần còn lại phía trên dãy nhà.
@@ -270,25 +264,57 @@
     padding: 0 1rem;
 }
 
-.hh-skyline__kicker {
-    font-family: var(--hh-font-primary);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: var(--hh-primary);
-    font-size: clamp(0.95rem, 1.6vw, 1.35rem);
-    margin: 0 0 0.35rem;
-}
-
+// Tên dự án: VÉN (display) đặt thưa chữ, chữ mảnh và bồng bềnh trên nền trời —
+// dâng lên/hạ xuống rất chậm (hhSkyTitleFloat) cho cảm giác "bay bổng".
 .hh-skyline__title {
     font-family: var(--hh-font-display);
     text-transform: uppercase;
     color: var(--hh-primary);
-    letter-spacing: 0.02em;
-    font-size: clamp(1.7rem, 4vw, 3.2rem);
-    line-height: 1.12;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    // Thụt lề phải đúng bằng letter-spacing để chữ vẫn cân giữa.
+    text-indent: 0.16em;
+    font-size: clamp(2.1rem, 5.2vw, 4.2rem);
+    line-height: 1.1;
     margin: 0;
-    text-shadow: 0 2px 18px rgba(255, 255, 255, 0.65);
+    text-shadow: 0 2px 22px rgba(255, 255, 255, 0.75);
+}
+
+// Chỉ bồng bềnh SAU khi hiệu ứng reveal chạy xong: trước đó transform còn thuộc
+// về .hh-stagger (trượt lên), animation sẽ đè mất nếu bật ngay từ đầu.
+.hh-skyline__head.is-visible .hh-skyline__title {
+    animation: hhSkyTitleFloat 7s ease-in-out 1.3s infinite;
+}
+
+// Dòng định vị dưới tên dự án + vạch vàng đồng mảnh ngăn hai dòng.
+.hh-skyline__kicker {
+    font-family: var(--hh-font-primary);
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 0.26em;
+    text-indent: 0.26em;
+    color: var(--hh-accent-600);
+    font-size: clamp(0.8rem, 1.4vw, 1.15rem);
+    margin: 0.85rem 0 0;
+    padding-top: 0.85rem;
+    position: relative;
+}
+
+.hh-skyline__kicker::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(3.5rem, 9vw, 7rem);
+    height: 2px;
+    background: var(--hh-gradient-gold);
+    opacity: 0.9;
+}
+
+@keyframes hhSkyTitleFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-9px); }
 }
 
 // Khung ngoài: dãy nhà bay lên THEO CUỘN — cuộn xuống thì dâng lên và rõ dần,
@@ -342,6 +368,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .hh-skyline__head.is-visible .hh-skyline__title {
+        animation: none;
+        transform: none;
+    }
     .hh-skyline__cloud {
         animation: none;
         transform: none;
@@ -359,7 +389,7 @@
 }
 
 // -------------------------------------------------------------
-// 1.6) KẾT NỐI VÙNG — dải mốc khoảng cách
+// 1.7) KẾT NỐI VÙNG — dải mốc khoảng cách
 // Dựng hoàn toàn bằng HTML/CSS (thay ảnh infographic tĩnh) nên chữ vẫn
 // chọn/dịch/SEO được và sắc nét ở mọi mật độ điểm ảnh.
 // Màu từng mốc truyền qua biến --stop-color đặt inline trên <li>.

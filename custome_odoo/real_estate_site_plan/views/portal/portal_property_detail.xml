@@ -778,6 +778,14 @@
                                                             border-bottom: 1px solid #F9ECC7;
                                                         }
                                                         .rp-timeline-table tbody tr:last-child td { border-bottom: 0; }
+                                                        /* Duong ke vang chia cot: dat o MEP TRAI cua moi o (tru o dau
+                                                           dong) nen o gop rowspan tu ve duong ke phu het chieu cao,
+                                                           khong ho vach o nhung dong bi o tren phu. */
+                                                        .rp-timeline-table th + th,
+                                                        .rp-timeline-table td + td {
+                                                            /* Cung mau voi ke ngang (#F9ECC7) de luoi bang deu mot tone. */
+                                                            border-left: 1px solid #F9ECC7;
+                                                        }
                                                         /* Hai moc quan trong nhat cua lich thanh toan (Ky HD, Giao nha):
                                                            to nen vang nhat de noi bat, dam hon vien bang (#F9ECC7)
                                                            nhung nhat hon o cot ngan hang (#FFE082) de khong tranh nhau. */
@@ -1875,9 +1883,10 @@
                             <t t-set="group_size" t-value="1"/>
                             <t t-set="grp_mt" t-value="False"/>
 
-                            <!-- Highlight đồng bộ với mẫu in PDF -->
-                            <t t-set="row_hl" t-value="timeline.type in ['ky_hop_dong', 'giao_nha']"/>
-                            <t t-set="bank_hl" t-value="timeline.type in ['dat_coc', 'quy_bao_tri']"/>
+                            <!-- Tô nền theo cờ cấu hình trên payment.schedule.template.line
+                                 (highlight_row / highlight_bank_cell), đồng bộ với mẫu in PDF. -->
+                            <t t-set="row_hl" t-value="timeline.highlight_row"/>
+                            <t t-set="bank_hl" t-value="timeline.highlight_bank_cell"/>
 
                             <!-- Group detection -->
                             <t t-if="timeline.bank_group">
@@ -1953,8 +1962,9 @@
                                     </t>
                                     <t t-elif="timeline.bank_split_json">
                                         <!-- O gop chia thanh nhieu khoi: moi khoi mot so tien + label -->
+                                        <t t-set="split_rows" t-value="rows[current_idx:current_idx + (timeline.bank_split_size or 1)]"/>
                                         <td t-att-rowspan="timeline.bank_split_size or 1"
-                                            t-att-class="'rp-bank-hl' if bank_hl else ''">
+                                            t-att-class="'rp-bank-hl' if any(split_rows.mapped('highlight_bank_cell')) else ''">
                                             <t t-foreach="timeline.get_bank_split_blocks()" t-as="blk">
                                                 <div t-att-class="'rp-bank-block' if blk_first else 'rp-bank-block rp-bank-block--sep'">
                                                     <span class="rp-bank-amount"><t t-esc="'{:,.0f}'.format(blk['amount'])"/></span>
@@ -1970,7 +1980,7 @@
                                         <!-- Ô gộp: hàng này + hàng Quỹ bảo trì -->
                                         <t t-set="qbt_pair" t-value="rows[current_idx:current_idx+2]"/>
                                         <t t-set="qbt_sum" t-value="sum(qbt_pair.mapped('bank_amount'))"/>
-                                        <td rowspan="2" class="rp-bank-hl">
+                                        <td rowspan="2" t-att-class="'rp-bank-hl' if any(qbt_pair.mapped('highlight_bank_cell')) else ''">
                                             <t t-if="qbt_sum &gt; 0">
                                                 <span class="rp-bank-amount"><t t-esc="'{:,.0f}'.format(qbt_sum)"/></span>
                                             </t>
@@ -1978,7 +1988,8 @@
                                         </td>
                                     </t>
                                     <t t-elif="is_first_in_group and timeline.bank_group">
-                                        <td t-att-rowspan="group_size" t-att-class="'rp-bank-hl' if bank_hl else ''">
+                                        <td t-att-rowspan="group_size"
+                                            t-att-class="'rp-bank-hl' if any(rows[current_idx:current_idx+group_size].mapped('highlight_bank_cell')) else ''">
                                             <t t-set="sum_bank" t-value="sum(rows[current_idx:current_idx+group_size].mapped('bank_amount'))"/>
                                             <t t-if="sum_bank &gt; 0">
                                                 <span class="rp-bank-amount"><t t-esc="'{:,.0f}'.format(sum_bank)"/></span>

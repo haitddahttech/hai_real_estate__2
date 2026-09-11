@@ -790,7 +790,7 @@
                                                            to nen vang nhat de noi bat, dam hon vien bang (#F9ECC7)
                                                            nhung nhat hon o cot ngan hang (#FFE082) de khong tranh nhau. */
                                                         .rp-row-hl { background-color: #FFF3CD; }
-                                                        .rp-bank-hl { background-color: #FFE082; }
+<!--                                                        .rp-bank-hl { background-color: #FFE082; }-->
                                                         .rp-text-right { text-align: right; }
                                                         /* Cot NGAY: can giua ca tieu de lan noi dung cho thang cot. */
                                                         .rp-text-center { text-align: center; }

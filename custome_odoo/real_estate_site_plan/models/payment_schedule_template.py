@@ -266,7 +266,14 @@ class PaymentScheduleTemplate(models.Model):
                 # không, hàng bị phủ mà lại mở nhóm sẽ để lại lỗ trống ô).
                 row['bank_group'] = ''
                 row['is_merge_title'] = False
-                payload.append({'amount': amount, 'label': label})
+                # Cờ tô nền của TỪNG khối = cờ highlight_bank_cell của đúng dòng
+                # phủ khối đó. Nhờ vậy trong một ô gộp bị chia, chỉ khối của dòng
+                # có bật cờ mới tô nền, không tô cả ô.
+                payload.append({
+                    'amount': amount,
+                    'label': label,
+                    'highlight': bool(row.get('highlight_bank_cell')),
+                })
 
             head = vals_list[idx]
             head['bank_split_json'] = json.dumps(payload)

@@ -1961,12 +1961,12 @@
                                         <!-- O da bi rowspan cua hang tren phu -> khong render -->
                                     </t>
                                     <t t-elif="timeline.bank_split_json">
-                                        <!-- O gop chia thanh nhieu khoi: moi khoi mot so tien + label -->
-                                        <t t-set="split_rows" t-value="rows[current_idx:current_idx + (timeline.bank_split_size or 1)]"/>
-                                        <td t-att-rowspan="timeline.bank_split_size or 1"
-                                            t-att-class="'rp-bank-hl' if any(split_rows.mapped('highlight_bank_cell')) else ''">
+                                        <!-- O gop chia thanh nhieu khoi: moi khoi mot so tien + label.
+                                             Tô nền theo TỪNG khối (blk['highlight']) — cờ của đúng dòng
+                                             phủ khối đó, không tô cả ô. -->
+                                        <td t-att-rowspan="timeline.bank_split_size or 1">
                                             <t t-foreach="timeline.get_bank_split_blocks()" t-as="blk">
-                                                <div t-att-class="'rp-bank-block' if blk_first else 'rp-bank-block rp-bank-block--sep'">
+                                                <div t-att-class="('rp-bank-block' if blk_first else 'rp-bank-block rp-bank-block--sep') + (' rp-bank-hl' if blk.get('highlight') else '')">
                                                     <span class="rp-bank-amount"><t t-esc="'{:,.0f}'.format(blk['amount'])"/></span>
                                                     <span t-if="blk['label']" class="rp-bank-note"><t t-esc="blk['label']"/></span>
                                                 </div>

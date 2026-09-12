@@ -138,12 +138,6 @@ class PaymentScheduleTemplate(models.Model):
     #   giao_nha    (C) -> trừ thẳng vào đợt Bàn giao nhà
     ROUND_DISCOUNT_SPLIT = -3  # chia đều làm tròn bội 1.000, dư dồn vào đợt cuối
 
-    # Cách tô nền CŨ (hardcode theo mã đợt), chỉ dùng cho mẫu lịch chưa tick cờ
-    # highlight_row / highlight_bank_cell nào — xem legacy_hl trong
-    # _build_timeline_vals.
-    LEGACY_HIGHLIGHT_ROW_CODES = ('ky_hop_dong', 'giao_nha')
-    LEGACY_HIGHLIGHT_BANK_CODES = ('dat_coc', 'quy_bao_tri')
-
     def _apply_schedule_discounts(self, vals_list, disc_ctx, currency):
         """Trừ tiền chiết khấu vào các đợt của `vals_list` (sửa tại chỗ).
 
@@ -337,10 +331,10 @@ class PaymentScheduleTemplate(models.Model):
 
         early_codes = ('dat_coc', 'trong_3_ngay', 'ky_hop_dong')
 
-        # Lịch cũ (dựng trước khi có 3 cờ is_handover / highlight_*) chưa tick ô
-        # nào -> giữ nguyên cách tô nền cứng theo mã đợt như trước để bảng không
-        # đột ngột mất highlight sau khi nâng cấp. Chỉ cần tick 1 ô bất kỳ trên
-        # mẫu lịch là toàn bộ việc tô nền chuyển sang chạy theo cấu hình.
+        # Tô nền dòng / ô ngân hàng nay CHẠY HOÀN TOÀN theo cấu hình
+        # (highlight_row / highlight_bank_cell) — không còn nền mặc định theo mã
+        # đợt. legacy_hl chỉ còn dùng cho MỐC BÀN GIAO: lịch cũ chưa tick cờ nào
+        # thì vẫn suy đợt 'giao_nha' làm mốc bàn giao để không lệch tiền chiết khấu.
         legacy_hl = not any(
             l.highlight_row or l.highlight_bank_cell for l in self.line_ids
         )
@@ -418,12 +412,9 @@ class PaymentScheduleTemplate(models.Model):
 
             # ---- CỜ HIỂN THỊ / MỐC BÀN GIAO ----
             line_handover = line.is_handover or (legacy_hl and line.code == 'giao_nha')
-            line_hl_row = line.highlight_row or (
-                legacy_hl and line.code in self.LEGACY_HIGHLIGHT_ROW_CODES
-            )
-            line_hl_bank = line.highlight_bank_cell or (
-                legacy_hl and line.code in self.LEGACY_HIGHLIGHT_BANK_CODES
-            )
+            # Tô nền HOÀN TOÀN theo cấu hình: không còn nền mặc định theo mã đợt.
+            line_hl_row = line.highlight_row
+            line_hl_bank = line.highlight_bank_cell
 
             # ---- MERGE (gộp dữ liệu theo ngày) ----
             if line.is_mergeable and line.is_merge_by_date and line_date:
@@ -452,7 +443,7 @@ class PaymentScheduleTemplate(models.Model):
                 name_str = "%g%%" % (line.percentage or 0.5)
             elif line.is_mergeable:
                 # Đợt mergeable: hiển thị cumulative % (gồm tích lũy nếu vừa drain merge)
-                name_str = "%.2f%% +VAT tương ứng" % (acc_share + line_share)
+                name_str = ("%.2f%%" if isinstance(line.vat_share, int) else "%") % (acc_share + line_share) + " +VAT tương ứng" if vat_amount else ""
             else:
                 name_str = "%g%%" % (line.percentage or 0)
 

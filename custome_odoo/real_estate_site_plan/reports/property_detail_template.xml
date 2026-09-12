@@ -512,11 +512,12 @@
                                                 <!-- O da bi rowspan cua hang tren phu -> khong render -->
                                             </t>
                                             <t t-elif="timeline.bank_split_json">
-                                                <!-- O gop chia thanh nhieu khoi: moi khoi mot so tien + label -->
-                                                <t t-set="split_rows" t-value="rows[current_idx:current_idx + (timeline.bank_split_size or 1)]"/>
-                                                <td t-att-rowspan="timeline.bank_split_size or 1" t-att-style="'vertical-align: middle; border-bottom: 1px solid #F9ECC7 !important;' + (' background-color: #FFE082;' if any(split_rows.mapped('highlight_bank_cell')) else '')">
+                                                <!-- O gop chia thanh nhieu khoi: moi khoi mot so tien + label.
+                                                     To nen theo TUNG khoi (blk['highlight']) - co cua dung dong
+                                                     phu khoi do, khong to ca o. -->
+                                                <td t-att-rowspan="timeline.bank_split_size or 1" style="vertical-align: middle; border-bottom: 1px solid #F9ECC7 !important;">
                                                     <t t-foreach="timeline.get_bank_split_blocks()" t-as="blk">
-                                                        <div t-att-style="'' if blk_first else 'border-top: 1px dashed #C9A227; margin-top: 4px; padding-top: 4px;'">
+                                                        <div t-att-style="('' if blk_first else 'border-top: 1px dashed #C9A227; margin-top: 4px; padding-top: 4px;') + (' background-color: #FFE082;' if blk.get('highlight') else '')">
                                                             <span class="bank-amount"><t t-esc="'{:,.0f}'.format(blk['amount'])"/></span>
                                                             <span t-if="blk['label']" class="bank-note"><t t-esc="blk['label']"/></span>
                                                         </div>

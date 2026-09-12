@@ -442,8 +442,10 @@ class PaymentScheduleTemplate(models.Model):
             elif line.code == 'quy_bao_tri':
                 name_str = "%g%%" % (line.percentage or 0.5)
             elif line.is_mergeable:
-                # Đợt mergeable: hiển thị cumulative % (gồm tích lũy nếu vừa drain merge)
-                name_str = ("%.2f%%" if isinstance(line.vat_share, int) else "%") % (acc_share + line_share) + " +VAT tương ứng" if vat_amount else ""
+                # Đợt mergeable: hiển thị cumulative % (gồm tích lũy nếu vừa drain merge).
+                # Chỉ gắn đuôi "+VAT tương ứng" khi đợt này thực sự có VAT.
+                suffix = " +VAT tương ứng" if vat_amount else ""
+                name_str = "%g%%%s" % (acc_share + line_share, suffix)
             else:
                 name_str = "%g%%" % (line.percentage or 0)
 
